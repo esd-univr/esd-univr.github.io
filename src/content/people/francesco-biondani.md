@@ -5,6 +5,7 @@ groups: [esd]
 order: 40
 legacyId: 44
 interests: [Digital twins, Predictive maintenance, Industry 5.0]
+photo: ./francesco-biondani.jpg
 orcid: "0009-0006-7070-4662"
 scholar: "https://scholar.google.com/citations?user=w5_w7Z0AAAAJ&hl=it&oi=ao"
 ---

@@ -1,4 +1,4 @@
-# Extras for individual publications, keyed by BibTeX key (see MAINTENANCE.md).
+# Extras for individual publications, keyed by BibTeX key (see docs/publications.md).
 #   featured: true      -> shown in "Selected publications" on the home page
 #   projects: [slug]    -> links the entry to a project page
 # Everything else about a publication comes from publications.bib.

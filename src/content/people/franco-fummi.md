@@ -5,6 +5,7 @@ groups: [esd]
 order: 10
 legacyId: 12
 interests: [Electronic design automation, Embedded systems, Cyber-physical production systems]
+photo: ./franco-fummi.jpg
 website: "https://www.di.univr.it/?ent=persona&id=59&lang=en"
 scholar: "https://scholar.google.it/citations?user=nhZeZLQAAAAJ&hl=it"
 dblp: "https://dblp.org/pid/50/2089.html"

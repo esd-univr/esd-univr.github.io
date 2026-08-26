@@ -1,5 +1,5 @@
 // Astro configuration for the CISD research-group website (static, GitHub Pages).
-// See README.md for the project overview and MAINTENANCE.md for content workflows.
+// See README.md for the project overview and docs/deployment.md for build and deployment.
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { isLegacyCompatUrl } from './src/lib/legacy.ts';

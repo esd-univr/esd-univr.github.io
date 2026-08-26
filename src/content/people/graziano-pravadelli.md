@@ -5,6 +5,7 @@ groups: [iot4care]
 order: 10
 legacyId: 22
 interests: [Semi-formal verification, Virtual coaching systems, Internet of Things]
+photo: ./graziano-pravadelli.png
 website: "https://www.di.univr.it/?ent=persona&id=123"
 dblp: "https://dblp.org/pid/84/2047.html"
 ---

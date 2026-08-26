@@ -4,7 +4,7 @@
  * build time; a typo or a missing required field fails the build with a message that
  * names the file and the field.
  *
- * Where the content lives (see MAINTENANCE.md):
+ * Where the content lives (see the task guides in docs/):
  *   src/data/groups.yaml     the CISD groups
  *   src/data/research.yaml   research topics
  *   src/content/people/<slug>.md, projects/<slug>.md, news/<date>-<slug>.md

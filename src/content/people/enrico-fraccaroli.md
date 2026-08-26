@@ -5,6 +5,7 @@ groups: [esd]
 order: 30
 legacyId: 1
 interests: [Electronic design automation, Fault modelling and injection, Digital twins]
+photo: ./enrico-fraccaroli.jpg
 website: "https://www.di.univr.it/?ent=persona&id=22371"
 dblp: "https://dblp.org/pid/170/0275.html"
 ---

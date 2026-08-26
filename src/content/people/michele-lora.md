@@ -5,6 +5,7 @@ groups: [esd]
 order: 20
 legacyId: 9
 interests: [Cyber-physical systems, Assume-guarantee contracts, Smart manufacturing]
+photo: ./michele-lora.jpg
 website: "https://www.di.univr.it/?ent=persona&id=9255"
 scholar: "https://scholar.google.com/citations?user=DNoGdSIAAAAJ"
 dblp: "https://dblp.org/pid/72/10001.html"

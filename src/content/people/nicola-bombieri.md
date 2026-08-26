@@ -5,6 +5,7 @@ groups: [parco]
 order: 10
 legacyId: 15
 interests: [Parallel and heterogeneous architectures, Edge computing, Parallel programming]
+photo: ./nicola-bombieri.jpg
 website: "https://www.di.univr.it/?ent=persona&id=2220&lang=en"
 scholar: "https://scholar.google.it/citations?user=eLA-qo8AAAAJ&hl=it&oi=ao"
 dblp: "https://dblp.org/pid/58/1093.html"
