@@ -87,35 +87,44 @@ cancel each other, so two quick merges both reach production in order.
 ### Repository settings this depends on
 
 - **Settings → Pages → Build and deployment → Source: GitHub Actions.** Not "Deploy from a
-  branch". If it is ever switched back, the workflow succeeds and the site does not change.
+  branch". If it is ever switched back, GitHub may try to run its legacy Pages/Jekyll build
+  over the Astro source instead of deploying `dist/`.
 - The `github-pages` environment exists (GitHub creates it on the first deployment).
 
 Nothing else about the repository settings matters to the build.
 
 ## URL and domain
 
-- The site is served at <https://esd-univr.github.io/> — an organisation Pages repository,
-  so it lives at the domain root.
-- `site: 'https://esd-univr.github.io'` in `astro.config.ts` is what canonical URLs, the
-  sitemap and Open Graph URLs are built from.
+- The site is currently served at <https://esd-univr.github.io/> — an organisation Pages
+  repository, so it lives at the domain root.
+- `site: 'https://esd-univr.github.io'` in `astro.config.ts` is the canonical origin used by
+  canonical links, the sitemap, Open Graph URLs and the generated `robots.txt`.
 - `build.format: 'directory'` produces `people/index.html`, so every URL ends with a slash,
   like the legacy site.
-- `public/.nojekyll` stops GitHub from running Jekyll over the artifact.
-- **No custom domain is configured.** There is no `CNAME` file.
+- `public/.nojekyll` is included in the deployed artifact.
+- **No custom domain is configured yet.** With the custom GitHub Actions Pages workflow, a
+  repository `CNAME` file is not required and GitHub ignores one if present.
 
 ### Moving to a custom domain
 
-All four steps, or links break:
+Do not change the canonical origin before the custom HTTPS hostname is actually serving the
+site. The sequence is:
 
-1. Set the DNS record with the university's DNS administrators (`CNAME` to
-   `esd-univr.github.io` for a subdomain).
-2. Settings → Pages → Custom domain, and enable *Enforce HTTPS*.
-3. Add `public/CNAME` containing the bare domain, so the setting survives redeployment.
-4. Change `site:` in `astro.config.ts` to the new origin.
+1. Agree the canonical hostname with the University and have the UniVR DNS/network
+   administrators point that subdomain to `esd-univr.github.io` with a `CNAME` record.
+2. **Settings → Pages → Custom domain**: enter the same hostname, then enable **Enforce
+   HTTPS** when GitHub makes it available.
+3. Verify the custom HTTPS URL actually serves the current site.
+4. Change `site:` in `astro.config.ts` to the custom origin.
+5. Update any verifier rule that deliberately pins the old origin, run `npm run ci`, and
+   merge the domain switch.
+6. Add the canonical domain to Google Search Console and submit `/sitemap-index.xml`.
 
-Step 4 is the one that is easy to forget: `npm run verify` asserts that every canonical link
-starts with `https://esd-univr.github.io/`, so it will fail until the check in
-`scripts/verify.mjs` is updated too.
+There is deliberately no `public/CNAME` step: GitHub states that a `CNAME` file is not used
+for Pages sites deployed through a custom GitHub Actions workflow. The custom domain belongs
+in the repository Pages settings.
+
+See `docs/domain-search.md` for the DNS, Search Console and analytics/privacy checklist.
 
 ## Legacy addresses
 
@@ -148,5 +157,6 @@ not exist. `docs/migration-map.md` is the record of which ids exist.
 ## See also
 
 - `docs/site-settings.md` — the site URL, brand assets and design tokens
+- `docs/domain-search.md` — custom domain, Search Console and analytics/privacy checklist
 - `docs/migration-map.md` — the legacy addresses that must keep working
 - `SECURITY.md` — what must never be committed

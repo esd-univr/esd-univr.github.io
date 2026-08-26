@@ -1,7 +1,7 @@
 ---
 /**
- * <head> metadata: title, description, canonical URL, Open Graph/Twitter cards.
- * The canonical URL is built from the configured `site` (esd-univr.github.io).
+ * <head> metadata: title, description, canonical URL, Open Graph/Twitter cards
+ * and a small amount of homepage structured data for search engines.
  */
 import { site } from '../data/site.ts';
 
@@ -23,6 +23,44 @@ const { title, description = site.description, type = 'website', image = site.br
 const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).href;
 const fullTitle = Astro.url.pathname === '/' ? site.title : `${title} · ${site.shortName}`;
 const imageUrl = image ? new URL(image, Astro.site).href : undefined;
+const homeUrl = new URL('/', Astro.site).href;
+const organisationId = `${homeUrl}#organization`;
+const websiteId = `${homeUrl}#website`;
+const structuredData = Astro.url.pathname === '/'
+  ? {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'WebSite',
+          '@id': websiteId,
+          url: homeUrl,
+          name: site.title,
+          description: site.description,
+          inLanguage: site.locale,
+          publisher: { '@id': organisationId },
+        },
+        {
+          '@type': 'Organization',
+          '@id': organisationId,
+          name: site.name,
+          alternateName: site.shortName,
+          url: homeUrl,
+          description: site.description,
+          sameAs: [site.links.github],
+          parentOrganization: {
+            '@type': 'Organization',
+            name: site.organisation.department,
+            url: site.organisation.departmentUrl,
+            parentOrganization: {
+              '@type': 'CollegeOrUniversity',
+              name: site.organisation.university,
+              url: site.organisation.universityUrl,
+            },
+          },
+        },
+      ],
+    }
+  : undefined;
 ---
 
 <title>{fullTitle}</title>
@@ -37,3 +75,4 @@ const imageUrl = image ? new URL(image, Astro.site).href : undefined;
 <meta property="og:locale" content="en_GB" />
 {imageUrl && <meta property="og:image" content={imageUrl} />}
 <meta name="twitter:card" content={imageUrl ? 'summary_large_image' : 'summary'} />
+{structuredData && <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
