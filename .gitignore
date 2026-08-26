@@ -1,0 +1,55 @@
+# Dependencies and build output
+node_modules/
+dist/
+.astro/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Legacy databases and database artifacts
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+*.dump
+*.sql
+
+# Legacy archives and backups
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.bak
+*.backup
+
+# Migration / forensic working directories
+legacy/
+legacy-*/
+migration-work/
+migration-work-*/
+.tmp/
+tmp/
+
+# Python / Django leftovers
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Logs
+*.log
+logs/
+
+# Editors and OS metadata
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local tooling
+.claude/settings.local.json
