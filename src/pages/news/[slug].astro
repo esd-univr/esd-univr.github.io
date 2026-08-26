@@ -44,7 +44,7 @@ const Content = rendered?.Content;
   <LegacyRedirect target={legacy} legacyPath={`/news/${legacy.legacyId}/`} />
 ) : (
   <BaseLayout title={d!.title} description={d!.summary} type="article">
-    <article class="container container--narrow article" lang={d!.lang}>
+    <article class="container article" lang={d!.lang}>
       <header class="article__header">
         <p class="eyebrow" lang="en">
           <time datetime={isoDate(d!.date)}>{formatDate(d!.date)}</time>
@@ -60,7 +60,7 @@ const Content = rendered?.Content;
         )}
       </header>
       {d!.image && (
-        <Image class="article__figure" src={d!.image} alt={d!.imageAlt ?? ''} widths={[640, 960, 1280]} sizes="(min-width: 60rem) 56rem, 100vw" />
+        <Image class="article__figure" src={d!.image} alt={d!.imageAlt ?? ''} widths={[640, 960, 1280]} sizes="(min-width: 80rem) 72rem, 90vw" />
       )}
       {Content && (
         <div class="prose article__body">
@@ -79,9 +79,20 @@ const Content = rendered?.Content;
 )}
 
 <style>
-  /* Width comes from .container--narrow (--container-narrow) on the element. */
+  /*
+   * The page uses the normal desktop container so an article does not read as a narrow
+   * mobile column on large screens. Running text remains capped by --measure; only the
+   * composition gets the same horizontal canvas as the rest of the site.
+   */
   .article {
     padding-block: var(--space-2xl);
+  }
+
+  .article__header,
+  .article__body,
+  .article__footer,
+  .article__back {
+    max-width: var(--measure);
   }
 
   .article__header {
@@ -105,7 +116,7 @@ const Content = rendered?.Content;
   }
 
   .article__figure {
-    width: 100%;
+    width: min(100%, 72rem);
     height: auto;
     border-radius: var(--radius);
     margin-bottom: var(--space-xl);
