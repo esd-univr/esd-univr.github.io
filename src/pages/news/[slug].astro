@@ -54,7 +54,7 @@ const Content = rendered?.Content;
         <p class="lede">{d!.summary}</p>
         {author && (
           <p class="article__author" lang="en">
-            <Portrait name={author.data.name} photo={author.data.photo} size={32} />
+            <Portrait name={author.data.name} photo={author.data.photo} size={32} variant="avatar" />
             <a href={`/people/${author.id}/`}>{author.data.name}</a>
           </p>
         )}
