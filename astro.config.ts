@@ -1,4 +1,4 @@
-// Astro configuration for the ESD research-group website (static, GitHub Pages).
+// Astro configuration for the CISD research-group website (static, GitHub Pages).
 // See README.md for the project overview and MAINTENANCE.md for content workflows.
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';

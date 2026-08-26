@@ -1,6 +1,6 @@
 ---
 name: Samuele Santacà
-role: Researcher
+role: Member
 groups: [esd]
 order: 60
 ---

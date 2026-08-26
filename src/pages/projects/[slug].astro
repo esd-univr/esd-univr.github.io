@@ -17,7 +17,7 @@ interface Props {
   project: Project;
 }
 
-const { project } = Astro.props;
+const { project } = Astro.props as Props;
 const d = project.data;
 const { Content } = await render(project);
 const hasBody = (project.body ?? '').trim().length > 0;
