@@ -29,6 +29,11 @@ const completed = projects.filter((p) => p.data.status === 'completed');
 </PageLayout>
 
 <style>
+  /* Lists need less vertical ceremony than narrative sections. */
+  .section {
+    padding-block: var(--space-xl);
+  }
+
   .group-heading {
     font-family: var(--font-mono);
     font-size: var(--text-sm);
@@ -36,6 +41,6 @@ const completed = projects.filter((p) => p.data.status === 'completed');
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--color-ink-3);
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
   }
 </style>
