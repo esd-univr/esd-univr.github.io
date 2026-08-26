@@ -1,0 +1,130 @@
+---
+import { Image } from 'astro:assets';
+import { getEntries, getEntry, render } from 'astro:content';
+import LinkList from '../../components/LinkList.astro';
+import Portrait from '../../components/Portrait.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LegacyRedirect from '../../layouts/LegacyRedirect.astro';
+import { getNews, type NewsItem } from '../../lib/content.ts';
+import { formatDate, isoDate } from '../../lib/format.ts';
+import { isLegacyId, legacyTargets, type LegacyTarget } from '../../lib/legacy.ts';
+
+export async function getStaticPaths() {
+  const news = await getNews();
+  const paths: Array<{ params: { slug: string }; props: Props }> = [];
+  for (const entry of news) {
+    if (isLegacyId(entry.id)) {
+      throw new Error(`News slug "${entry.id}" is purely numeric; numeric slugs are reserved for legacy ids`);
+    }
+    paths.push({ params: { slug: entry.id }, props: { entry } });
+  }
+  // Legacy /news/<id>/ addresses from the old site point at the new slug.
+  for (const target of legacyTargets(news, (e) => `/news/${e.id}/`, (e) => e.data.title)) {
+    paths.push({ params: { slug: target.legacyId }, props: { legacy: target } });
+  }
+  return paths;
+}
+
+type Props = { entry: NewsItem; legacy?: undefined } | { entry?: undefined; legacy: LegacyTarget };
+
+const { entry, legacy } = Astro.props;
+const d = entry?.data;
+const author = d?.author ? await getEntry(d.author) : undefined;
+const related = entry
+  ? [
+      ...(await getEntries(d!.people)).map((p) => ({ label: 'People', href: `/people/${p.id}/`, text: p.data.name })),
+      ...(await getEntries(d!.projects)).map((p) => ({ label: 'Project', href: `/projects/${p.id}/`, text: p.data.acronym ?? p.data.name })),
+      ...(await getEntries(d!.research)).map((r) => ({ label: 'Research', href: `/research/${r.id}/`, text: r.data.name })),
+    ]
+  : [];
+const rendered = entry ? await render(entry) : undefined;
+const Content = rendered?.Content;
+---
+
+{legacy ? (
+  <LegacyRedirect target={legacy} legacyPath={`/news/${legacy.legacyId}/`} />
+) : (
+  <BaseLayout title={d!.title} description={d!.summary} type="article">
+    <article class="container article" lang={d!.lang}>
+      <header class="article__header">
+        <p class="eyebrow" lang="en">
+          <time datetime={isoDate(d!.date)}>{formatDate(d!.date)}</time>
+          {d!.category && ` · ${d!.category}`}
+        </p>
+        <h1>{d!.title}</h1>
+        <p class="lede">{d!.summary}</p>
+        {author && (
+          <p class="article__author" lang="en">
+            <Portrait name={author.data.name} photo={author.data.photo} size={32} />
+            <a href={`/people/${author.id}/`}>{author.data.name}</a>
+          </p>
+        )}
+      </header>
+      {d!.image && (
+        <Image class="article__figure" src={d!.image} alt={d!.imageAlt ?? ''} widths={[640, 960, 1280]} sizes="(min-width: 60rem) 56rem, 100vw" />
+      )}
+      {Content && (
+        <div class="prose article__body">
+          <Content />
+        </div>
+      )}
+      {related.length > 0 && (
+        <footer class="article__footer" lang="en">
+          <h2 class="eyebrow">Related</h2>
+          <LinkList items={related} />
+        </footer>
+      )}
+      <p class="article__back" lang="en"><a href="/news/">← All news</a></p>
+    </article>
+  </BaseLayout>
+)}
+
+<style>
+  .article {
+    max-width: 56rem;
+    padding-block: var(--space-2xl);
+  }
+
+  .article__header {
+    display: grid;
+    gap: var(--space-sm);
+    padding-bottom: var(--space-xl);
+    border-bottom: var(--rule);
+    margin-bottom: var(--space-xl);
+  }
+
+  .article__header h1 {
+    font-size: var(--text-3xl);
+  }
+
+  .article__author {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--text-sm);
+    margin-top: var(--space-xs);
+  }
+
+  .article__figure {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    margin-bottom: var(--space-xl);
+  }
+
+  .article__footer {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-lg);
+    border-top: var(--rule);
+  }
+
+  .article__footer .eyebrow {
+    margin-bottom: var(--space-sm);
+  }
+
+  .article__back {
+    margin-top: var(--space-xl);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+</style>

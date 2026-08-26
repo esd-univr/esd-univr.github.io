@@ -1,0 +1,114 @@
+---
+/** Site masthead and primary navigation. Works without JavaScript (plain links). */
+import { site } from '../data/site.ts';
+
+const NAV = [
+  { href: '/research/', label: 'Research' },
+  { href: '/people/', label: 'People' },
+  { href: '/projects/', label: 'Projects' },
+  { href: '/publications/', label: 'Publications' },
+  { href: '/news/', label: 'News' },
+] as const;
+
+const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
+---
+
+<header class="masthead">
+  <div class="container masthead__inner">
+    <a class="wordmark" href="/" aria-label={`${site.name} — home`}>
+      {site.brand.logo ? <img class="wordmark__logo" src={site.brand.logo} alt="" width="120" height="40" /> : null}
+      <span class="wordmark__short">{site.shortName}</span>
+      <span class="wordmark__long">{site.name}<span class="wordmark__affiliation"> · {site.organisation.university}</span></span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <ul class="nav__list">
+        {NAV.map((item) => (
+          <li>
+            <a href={item.href} aria-current={current === item.href ? 'page' : undefined}>{item.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .masthead {
+    border-bottom: 1px solid var(--color-rule-strong);
+    padding-block: var(--space-md);
+  }
+
+  .masthead__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-sm) var(--space-xl);
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    text-decoration: none;
+  }
+
+  .wordmark:hover {
+    color: inherit;
+  }
+
+  .wordmark__logo {
+    align-self: center;
+    height: 2.25rem;
+    width: auto;
+  }
+
+  .wordmark__short {
+    font-family: var(--font-serif);
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .wordmark__long {
+    font-size: var(--text-sm);
+    color: var(--color-ink-2);
+  }
+
+  .wordmark__affiliation {
+    color: var(--color-ink-3);
+  }
+
+  .nav__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs) var(--space-lg);
+    list-style: none;
+    padding: 0;
+  }
+
+  .nav__list a {
+    display: inline-block;
+    padding-block: var(--space-2xs);
+    font-size: var(--text-sm);
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+  }
+
+  .nav__list a:hover {
+    border-bottom-color: var(--color-accent);
+  }
+
+  .nav__list a[aria-current='page'] {
+    border-bottom-color: var(--color-rule-strong);
+    font-weight: 600;
+  }
+
+  @media (max-width: 40rem) {
+    .wordmark__long {
+      display: none;
+    }
+  }
+</style>

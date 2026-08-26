@@ -1,0 +1,52 @@
+---
+/** Directory list of people: portrait, name (linked) and role. */
+import type { Person } from '../lib/content.ts';
+import Portrait from './Portrait.astro';
+
+interface Props {
+  people: Person[];
+  /** Portrait size in CSS px. */
+  size?: number;
+}
+
+const { people, size = 72 } = Astro.props;
+---
+
+<ul class="people">
+  {people.map((person) => (
+    <li class="person">
+      <Portrait name={person.data.name} photo={person.data.photo} size={size} />
+      <div class="person__text">
+        <a class="person__name" href={`/people/${person.id}/`}>{person.data.name}</a>
+        <p class="person__role">{person.data.role}</p>
+      </div>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .people {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    gap: var(--space-lg) var(--space-xl);
+  }
+
+  .person {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .person__name {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    text-decoration: none;
+  }
+
+  .person__role {
+    font-size: var(--text-sm);
+    color: var(--color-ink-3);
+  }
+</style>

@@ -1,0 +1,169 @@
+---
+import { render } from 'astro:content';
+import LinkList from '../../components/LinkList.astro';
+import NewsList from '../../components/NewsList.astro';
+import Portrait from '../../components/Portrait.astro';
+import ProjectList from '../../components/ProjectList.astro';
+import PublicationList from '../../components/PublicationList.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getNewsFor, getPeople, getProjectsForPerson, getPublicationsForPerson, type Person } from '../../lib/content.ts';
+
+export async function getStaticPaths() {
+  const people = await getPeople();
+  return people.map((person) => ({ params: { slug: person.id }, props: { person } }));
+}
+
+interface Props {
+  person: Person;
+}
+
+const { person } = Astro.props;
+const d = person.data;
+const { Content } = await render(person);
+const hasBio = (person.body ?? '').trim().length > 0;
+const projects = await getProjectsForPerson(person);
+const publications = await getPublicationsForPerson(person);
+const news = await getNewsFor('people', person.id);
+const people = await getPeople();
+
+const githubUrl = d.github ? (d.github.startsWith('http') ? d.github : `https://github.com/${d.github}`) : undefined;
+const links = [
+  d.email && { label: 'E-mail', href: `mailto:${d.email}`, text: d.email },
+  d.website && { label: 'Website', href: d.website },
+  d.orcid && { label: 'ORCID', href: `https://orcid.org/${d.orcid}`, text: d.orcid },
+  d.scholar && { label: 'Google Scholar', href: d.scholar, text: 'Profile' },
+  d.dblp && { label: 'DBLP', href: d.dblp, text: 'Profile' },
+  githubUrl && { label: 'GitHub', href: githubUrl },
+  d.linkedin && { label: 'LinkedIn', href: d.linkedin, text: 'Profile' },
+].filter((x): x is { label: string; href: string; text?: string } => Boolean(x));
+
+const statusNote =
+  d.status === 'former' ? 'Former member' : d.status === 'alumnus' || d.status === 'alumna' ? 'Alumni' : d.status === 'external' ? 'External collaborator' : undefined;
+---
+
+<BaseLayout title={d.name} description={`${d.name}, ${d.role} — ${d.affiliation ?? 'Electronic Systems Design, University of Verona'}.`}>
+  <div class="container">
+    <header class="profile">
+      <Portrait name={d.name} photo={d.photo} size={160} />
+      <div class="profile__text">
+        <p class="eyebrow">{statusNote ?? 'People'}</p>
+        <h1>{d.name}</h1>
+        <p class="profile__role">{d.role}</p>
+        {d.affiliation && <p class="profile__affiliation">{d.affiliation}</p>}
+      </div>
+    </header>
+
+    <div class="layout">
+      <div class="main">
+        {d.interests.length > 0 && (
+          <section class="section">
+            <h2 class="eyebrow">Research interests</h2>
+            <p class="interests">{d.interests.join(' · ')}</p>
+          </section>
+        )}
+        {hasBio && (
+          <section class="section prose" aria-label="Biography">
+            <Content />
+          </section>
+        )}
+        {projects.length > 0 && (
+          <section class="section" aria-labelledby="person-projects">
+            <h2 id="person-projects">Projects</h2>
+            <ProjectList projects={projects} />
+          </section>
+        )}
+        {publications.length > 0 && (
+          <section class="section" aria-labelledby="person-publications">
+            <h2 id="person-publications">Publications</h2>
+            <PublicationList publications={publications} people={people} headingLevel={3} />
+          </section>
+        )}
+        {news.length > 0 && (
+          <section class="section" aria-labelledby="person-news">
+            <h2 id="person-news">News</h2>
+            <NewsList items={news} />
+          </section>
+        )}
+      </div>
+      <aside class="aside">
+        {links.length > 0 && (
+          <section>
+            <h2 class="eyebrow">Contact and profiles</h2>
+            <LinkList items={links} />
+          </section>
+        )}
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .profile {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-lg) var(--space-xl);
+    padding-block: var(--space-2xl) var(--space-xl);
+    border-bottom: var(--rule);
+  }
+
+  .profile__text {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .profile h1 {
+    font-size: var(--text-4xl);
+  }
+
+  .profile__role {
+    font-size: var(--text-lg);
+  }
+
+  .profile__affiliation {
+    color: var(--color-ink-2);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
+    gap: var(--space-2xl);
+    padding-block: var(--space-xl);
+  }
+
+  .main .section {
+    padding-block: var(--space-xl);
+  }
+
+  .main .section:first-child {
+    padding-top: 0;
+  }
+
+  .main h2 {
+    margin-bottom: var(--space-lg);
+  }
+
+  .main h2.eyebrow {
+    margin-bottom: var(--space-sm);
+  }
+
+  .interests {
+    max-width: var(--measure);
+    font-size: var(--text-lg);
+  }
+
+  .aside {
+    align-content: start;
+    padding-top: var(--space-sm);
+  }
+
+  .aside .eyebrow {
+    margin-bottom: var(--space-sm);
+  }
+
+  @media (max-width: 56rem) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

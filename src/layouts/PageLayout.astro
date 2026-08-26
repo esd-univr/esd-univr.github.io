@@ -1,0 +1,41 @@
+---
+/** Standard inner page: optional eyebrow, H1 title, optional lede, then content. */
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  eyebrow?: string;
+  lede?: string;
+  type?: 'website' | 'article';
+  image?: string;
+}
+
+const { title, description, eyebrow, lede, type, image } = Astro.props;
+---
+
+<BaseLayout title={title} description={description ?? lede} type={type} image={image}>
+  <div class="container">
+    <header class="page-header">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1>{title}</h1>
+      {lede && <p class="lede">{lede}</p>}
+      <slot name="header" />
+    </header>
+    <slot />
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    padding-block: var(--space-2xl) var(--space-xl);
+    border-bottom: var(--rule);
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  .page-header h1 {
+    font-size: var(--text-4xl);
+    max-width: 22ch;
+  }
+</style>

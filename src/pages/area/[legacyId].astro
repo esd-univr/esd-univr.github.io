@@ -1,0 +1,19 @@
+---
+/** Legacy /area/<id>/ → /research/<slug>/ compatibility stubs (from `legacyId`). */
+import LegacyRedirect from '../../layouts/LegacyRedirect.astro';
+import { getResearchAreas } from '../../lib/content.ts';
+import { legacyTargets, type LegacyTarget } from '../../lib/legacy.ts';
+
+export async function getStaticPaths() {
+  const targets = legacyTargets(await getResearchAreas(), (a) => `/research/${a.id}/`, (a) => a.data.name);
+  return targets.map((target) => ({ params: { legacyId: target.legacyId }, props: { target } }));
+}
+
+interface Props {
+  target: LegacyTarget;
+}
+
+const { target } = Astro.props;
+---
+
+<LegacyRedirect target={target} legacyPath={`/area/${target.legacyId}/`} />

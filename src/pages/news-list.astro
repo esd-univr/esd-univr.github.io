@@ -1,0 +1,6 @@
+---
+/** Legacy /news-list/ page → /news/. */
+import LegacyRedirect from '../layouts/LegacyRedirect.astro';
+---
+
+<LegacyRedirect target={{ legacyId: '', to: '/news/', title: 'News' }} legacyPath="/news-list/" />

@@ -1,0 +1,35 @@
+---
+import EmptyState from '../../components/EmptyState.astro';
+import NewsList from '../../components/NewsList.astro';
+import PageLayout from '../../layouts/PageLayout.astro';
+import { getNews } from '../../lib/content.ts';
+
+const news = await getNews();
+const byYear = new Map<number, typeof news>();
+for (const item of news) {
+  const year = item.data.date.getUTCFullYear();
+  const list = byYear.get(year);
+  if (list) list.push(item);
+  else byYear.set(year, [item]);
+}
+---
+
+<PageLayout title="News" eyebrow="Electronic Systems Design" description="News from the ESD research group.">
+  {news.length === 0 && <EmptyState message="News items will be listed here." />}
+  {[...byYear.entries()].map(([year, items]) => (
+    <section class="section" aria-labelledby={`news-${year}`}>
+      <h2 id={`news-${year}`} class="year">{year}</h2>
+      <NewsList items={items} />
+    </section>
+  ))}
+</PageLayout>
+
+<style>
+  .year {
+    font-family: var(--font-mono);
+    font-size: var(--text-lg);
+    font-weight: 500;
+    color: var(--color-ink-3);
+    margin-bottom: var(--space-lg);
+  }
+</style>

@@ -1,0 +1,121 @@
+---
+import { Image } from 'astro:assets';
+import { getEntry, render } from 'astro:content';
+import LinkList from '../../components/LinkList.astro';
+import NewsList from '../../components/NewsList.astro';
+import PeopleList from '../../components/PeopleList.astro';
+import ProjectList from '../../components/ProjectList.astro';
+import PublicationList from '../../components/PublicationList.astro';
+import PageLayout from '../../layouts/PageLayout.astro';
+import { getNewsFor, getPeople, getProjectsForResearch, getPublicationsForResearch, getResearchAreas, type ResearchArea } from '../../lib/content.ts';
+
+export async function getStaticPaths() {
+  const areas = await getResearchAreas();
+  return areas.map((area) => ({ params: { slug: area.id }, props: { area } }));
+}
+
+interface Props {
+  area: ResearchArea;
+}
+
+const { area } = Astro.props;
+const { Content } = await render(area);
+const hasBody = (area.body ?? '').trim().length > 0;
+const lead = area.data.lead ? await getEntry(area.data.lead) : undefined;
+const projects = await getProjectsForResearch(area);
+const publications = await getPublicationsForResearch(area);
+const news = await getNewsFor('research', area.id);
+const people = await getPeople();
+const links = area.data.url ? [{ label: 'Website', href: area.data.url }] : [];
+---
+
+<PageLayout title={area.data.name} eyebrow={area.data.status === 'archived' ? 'Research · archived' : 'Research'} lede={area.data.summary}>
+  <div class="layout">
+    <div class="main">
+      {area.data.logo && (
+        <Image class="logo" src={area.data.logo} alt={area.data.logoAlt ?? `${area.data.name} logo`} width={320} height={160} fit="contain" />
+      )}
+      {hasBody && (
+        <section class="section prose">
+          <Content />
+        </section>
+      )}
+      {projects.length > 0 && (
+        <section class="section" aria-labelledby="area-projects">
+          <h2 id="area-projects">Projects</h2>
+          <ProjectList projects={projects} />
+        </section>
+      )}
+      {publications.length > 0 && (
+        <section class="section" aria-labelledby="area-publications">
+          <h2 id="area-publications">Selected publications</h2>
+          <PublicationList publications={publications} people={people} headingLevel={3} />
+        </section>
+      )}
+      {news.length > 0 && (
+        <section class="section" aria-labelledby="area-news">
+          <h2 id="area-news">News</h2>
+          <NewsList items={news} />
+        </section>
+      )}
+    </div>
+    <aside class="aside">
+      {lead && (
+        <section>
+          <h2 class="eyebrow">Lead</h2>
+          <PeopleList people={[lead]} size={56} />
+        </section>
+      )}
+      {links.length > 0 && (
+        <section>
+          <LinkList items={links} />
+        </section>
+      )}
+    </aside>
+  </div>
+</PageLayout>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
+    gap: var(--space-2xl);
+    padding-block: var(--space-xl);
+  }
+
+  .main .section {
+    padding-block: var(--space-xl);
+  }
+
+  .main .section:first-child {
+    padding-top: 0;
+  }
+
+  .main h2 {
+    margin-bottom: var(--space-lg);
+  }
+
+  .logo {
+    width: 20rem;
+    height: 10rem;
+    object-fit: contain;
+    margin-bottom: var(--space-lg);
+  }
+
+  .aside {
+    display: grid;
+    gap: var(--space-xl);
+    align-content: start;
+    padding-top: var(--space-sm);
+  }
+
+  .aside .eyebrow {
+    margin-bottom: var(--space-sm);
+  }
+
+  @media (max-width: 56rem) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

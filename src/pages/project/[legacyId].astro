@@ -1,0 +1,19 @@
+---
+/** Legacy /project/<id>/ → /projects/<slug>/ compatibility stubs (from `legacyId`). */
+import LegacyRedirect from '../../layouts/LegacyRedirect.astro';
+import { getProjects } from '../../lib/content.ts';
+import { legacyTargets, type LegacyTarget } from '../../lib/legacy.ts';
+
+export async function getStaticPaths() {
+  const targets = legacyTargets(await getProjects(), (p) => `/projects/${p.id}/`, (p) => p.data.name);
+  return targets.map((target) => ({ params: { legacyId: target.legacyId }, props: { target } }));
+}
+
+interface Props {
+  target: LegacyTarget;
+}
+
+const { target } = Astro.props;
+---
+
+<LegacyRedirect target={target} legacyPath={`/project/${target.legacyId}/`} />

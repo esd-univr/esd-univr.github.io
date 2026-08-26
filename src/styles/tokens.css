@@ -1,0 +1,46 @@
+/* Design tokens. Change colours, type and spacing here; components only use variables. */
+:root {
+  color-scheme: light;
+
+  --font-sans: 'IBM Plex Sans Variable', 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'IBM Plex Serif', Georgia, 'Times New Roman', serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Fluid type scale (min → max between 20rem and 80rem viewports). */
+  --text-xs: clamp(0.72rem, 0.7rem + 0.1vw, 0.78rem);
+  --text-sm: clamp(0.86rem, 0.83rem + 0.14vw, 0.94rem);
+  --text-base: clamp(1rem, 0.97rem + 0.18vw, 1.1rem);
+  --text-lg: clamp(1.18rem, 1.12rem + 0.3vw, 1.35rem);
+  --text-xl: clamp(1.4rem, 1.3rem + 0.55vw, 1.7rem);
+  --text-2xl: clamp(1.7rem, 1.5rem + 1vw, 2.25rem);
+  --text-3xl: clamp(2.1rem, 1.75rem + 1.75vw, 3rem);
+  --text-4xl: clamp(2.6rem, 2rem + 3vw, 4.25rem);
+
+  /* Spacing scale. */
+  --space-2xs: clamp(0.25rem, 0.23rem + 0.1vw, 0.31rem);
+  --space-xs: clamp(0.5rem, 0.46rem + 0.2vw, 0.62rem);
+  --space-sm: clamp(0.75rem, 0.7rem + 0.25vw, 0.94rem);
+  --space-md: clamp(1rem, 0.93rem + 0.35vw, 1.25rem);
+  --space-lg: clamp(1.5rem, 1.4rem + 0.5vw, 1.9rem);
+  --space-xl: clamp(2rem, 1.8rem + 1vw, 2.75rem);
+  --space-2xl: clamp(3rem, 2.6rem + 2vw, 4.5rem);
+  --space-3xl: clamp(4.5rem, 3.8rem + 3.5vw, 7rem);
+
+  /* Colour: ink on warm paper, a single accent, blue focus ring. */
+  --color-paper: #fbfaf7;
+  --color-paper-2: #f3f1eb;
+  --color-ink: #16171b;
+  --color-ink-2: #43464d;
+  --color-ink-3: #6b6f78;
+  --color-rule: #dcd8ce;
+  --color-rule-strong: #16171b;
+  --color-accent: #9a2f2f;
+  --color-accent-strong: #741f1f;
+  --color-focus: #0b57d0;
+
+  --measure: 66ch;
+  --container: 76rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --rule: 1px solid var(--color-rule);
+  --radius: 2px;
+}

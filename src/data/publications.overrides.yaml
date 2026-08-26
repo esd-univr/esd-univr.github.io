@@ -1,0 +1,13 @@
+# Optional per-publication metadata, keyed by the BibTeX citation key used in
+# publications.bib. Every key is optional; unknown keys make the build warn.
+#
+# DBLP:conf/date/Example24:
+#   featured: true                         # shown on the home page
+#   pdf: /documents/papers/example24.pdf   # local file under public/ or an https URL
+#   code: https://github.com/esd-univr/example
+#   projects: [strategus]                  # slugs of src/content/projects/*.md
+#   research: [electronic-systems-design]  # slugs of src/content/research/*.md
+#   people: [franco-fummi]                 # force an author↔person link when name matching fails
+#   hidden: true                           # keep the entry but never show or export it
+#   note: Best paper award
+{}

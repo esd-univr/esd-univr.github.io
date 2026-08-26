@@ -1,0 +1,36 @@
+---
+/** Small definition-style list of labelled links (contacts, profiles, resources). */
+interface Props {
+  items: Array<{ label: string; href: string; text?: string }>;
+}
+const { items } = Astro.props;
+---
+
+{items.length > 0 && (
+  <ul class="link-list">
+    {items.map((item) => (
+      <li>
+        <span class="eyebrow">{item.label}</span>
+        <a href={item.href}>{item.text ?? item.href.replace(/^https?:\/\//, '').replace(/^mailto:/, '')}</a>
+      </li>
+    ))}
+  </ul>
+)}
+
+<style>
+  .link-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  .link-list li {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .link-list a {
+    overflow-wrap: anywhere;
+  }
+</style>

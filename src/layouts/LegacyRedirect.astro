@@ -1,0 +1,41 @@
+---
+/**
+ * Compatibility stub for a legacy URL (cisd.di.univr.it/profile/12/ …).
+ * GitHub Pages cannot send HTTP redirects, so the page points browsers (meta refresh),
+ * crawlers (canonical, noindex) and humans (visible link) to the new address.
+ */
+import type { LegacyTarget } from '../lib/legacy.ts';
+
+interface Props {
+  target: LegacyTarget;
+  legacyPath: string;
+}
+
+const { target, legacyPath } = Astro.props;
+const newUrl = new URL(target.to, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content={`0; url=${newUrl}`} />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href={newUrl} />
+    <title>{target.title} — moved</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 15vh auto; padding: 0 1.5rem; line-height: 1.5; color: #16171b; background: #fbfaf7; }
+      a { color: #741f1f; }
+      code { font-family: ui-monospace, monospace; font-size: 0.9em; }
+    </style>
+  </head>
+  <body>
+    <h1>This page has moved</h1>
+    <p>
+      The address <code>{legacyPath}</code> belonged to the former CISD website.
+      Its content is now at <a href={target.to}>{target.title}</a>.
+    </p>
+    <p>You will be taken there automatically; if not, use the link above.</p>
+  </body>
+</html>

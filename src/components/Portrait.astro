@@ -1,0 +1,57 @@
+---
+/** Person portrait: optimised image when available, otherwise a monogram. */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  name: string;
+  photo?: ImageMetadata | undefined;
+  /** Rendered size in CSS pixels (square). */
+  size?: number;
+}
+
+const { name, photo, size = 96 } = Astro.props;
+const initials = name
+  .split(/\s+/)
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((part) => part[0]?.toUpperCase() ?? '')
+  .join('');
+---
+
+{photo ? (
+  <Image
+    class="portrait"
+    src={photo}
+    alt={`Portrait of ${name}`}
+    width={size}
+    height={size}
+    widths={[size, size * 2]}
+    sizes={`${size}px`}
+    fit="cover"
+    style={`--portrait-size: ${size}px`}
+  />
+) : (
+  <span class="portrait portrait--monogram" style={`--portrait-size: ${size}px`} aria-hidden="true">{initials}</span>
+)}
+
+<style>
+  .portrait {
+    width: var(--portrait-size);
+    height: var(--portrait-size);
+    border-radius: var(--radius);
+    object-fit: cover;
+    background: var(--color-paper-2);
+    flex: none;
+  }
+
+  .portrait--monogram {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif);
+    font-size: calc(var(--portrait-size) * 0.36);
+    color: var(--color-ink-3);
+    border: var(--rule);
+  }
+</style>

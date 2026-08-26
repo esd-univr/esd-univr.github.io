@@ -1,0 +1,95 @@
+---
+/** Editorial list of projects: acronym and years in the margin, name and summary. */
+import { getEntries } from 'astro:content';
+import type { Project } from '../lib/content.ts';
+import { formatYearRange } from '../lib/format.ts';
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+const rows = await Promise.all(
+  projects.map(async (project) => ({ project, areas: await getEntries(project.data.research) })),
+);
+---
+
+<ol class="projects">
+  {rows.map(({ project, areas }) => (
+    <li class="project">
+      <div class="project__margin">
+        {project.data.acronym && <p class="project__acronym">{project.data.acronym}</p>}
+        <p class="meta">{formatYearRange(project.data.start, project.data.end)}</p>
+      </div>
+      <div class="project__body">
+        <h3 class="project__name"><a href={`/projects/${project.id}/`}>{project.data.name}</a></h3>
+        <p class="project__summary">{project.data.summary}</p>
+        {areas.length > 0 && (
+          <p class="meta">{areas.map((a) => a.data.name).join(' · ')}</p>
+        )}
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .projects {
+    list-style: none;
+    padding: 0;
+    display: grid;
+  }
+
+  .project {
+    display: grid;
+    grid-template-columns: minmax(8rem, 12rem) 1fr;
+    gap: var(--space-sm) var(--space-xl);
+    padding-block: var(--space-lg);
+    border-top: var(--rule);
+  }
+
+  .project:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .project__acronym {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--color-accent);
+  }
+
+  .project__name {
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-xs);
+  }
+
+  .project__name a {
+    text-decoration: none;
+  }
+
+  .project__name a:hover {
+    text-decoration: underline;
+  }
+
+  .project__summary {
+    max-width: var(--measure);
+    color: var(--color-ink-2);
+  }
+
+  .project__body .meta {
+    margin-top: var(--space-xs);
+  }
+
+  @media (max-width: 40rem) {
+    .project {
+      grid-template-columns: 1fr;
+      gap: var(--space-xs);
+    }
+
+    .project__margin {
+      display: flex;
+      gap: var(--space-md);
+      align-items: baseline;
+    }
+  }
+</style>

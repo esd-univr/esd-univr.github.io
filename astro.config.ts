@@ -1,0 +1,35 @@
+// Astro configuration for the ESD research-group website (static, GitHub Pages).
+// See README.md for the project overview and MAINTENANCE.md for content workflows.
+import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
+import { isLegacyCompatUrl } from './src/lib/legacy.ts';
+
+// Development fixtures: `ESD_FIXTURES=1` switches every collection to the sample
+// content under src/content-fixtures/ (never used for the deployed site).
+const fixtures = process.env.ESD_FIXTURES === '1';
+
+export default defineConfig({
+  // Organisation Pages repository (esd-univr.github.io) => served at the domain root.
+  site: 'https://esd-univr.github.io',
+  output: 'static',
+  trailingSlash: 'ignore',
+  outDir: fixtures ? './dist-fixtures' : './dist',
+  build: {
+    // One folder per page (people/index.html) so URLs end with a slash like the legacy site.
+    format: 'directory',
+  },
+  image: {
+    // Responsive <Image> output by default (srcset + sizes) with cropping to the box.
+    layout: 'constrained',
+    responsiveStyles: true,
+  },
+  integrations: [
+    sitemap({
+      // Legacy compatibility pages (meta-refresh stubs) must not be advertised.
+      filter: (page) => !isLegacyCompatUrl(page),
+    }),
+  ],
+  // Legacy URL compatibility is handled by static stub pages, not by `redirects`:
+  // src/pages/{areas,news-list}.astro for the old list pages and the routes under
+  // src/pages/{profile,area,project}/ (+ numeric /news/<id>/) for records with a `legacyId`.
+});

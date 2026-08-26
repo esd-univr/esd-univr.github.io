@@ -1,0 +1,39 @@
+---
+/**
+ * <head> metadata: title, description, canonical URL, Open Graph/Twitter cards.
+ * The canonical URL is built from the configured `site` (esd-univr.github.io).
+ */
+import { site } from '../data/site.ts';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Open Graph type. */
+  type?: 'website' | 'article';
+  /** Path (from public/) or absolute URL of a preview image. */
+  image?: string;
+  /** Exclude from search engines (used for legacy compatibility stubs). */
+  noindex?: boolean;
+  /** Override the canonical URL (defaults to the current page). */
+  canonical?: string;
+}
+
+const { title, description = site.description, type = 'website', image = site.brand.ogImage, noindex = false, canonical } = Astro.props;
+
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).href;
+const fullTitle = Astro.url.pathname === '/' ? site.title : `${title} · ${site.shortName}`;
+const imageUrl = image ? new URL(image, Astro.site).href : undefined;
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+{noindex && <meta name="robots" content="noindex, follow" />}
+<meta property="og:site_name" content={site.title} />
+<meta property="og:type" content={type} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:locale" content="en_GB" />
+{imageUrl && <meta property="og:image" content={imageUrl} />}
+<meta name="twitter:card" content={imageUrl ? 'summary_large_image' : 'summary'} />
