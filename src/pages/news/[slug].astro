@@ -3,10 +3,10 @@ import { Image } from 'astro:assets';
 import { getEntries, getEntry, render } from 'astro:content';
 import LinkList from '../../components/LinkList.astro';
 import Portrait from '../../components/Portrait.astro';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageLayout from '../../layouts/PageLayout.astro';
 import LegacyRedirect from '../../layouts/LegacyRedirect.astro';
 import { getNews, type NewsItem } from '../../lib/content.ts';
-import { formatDate, isoDate } from '../../lib/format.ts';
+import { formatDate } from '../../lib/format.ts';
 import { isLegacyId, legacyTargets, type LegacyTarget } from '../../lib/legacy.ts';
 
 export async function getStaticPaths() {
@@ -18,7 +18,6 @@ export async function getStaticPaths() {
     }
     paths.push({ params: { slug: entry.id }, props: { entry } });
   }
-  // Legacy /news/<id>/ addresses from the old site point at the new slug.
   for (const target of legacyTargets(news, (e) => `/news/${e.id}/`, (e) => e.data.title)) {
     paths.push({ params: { slug: target.legacyId }, props: { legacy: target } });
   }
@@ -38,79 +37,68 @@ const related = entry
   : [];
 const rendered = entry ? await render(entry) : undefined;
 const Content = rendered?.Content;
+const eyebrow = d ? `${formatDate(d.date)}${d.category ? ` · ${d.category}` : ''}` : '';
 ---
 
 {legacy ? (
   <LegacyRedirect target={legacy} legacyPath={`/news/${legacy.legacyId}/`} />
 ) : (
-  <BaseLayout title={d!.title} description={d!.summary} type="article">
-    <article class="container article" lang={d!.lang}>
-      <header class="article__header">
-        <p class="eyebrow" lang="en">
-          <time datetime={isoDate(d!.date)}>{formatDate(d!.date)}</time>
-          {d!.category && ` · ${d!.category}`}
-        </p>
-        <h1>{d!.title}</h1>
-        <div class="article__intro">
-          <p class="lede">{d!.summary}</p>
-          {author && (
-            <p class="article__author" lang="en">
-              <Portrait name={author.data.name} photo={author.data.photo} size={32} variant="avatar" />
-              <a href={`/people/${author.id}/`}>{author.data.name}</a>
-            </p>
-          )}
-        </div>
-      </header>
-      {d!.image && (
-        <Image class="article__figure" src={d!.image} alt={d!.imageAlt ?? ''} widths={[640, 960, 1280]} sizes="(min-width: 80rem) 72rem, 90vw" />
-      )}
-      {Content && (
-        <div class="prose article__body">
-          <Content />
-        </div>
-      )}
-      {related.length > 0 && (
-        <footer class="article__footer" lang="en">
-          <h2 class="eyebrow">Related</h2>
-          <LinkList items={related} />
-        </footer>
-      )}
-      <p class="article__back" lang="en"><a href="/news/">← All news</a></p>
-    </article>
-  </BaseLayout>
+  <PageLayout title={d!.title} eyebrow={eyebrow} lede={d!.summary} type="article">
+    {author && (
+      <p slot="header" class="byline" lang="en">
+        <Portrait name={author.data.name} photo={author.data.photo} size={32} variant="avatar" />
+        <span>By <a href={`/people/${author.id}/`}>{author.data.name}</a></span>
+      </p>
+    )}
+
+    <div class="layout" lang={d!.lang}>
+      <div class="main">
+        {d!.image && (
+          <Image class="article__figure" src={d!.image} alt={d!.imageAlt ?? ''} widths={[640, 960, 1280]} sizes="(min-width: 60rem) 68rem, 100vw" />
+        )}
+        {Content && (
+          <section class="section prose article__body">
+            <Content />
+          </section>
+        )}
+      </div>
+
+      <aside class="aside" lang="en">
+        {related.length > 0 && (
+          <section>
+            <h2 class="eyebrow">Related</h2>
+            <LinkList items={related} />
+          </section>
+        )}
+        <p class="article__back"><a href="/news/">← All news</a></p>
+      </aside>
+    </div>
+  </PageLayout>
 )}
 
 <style>
-  .article {
-    padding-block: var(--space-xl) var(--space-2xl);
-  }
-
-  .article__header {
-    display: grid;
-    gap: var(--space-md) var(--space-2xl);
-    padding-bottom: var(--space-xl);
-    border-bottom: var(--rule);
-    margin-bottom: var(--space-xl);
-  }
-
-  .article__header h1 {
-    font-size: var(--text-3xl);
-    max-width: 18ch;
-  }
-
-  .article__intro {
-    display: grid;
-    align-content: start;
-    gap: var(--space-sm);
-    max-width: 52ch;
-  }
-
-  .article__author {
+  .byline {
     display: flex;
     align-items: center;
     gap: var(--space-xs);
-    font-size: var(--text-sm);
     margin-top: var(--space-xs);
+    font-size: var(--text-sm);
+    color: var(--color-ink-2);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
+    gap: var(--space-2xl);
+    padding-block: var(--space-xl);
+  }
+
+  .main .section {
+    padding-block: var(--space-xl);
+  }
+
+  .main .section:first-child {
+    padding-top: 0;
   }
 
   .article__figure {
@@ -121,43 +109,28 @@ const Content = rendered?.Content;
   }
 
   .article__body {
-    max-width: var(--measure);
+    max-width: 72ch;
   }
 
-  .article__footer {
-    max-width: var(--measure);
-    margin-top: var(--space-2xl);
-    padding-top: var(--space-lg);
-    border-top: var(--rule);
+  .aside {
+    display: grid;
+    gap: var(--space-xl);
+    align-content: start;
+    padding-top: var(--space-sm);
   }
 
-  .article__footer .eyebrow {
+  .aside .eyebrow {
     margin-bottom: var(--space-sm);
   }
 
   .article__back {
-    max-width: var(--measure);
-    margin-top: var(--space-xl);
     font-family: var(--font-mono);
     font-size: var(--text-sm);
   }
 
-  @media (min-width: 56rem) {
-    .article__header {
-      grid-template-columns: minmax(20rem, 0.85fr) minmax(28rem, 1.15fr);
-      align-items: start;
-    }
-
-    .article__header > .eyebrow {
-      grid-column: 1 / -1;
-    }
-
-    .article__header h1 {
-      grid-column: 1;
-    }
-
-    .article__intro {
-      grid-column: 2;
+  @media (max-width: 56rem) {
+    .layout {
+      grid-template-columns: 1fr;
     }
   }
 </style>
