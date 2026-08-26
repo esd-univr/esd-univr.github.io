@@ -2,36 +2,27 @@
 import EmptyState from '../../components/EmptyState.astro';
 import PeopleList from '../../components/PeopleList.astro';
 import PageLayout from '../../layouts/PageLayout.astro';
-import { getPeople } from '../../lib/content.ts';
+import { getGroups, getPeople } from '../../lib/content.ts';
 import { groupPeople } from '../../lib/people.ts';
+import { site } from '../../data/site.ts';
 
 const people = await getPeople();
-const { members, external, former } = groupPeople(people);
+const groups = await getGroups();
+const sections = groupPeople(
+  people,
+  groups.map((group) => ({ id: group.id, label: group.data.name })),
+);
 ---
 
-<PageLayout title="People" eyebrow="Electronic Systems Design" description="Members of the ESD research group.">
+<PageLayout title="People" eyebrow={site.shortName} description="Members of the CISD research groups." >
   {people.length === 0 && <EmptyState message="Group members will be listed here." />}
 
-  {members.map((section) => (
+  {sections.map((section) => (
     <section class="section" aria-labelledby={`people-${section.id}`}>
       <h2 id={`people-${section.id}`} class="group-heading">{section.label}</h2>
       <PeopleList people={section.people} />
     </section>
   ))}
-
-  {external.length > 0 && (
-    <section class="section" aria-labelledby="people-external">
-      <h2 id="people-external" class="group-heading">External collaborators</h2>
-      <PeopleList people={external} />
-    </section>
-  )}
-
-  {former.length > 0 && (
-    <section class="section" aria-labelledby="people-former">
-      <h2 id="people-former" class="group-heading">Alumni and former members</h2>
-      <PeopleList people={former} size={56} />
-    </section>
-  )}
 </PageLayout>
 
 <style>

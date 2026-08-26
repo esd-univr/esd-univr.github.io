@@ -4,16 +4,11 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { isLegacyCompatUrl } from './src/lib/legacy.ts';
 
-// Development fixtures: `ESD_FIXTURES=1` switches every collection to the sample
-// content under src/content-fixtures/ (never used for the deployed site).
-const fixtures = process.env.ESD_FIXTURES === '1';
-
 export default defineConfig({
   // Organisation Pages repository (esd-univr.github.io) => served at the domain root.
   site: 'https://esd-univr.github.io',
   output: 'static',
   trailingSlash: 'ignore',
-  outDir: fixtures ? './dist-fixtures' : './dist',
   build: {
     // One folder per page (people/index.html) so URLs end with a slash like the legacy site.
     format: 'directory',

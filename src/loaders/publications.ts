@@ -26,7 +26,6 @@ const overrideSchema = z.record(
       note: z.string().optional(),
       people: z.array(z.string()).optional(),
       projects: z.array(z.string()).optional(),
-      research: z.array(z.string()).optional(),
     })
     .strict(),
 );

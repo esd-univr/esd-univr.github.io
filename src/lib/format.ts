@@ -1,14 +1,9 @@
 /** Date formatting helpers (British English, e.g. "20 March 2024"). */
 
 const LONG = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
-const MONTH_YEAR = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 export function formatDate(date: Date): string {
   return LONG.format(date);
-}
-
-export function formatMonthYear(date: Date): string {
-  return MONTH_YEAR.format(date);
 }
 
 /** ISO date (YYYY-MM-DD) for <time datetime>. */

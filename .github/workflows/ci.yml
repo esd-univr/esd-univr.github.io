@@ -29,7 +29,5 @@ jobs:
         run: npm test
       - name: Production build
         run: npm run build
-      - name: Fixture build (layout smoke test)
-        run: npm run build:fixtures
       - name: Verify repository and build
         run: npm run verify

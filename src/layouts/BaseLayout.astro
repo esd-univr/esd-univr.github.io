@@ -23,7 +23,6 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import Seo from '../components/Seo.astro';
 import { site } from '../data/site.ts';
-import { FIXTURES_ENABLED, FIXTURE_MARKER } from '../lib/fixtures.ts';
 
 interface Props {
   title: string;
@@ -48,11 +47,6 @@ const { title, description, type, image, noindex } = Astro.props;
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
-    {FIXTURES_ENABLED && (
-      <p class="fixture-banner" role="status">
-        {FIXTURE_MARKER}: this build uses sample content from src/content-fixtures/ — not production data.
-      </p>
-    )}
     <Header />
     <main id="main" tabindex="-1">
       <slot />
@@ -62,15 +56,6 @@ const { title, description, type, image, noindex } = Astro.props;
 </html>
 
 <style>
-  .fixture-banner {
-    background: #ffe9a8;
-    color: #3d2b00;
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    text-align: center;
-    padding: var(--space-xs) var(--gutter);
-  }
-
   main:focus {
     outline: none;
   }

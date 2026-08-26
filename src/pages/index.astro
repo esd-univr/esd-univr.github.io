@@ -1,7 +1,7 @@
 ---
 /**
- * Home page: identity + mission, research themes, featured work, selected
- * publications, people, recent news. Every section renders only when it has content.
+ * Home page: CISD identity, the three groups, selected projects, selected
+ * publications, people and recent news. Every section renders only when it has content.
  */
 import NewsList from '../components/NewsList.astro';
 import PeopleList from '../components/PeopleList.astro';
@@ -10,15 +10,13 @@ import PublicationList from '../components/PublicationList.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import { site } from '../data/site.ts';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getFeaturedPublications, getNews, getPeople, getProjects, getResearchAreas } from '../lib/content.ts';
-import { currentMembers } from '../lib/people.ts';
+import { getFeaturedPublications, getGroups, getNews, getPeople, getProjects } from '../lib/content.ts';
 
-const research = (await getResearchAreas()).filter((area) => area.data.status === 'active');
+const groups = await getGroups();
 const projects = await getProjects();
-const featuredProjects = projects.filter((p) => p.data.featured);
-const highlightedProjects = (featuredProjects.length > 0 ? featuredProjects : projects.filter((p) => p.data.status === 'active')).slice(0, 4);
+const featured = projects.filter((p) => p.data.featured);
+const highlightedProjects = (featured.length > 0 ? featured : projects).slice(0, 4);
 const people = await getPeople();
-const members = currentMembers(people).slice(0, 8);
 const publications = await getFeaturedPublications(5);
 const news = (await getNews()).slice(0, 3);
 ---
@@ -35,16 +33,16 @@ const news = (await getNews()).slice(0, 3);
     </nav>
   </section>
 
-  {research.length > 0 && (
-    <section class="section container" aria-labelledby="home-research">
-      <SectionHeading eyebrow="Research" title="Research themes" id="home-research" moreHref="/research/" moreLabel="All research" />
-      <ol class="themes">
-        {research.map((area, index) => (
-          <li class="theme">
-            <span class="theme__index">{String(index + 1).padStart(2, '0')}</span>
+  {groups.length > 0 && (
+    <section class="section container" aria-labelledby="home-groups">
+      <SectionHeading eyebrow="Groups" title={`The ${site.shortName} groups`} id="home-groups" moreHref="/research/" moreLabel="Research" />
+      <ol class="groups">
+        {groups.map((group) => (
+          <li class="group">
+            <p class="group__short">{group.data.shortName}</p>
             <div>
-              <h3 class="theme__name"><a href={`/research/${area.id}/`}>{area.data.name}</a></h3>
-              <p class="theme__summary">{area.data.summary}</p>
+              <h3 class="group__name"><a href={`/research/#${group.id}`}>{group.data.name}</a></h3>
+              <p class="group__summary">{group.data.summary}</p>
             </div>
           </li>
         ))}
@@ -54,7 +52,7 @@ const news = (await getNews()).slice(0, 3);
 
   {highlightedProjects.length > 0 && (
     <section class="section container" aria-labelledby="home-projects">
-      <SectionHeading eyebrow="Projects" title="Featured and active work" id="home-projects" moreHref="/projects/" moreLabel="All projects" />
+      <SectionHeading eyebrow="Projects" title="Selected projects" id="home-projects" moreHref="/projects/" moreLabel="All projects" />
       <ProjectList projects={highlightedProjects} />
     </section>
   )}
@@ -66,10 +64,10 @@ const news = (await getNews()).slice(0, 3);
     </section>
   )}
 
-  {members.length > 0 && (
+  {people.length > 0 && (
     <section class="section container" aria-labelledby="home-people">
-      <SectionHeading eyebrow="People" title="The group" id="home-people" moreHref="/people/" moreLabel="All people" />
-      <PeopleList people={members} />
+      <SectionHeading eyebrow="People" title="The groups' members" id="home-people" moreHref="/people/" moreLabel="All people" />
+      <PeopleList people={people} />
     </section>
   )}
 
@@ -91,13 +89,13 @@ const news = (await getNews()).slice(0, 3);
   .hero__title {
     font-size: var(--text-4xl);
     font-weight: 500;
-    max-width: 18ch;
+    max-width: 20ch;
   }
 
   .hero__lede {
     font-size: var(--text-xl);
     line-height: 1.4;
-    max-width: 34ch;
+    max-width: 42ch;
     color: var(--color-ink-2);
   }
 
@@ -108,41 +106,43 @@ const news = (await getNews()).slice(0, 3);
     margin-top: var(--space-sm);
   }
 
-  .themes {
+  .groups {
     list-style: none;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
     gap: var(--space-xl);
   }
 
-  .theme {
+  .group {
     display: grid;
-    grid-template-columns: 3rem 1fr;
+    grid-template-columns: 5rem 1fr;
     gap: var(--space-sm);
     padding-top: var(--space-md);
     border-top: 1px solid var(--color-rule-strong);
   }
 
-  .theme__index {
+  .group__short {
     font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: 0.08em;
     color: var(--color-accent);
   }
 
-  .theme__name {
+  .group__name {
     font-size: var(--text-xl);
     margin-bottom: var(--space-xs);
   }
 
-  .theme__name a {
+  .group__name a {
     text-decoration: none;
   }
 
-  .theme__name a:hover {
+  .group__name a:hover {
     text-decoration: underline;
   }
 
-  .theme__summary {
+  .group__summary {
     color: var(--color-ink-2);
   }
 </style>

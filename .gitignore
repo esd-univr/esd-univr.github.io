@@ -1,7 +1,6 @@
 # Dependencies and build output
 node_modules/
 dist/
-dist-fixtures/
 .astro/
 
 # Environment files and secrets

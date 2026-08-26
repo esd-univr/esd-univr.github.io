@@ -35,10 +35,9 @@ export interface Publication {
   featured: boolean;
   /** Hidden entries stay in the data set but are never rendered or exported. */
   hidden: boolean;
-  /** Slugs of people/projects/research entries linked through the overrides file. */
+  /** Slugs of people/projects linked through the overrides file. */
   people: string[];
   projects: string[];
-  research: string[];
 }
 
 export interface PublicationOverride {
@@ -49,7 +48,6 @@ export interface PublicationOverride {
   note?: string;
   people?: string[];
   projects?: string[];
-  research?: string[];
 }
 
 export type PublicationOverrides = Record<string, PublicationOverride>;
@@ -89,7 +87,6 @@ export function entryToPublication(entry: BibEntry): Publication {
     hidden: false,
     people: [],
     projects: [],
-    research: [],
   };
 }
 
@@ -105,8 +102,10 @@ function venueOf(entry: BibEntry): { venue?: string; venueKind: VenueKind } {
     case 'incollection':
     case 'inbook':
       return { venue: f.booktitle ?? f.title, venueKind: 'chapter' };
-    case 'book':
     case 'proceedings':
+      // Edited proceedings (DBLP "Editorship"): the venue acronym may be given as booktitle.
+      return { venue: f.booktitle ?? f.series ?? f.publisher, venueKind: 'book' };
+    case 'book':
       return { venue: f.publisher ?? f.series, venueKind: 'book' };
     case 'phdthesis':
     case 'mastersthesis':
@@ -158,7 +157,6 @@ export function applyOverrides(
     if (override.note !== undefined) publication.note = override.note;
     if (override.people) publication.people = [...override.people];
     if (override.projects) publication.projects = [...override.projects];
-    if (override.research) publication.research = [...override.research];
   }
   return publications;
 }

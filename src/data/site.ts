@@ -3,19 +3,16 @@
  * affiliation, address or footer links. Nothing here is generated.
  */
 export const site = {
-  shortName: 'ESD',
-  name: 'Electronic Systems Design',
+  shortName: 'CISD',
+  name: 'Cyber-Physical and IoT Systems Design',
   /** Used for <title> on the home page and as the Open Graph site name. */
-  title: 'ESD — Electronic Systems Design · University of Verona',
+  title: 'CISD — Cyber-Physical and IoT Systems Design · University of Verona',
   /** Default meta description (≤ 160 characters). */
   description:
-    'Electronic Systems Design (ESD) research group, Department of Computer Science, University of Verona.',
-  /**
-   * DRAFT — hero copy for the scaffold. Replace with the group's approved mission
-   * statement before launch; it is intentionally short and factual.
-   */
+    'CISD brings together the ESD, PARCO and IoT4Care research groups at the Department of Computer Science, University of Verona.',
+  /** Hero copy on the home page. */
   mission:
-    'Research on the design, modelling and verification of electronic and cyber-physical systems — from hardware description languages and design automation to smart manufacturing and the Internet of Things.',
+    'CISD brings together research groups at the Department of Computer Science of the University of Verona that address, with multi-domain knowledge, the design and verification of cyber-physical and IoT systems — from industrial IoT and smart manufacturing to parallel computing and healthcare.',
   organisation: {
     university: 'University of Verona',
     universityUrl: 'https://www.univr.it/',
@@ -31,7 +28,7 @@ export const site = {
   },
   /**
    * Optional brand assets — leave undefined until official files are approved.
-   * Paths are relative to public/ (e.g. '/images/brand/esd-logo.svg').
+   * Paths are relative to public/ (e.g. '/images/brand/cisd-logo.svg').
    */
   brand: {
     logo: undefined as string | undefined,

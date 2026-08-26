@@ -6,7 +6,15 @@ import Portrait from '../../components/Portrait.astro';
 import ProjectList from '../../components/ProjectList.astro';
 import PublicationList from '../../components/PublicationList.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getNewsFor, getPeople, getProjectsForPerson, getPublicationsForPerson, type Person } from '../../lib/content.ts';
+import { site } from '../../data/site.ts';
+import {
+  getGroups,
+  getNewsFor,
+  getPeople,
+  getProjectsForPerson,
+  getPublicationsForPerson,
+  type Person,
+} from '../../lib/content.ts';
 
 export async function getStaticPaths() {
   const people = await getPeople();
@@ -25,6 +33,7 @@ const projects = await getProjectsForPerson(person);
 const publications = await getPublicationsForPerson(person);
 const news = await getNewsFor('people', person.id);
 const people = await getPeople();
+const groups = (await getGroups()).filter((group) => d.groups.some((id) => id === group.id));
 
 const githubUrl = d.github ? (d.github.startsWith('http') ? d.github : `https://github.com/${d.github}`) : undefined;
 const links = [
@@ -36,17 +45,14 @@ const links = [
   githubUrl && { label: 'GitHub', href: githubUrl },
   d.linkedin && { label: 'LinkedIn', href: d.linkedin, text: 'Profile' },
 ].filter((x): x is { label: string; href: string; text?: string } => Boolean(x));
-
-const statusNote =
-  d.status === 'former' ? 'Former member' : d.status === 'alumnus' || d.status === 'alumna' ? 'Alumni' : d.status === 'external' ? 'External collaborator' : undefined;
 ---
 
-<BaseLayout title={d.name} description={`${d.name}, ${d.role} — ${d.affiliation ?? 'Electronic Systems Design, University of Verona'}.`}>
+<BaseLayout title={d.name} description={`${d.name}, ${d.role} — ${d.affiliation ?? `${site.shortName}, ${site.organisation.university}`}.`}>
   <div class="container">
     <header class="profile">
       <Portrait name={d.name} photo={d.photo} size={160} />
       <div class="profile__text">
-        <p class="eyebrow">{statusNote ?? 'People'}</p>
+        <p class="eyebrow">{groups.map((group) => group.data.shortName).join(' · ')}</p>
         <h1>{d.name}</h1>
         <p class="profile__role">{d.role}</p>
         {d.affiliation && <p class="profile__affiliation">{d.affiliation}</p>}
@@ -88,8 +94,18 @@ const statusNote =
       <aside class="aside">
         {links.length > 0 && (
           <section>
-            <h2 class="eyebrow">Contact and profiles</h2>
+            <h2 class="eyebrow">Profiles</h2>
             <LinkList items={links} />
+          </section>
+        )}
+        {groups.length > 0 && (
+          <section>
+            <h2 class="eyebrow">Group</h2>
+            <ul class="groups">
+              {groups.map((group) => (
+                <li><a href={`/research/#${group.id}`}>{group.data.name}</a></li>
+              ))}
+            </ul>
           </section>
         )}
       </aside>
@@ -153,12 +169,21 @@ const statusNote =
   }
 
   .aside {
+    display: grid;
+    gap: var(--space-xl);
     align-content: start;
     padding-top: var(--space-sm);
   }
 
   .aside .eyebrow {
     margin-bottom: var(--space-sm);
+  }
+
+  .groups {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2xs);
   }
 
   @media (max-width: 56rem) {

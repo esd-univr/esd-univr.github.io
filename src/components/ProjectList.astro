@@ -1,7 +1,6 @@
 ---
 /** Editorial list of projects: acronym and years in the margin, name and summary. */
-import { getEntries } from 'astro:content';
-import type { Project } from '../lib/content.ts';
+import { getGroups, type Project } from '../lib/content.ts';
 import { formatYearRange } from '../lib/format.ts';
 
 interface Props {
@@ -9,13 +8,15 @@ interface Props {
 }
 
 const { projects } = Astro.props;
-const rows = await Promise.all(
-  projects.map(async (project) => ({ project, areas: await getEntries(project.data.research) })),
-);
+const groupName = new Map((await getGroups()).map((group) => [group.id, group.data.shortName]));
+const rows = projects.map((project) => ({
+  project,
+  labels: project.data.groups.map((id) => groupName.get(id) ?? id),
+}));
 ---
 
 <ol class="projects">
-  {rows.map(({ project, areas }) => (
+  {rows.map(({ project, labels }) => (
     <li class="project">
       <div class="project__margin">
         {project.data.acronym && <p class="project__acronym">{project.data.acronym}</p>}
@@ -24,9 +25,7 @@ const rows = await Promise.all(
       <div class="project__body">
         <h3 class="project__name"><a href={`/projects/${project.id}/`}>{project.data.name}</a></h3>
         <p class="project__summary">{project.data.summary}</p>
-        {areas.length > 0 && (
-          <p class="meta">{areas.map((a) => a.data.name).join(' · ')}</p>
-        )}
+        {labels.length > 0 && <p class="meta">{labels.join(' · ')}</p>}
       </div>
     </li>
   ))}

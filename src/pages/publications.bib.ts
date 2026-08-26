@@ -7,10 +7,9 @@ import { getCollection } from 'astro:content';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { parseBibtex, serializeBibtex } from '../lib/bibtex.ts';
-import { DATA_ROOT } from '../lib/fixtures.ts';
 
 export const GET: APIRoute = async () => {
-  const bibPath = `${DATA_ROOT}/publications.bib`;
+  const bibPath = './src/data/publications.bib';
   const hidden = new Set((await getCollection('publications', ({ data }) => data.hidden)).map((e) => e.id));
   const entries = existsSync(bibPath) ? parseBibtex(await readFile(bibPath, 'utf8')).filter((e) => !hidden.has(e.key)) : [];
   const header = `% Electronic Systems Design (ESD), University of Verona — publications\n% Generated from the site bibliography; ${entries.length} entries.\n\n`;

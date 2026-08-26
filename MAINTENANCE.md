@@ -1,210 +1,200 @@
-# Maintaining the ESD website
+# Maintaining the CISD website
 
-Everything on the site comes from text files in `src/`. You never need to touch the
-templates to add or change content. Work on a branch, run `npm run ci`, open a pull
-request; the site deploys automatically when the change reaches `main`.
-
-Quick start:
+Everything on the site comes from a handful of text files under `src/`. You never edit
+templates to change content. Work on a branch, run `npm run ci`, open a pull request; the
+site deploys automatically once the change reaches `main`.
 
 ```bash
-npm ci               # once
+npm ci               # once, after cloning
 npm run dev          # http://localhost:4321 — reloads on save
 npm run ci           # before pushing: checks, tests, build, verification
 ```
 
-If the build fails after a content change, the error message names the file and the
-field (for example `people/mario-rossi.md → email: Invalid email`). Fix and re-run.
+If something is wrong the build stops and names the file and the field, for example
+`people/mario-rossi.md → role: Required`. Fix it and run again.
+
+## Which file do I edit?
+
+| To change | Edit |
+| --- | --- |
+| A person (role, links, bio, photo) | `src/content/people/<slug>.md` |
+| The groups (ESD, PARCO, IoT4Care) | `src/data/groups.yaml` |
+| Research topics | `src/data/research.yaml` |
+| A project | `src/content/projects/<slug>.md` |
+| Publications | `src/data/publications.bib` (+ `publications.overrides.yaml`) |
+| A news item | `src/content/news/YYYY-MM-DD-<slug>.md` |
+| Address, mission, footer links | `src/data/site.ts` |
+
+Every person, project, news item and research topic carries a `groups:` list naming the
+groups it belongs to (`esd`, `parco`, `iot4care` — the ids in `groups.yaml`). That list is
+what puts a person in the right section of the People page and labels projects and topics.
+Something can belong to more than one group: `groups: [esd, iot4care]`.
+
+File names are URLs: `src/content/people/mario-rossi.md` → `/people/mario-rossi/`. Use
+lower-case letters, digits and hyphens. Files starting with `_` are ignored. Dates are
+`YYYY-MM-DD`. Text after the `---` block is Markdown; headings inside a body start at `##`.
+
+Records that existed on the old CISD site carry a `legacyId`, which generates the
+compatibility page for the old numeric address (`/profile/12/` → `/people/franco-fummi/`).
+Keep it when you edit a file; never add one yourself. `docs/migration-map.md` says where the
+published records came from.
 
 ---
 
-## Slugs and file names
+## Update someone's role or status
 
-The **file name is the URL**: `src/content/people/mario-rossi.md` → `/people/mario-rossi/`.
-Use lower-case letters, digits and hyphens; never rename a published file without
-adding a redirect (ask before doing so — external sites link to us).
-Files starting with `_` (such as `_README.md`) are ignored.
+Open their file under `src/content/people/` and edit `role` (free text, shown next to the
+name). To move somebody to another group, change `groups`. Nothing else needs touching.
 
-Dates are written `YYYY-MM-DD`. Text after the frontmatter (`---` block) is Markdown.
-Headings inside a body start at `##` (the page title is the only `#`/H1); `npm run verify`
-rejects skipped heading levels.
+## Add a person
 
-## Add or update a person
-
-Create `src/content/people/<slug>.md`:
+Create `src/content/people/<given-family>.md`:
 
 ```markdown
 ---
 name: Mario Rossi
-role: Assistant Professor          # free text shown next to the name
-status: current                    # current | student | external | former | alumnus | alumna
-group: faculty                     # faculty | researchers | phd | students | staff | external | alumni
-order: 10                          # lower = earlier within the group (optional, default 100)
-affiliation: Department of Computer Science, University of Verona   # optional
-interests: [Design automation, Digital twins]                        # optional
-photo: ./mario-rossi.jpg           # optional; put the file next to the .md (or in src/assets/)
-email: mario.rossi@univr.it        # optional — only institutional addresses whose publication is approved
-website: https://…                 # optional
-orcid: 0000-0000-0000-0000         # optional
+role: PhD Student          # free text, shown next to the name
+groups: [esd]              # esd | parco | iot4care (one or more)
+order: 40                  # lower comes first inside the group (default 100)
+interests: [Digital twins, Verification]   # optional
+photo: ./mario-rossi.jpg   # optional, see below
+website: https://…         # optional
+orcid: 0000-0000-0000-0000 # optional
 scholar: https://scholar.google.com/citations?user=…   # optional
-dblp: https://dblp.org/pid/…       # optional
-github: mariorossi                 # optional (user name or URL)
-linkedin: https://www.linkedin.com/in/…                # optional
-aliases: ["M. Rossi"]              # optional: other spellings used in publications.bib
-legacyId: 12                       # optional: id on the old site (/profile/12/) → compatibility page
+dblp: https://dblp.org/pid/…                          # optional
+github: mariorossi         # optional (user name or URL)
+linkedin: https://www.linkedin.com/in/…               # optional
+aliases: ["M. Rossi"]      # optional: other spellings used in publications.bib
 ---
 
-Short biography in Markdown (optional).
+One or two paragraphs of public biography (optional).
 ```
 
-Photos: JPEG or PNG, at least 480×480 px, roughly square (they are cropped to a square
-and resized at build time). Strip personal metadata (EXIF) before adding a photo.
+Only publish institutional, already-public information. Do not add telephone numbers,
+office numbers, private addresses or CVs. `email` exists but is left empty on this site.
 
-### Mark someone as former / alumni
+## Remove a person
 
-Edit their file: set `status: former` (or `alumnus` / `alumna`) and `group: alumni`,
-optionally update `role` (e.g. `Former PhD student (2019–2023)`). Do **not** delete the
-file — their publications and projects still link to the page.
+Delete their file. If they had a `legacyId`, the `/profile/<id>/` page disappears with it —
+that is intended. Their publications stay in `publications.bib`; their name simply stops
+being a link.
 
-## Add or update a research area
+## Add or replace a photo
 
-Create `src/content/research/<slug>.md`:
+Put a JPEG or PNG next to the person's Markdown file and point `photo:` at it
+(`photo: ./mario-rossi.jpg`). Roughly square, at least 480×480 px; it is cropped and
+resized at build time. **Strip metadata (EXIF) before adding a photo**, and only publish a
+portrait the person has agreed to. Without a photo the page shows their initials, which is
+fine — the People page is designed to look right either way.
 
-```markdown
----
-name: Design automation for cyber-physical systems
-summary: One or two sentences shown in lists and on the home page.
-status: active                     # active | archived
-lead: mario-rossi                  # optional: slug of a person
-logo: ./logo.png                   # optional; add logoAlt when set
-logoAlt: Logo of …
-url: https://…                     # optional external page
-featured: true                     # optional
-order: 1                           # optional
-legacyId: 9                        # optional (/area/9/)
----
-
-Long description in Markdown (optional): topics, methods, tools.
-```
-
-To archive a theme set `status: archived`; it moves to the "Archived themes" list.
-
-## Add or update a project
+## Add a project / mark one completed
 
 Create `src/content/projects/<slug>.md`:
 
 ```markdown
 ---
 name: Full project title
-acronym: ACRONYM                   # optional
-status: active                     # active | completed | archived
+acronym: ACRONYM           # optional
+groups: [esd]
+status: active             # active | completed
 start: 2024-01-01
-end: 2027-12-31                    # optional
-summary: One or two sentences.
-image: ./image.jpg                 # optional; imageAlt is then required
-imageAlt: Description of the image
-url: https://project-website       # optional
-research: [design-automation]      # slugs of research areas (optional)
-people: [mario-rossi]              # slugs of people (optional)
-funding:                           # optional
+end: 2027-12-31            # optional
+summary: One or two sentences shown in lists.
+url: https://project-website          # optional
+people: [mario-rossi]                 # slugs of people (optional)
+funding:                              # optional
   programme: Horizon Europe
   funder: European Commission
   grant: "101000000"
-  amount: 250000                   # never shown unless showAmount: true
-  showAmount: false
-featured: false
-legacyId: 2                        # optional (/project/2/)
+featured: true             # optional: show on the home page
 ---
 
 Full description in Markdown (optional).
 ```
 
-When a project ends, set `status: completed` and the `end` date. Projects are never
-deleted; `archived` exists for very old projects you want out of the main list.
+When a project ends, set `status: completed` and fill in `end`. Funding **amounts** are not
+part of the model and are not published.
+
+## Edit the groups or the research topics
+
+`src/data/groups.yaml` holds the three groups: name, acronym, one-sentence summary and the
+order they appear in. `src/data/research.yaml` holds the topics, each with a `groups:` list,
+a summary and an optional `details:` list of concrete subjects. Both files are plain lists —
+add, edit or delete an entry and the Research page follows. Every group must keep at least
+one topic (a test enforces it).
 
 ## Add a news item
 
-Create `src/content/news/YYYY-MM-DD-short-title.md` (the date prefix keeps files sorted
-and slugs unique):
+Create `src/content/news/YYYY-MM-DD-short-title.md`:
 
 ```markdown
 ---
-title: Paper accepted at DATE 2026
-date: 2026-01-15
-author: mario-rossi                # optional
-category: Publication              # optional short label
+title: Paper accepted at DATE 2027
+date: 2027-01-15
+groups: [esd]
+author: mario-rossi        # optional, the person posting
+category: Publication      # optional short label
 summary: One or two sentences shown in the list.
-image: ./photo.jpg                 # optional; imageAlt is then required
-imageAlt: …
-people: [mario-rossi]              # optional
-projects: [acronym-slug]           # optional
-research: [design-automation]      # optional
-lang: en                           # en | it
-legacyId: 31                       # optional (/news/31/)
+people: [mario-rossi]      # optional
+projects: [strategus]      # optional
+image: ./photo.jpg         # optional; imageAlt is then required
+imageAlt: What the photo shows
+lang: en                   # en | it
 ---
 
 Body in Markdown.
 ```
 
-Slugs of news items must not be purely numeric (numbers are reserved for old ids).
+## Refresh publications
 
-## Publications
+The bibliography is one file: `src/data/publications.bib`. Every entry must have a key, a
+`title`, an `author` (or `editor`) and a `year`; `journal`/`booktitle`, `pages`, `volume`,
+`number`, `doi` and `url` are used when present.
 
-The bibliography is **one BibTeX file**: `src/data/publications.bib`. Add or edit
-entries there (DBLP's "export → BibTeX" is the reference format; keys such as
-`DBLP:conf/date/Rossi26` automatically get a DBLP link). Each entry needs a key,
-`title`, `author` and `year`; `journal`/`booktitle`, `pages`, `volume`, `number`,
-`doi` (or a `doi.org` url) are used when present. LaTeX accents are decoded; UTF-8 is
-fine too.
-
-Per-publication extras go into `src/data/publications.overrides.yaml`, keyed by the
-BibTeX key:
-
-```yaml
-DBLP:conf/date/Rossi26:
-  featured: true                        # shown on the home page
-  pdf: /documents/papers/rossi26.pdf    # file under public/documents/ or an https URL
-  code: https://github.com/esd-univr/…
-  projects: [acronym-slug]
-  research: [design-automation]
-  people: [mario-rossi]                 # only if the author name does not match automatically
-  hidden: true                          # keep the entry but never show or export it
-```
+To add a paper, open its DBLP record, choose *export record → BibTeX*, and paste the entry
+under the right year. Keys of the form `DBLP:conf/date/Rossi27` automatically get a DBLP
+link on the site.
 
 Author names are matched to people automatically (`Mario Rossi`, `M. Rossi`, accents
-ignored); add `aliases` to a person's file for other spellings. The site also serves
-the visible bibliography at `/publications.bib`.
+ignored); add `aliases` to a person's file for other spellings. A test checks that every
+entry has at least one author who is listed under People — the bibliography is a curated
+selection, not a complete archive.
 
-## Images and documents
+Per-entry extras go into `src/data/publications.overrides.yaml`:
 
-- Content images (photos, logos, project/news pictures): next to the Markdown file or
-  in `src/assets/`; they are optimised and resized at build time.
-- Downloadable PDFs and files that must keep a fixed URL: `public/documents/…` and
-  link to them as `/documents/…`.
-- Legacy files that must stay at their old `/media/...` address: `public/media/…`.
-- Independent static sites: `public/wg10-5/` and `public/essm-workshop/` are copied
-  unchanged to `/wg10-5/` and `/essm-workshop/`.
-
-Never add photos or documents of people without their agreement.
-
-## Institutional information and branding
-
-`src/data/site.ts` holds the group name, mission text, department, address and footer
-links. `site.brand` has slots for the official logo, favicon and social preview image;
-put approved files under `public/images/brand/` and reference them there.
-
-## Checks before pushing
-
-```bash
-npm run ci
+```yaml
+DBLP:conf/date/Rossi27:
+  featured: true                     # shown in "Selected publications" on the home page
+  projects: [strategus]              # link the entry to a project page
+  pdf: /documents/papers/rossi27.pdf # file under public/documents/ or an https URL
+  code: https://github.com/esd-univr/…
+  people: [mario-rossi]              # only if automatic name matching fails
+  hidden: true                       # keep the entry but never show or export it
 ```
 
-runs `astro check` (templates and schemas), the unit tests, the production build, the
-fixture build and `scripts/verify.mjs` (no forbidden files, all routes present, no
-broken internal links, heading structure, no third-party scripts, passthrough of the
-legacy trees). Fix everything it reports; CI runs the same commands.
+The site also serves the visible bibliography at `/publications.bib`.
+
+## Preview and deploy
+
+```bash
+npm run dev       # local preview at http://localhost:4321
+npm run build     # production build into dist/
+npm run preview   # serve the built site
+npm run ci        # what CI runs: check, tests, build, verify
+```
+
+Pushing to `main` builds and deploys the site with
+`.github/workflows/deploy.yml`. Pull requests run the same checks without deploying.
+
+## Downloadable files
+
+- Images that belong to a page: next to its Markdown file; they are optimised at build time.
+- PDFs and files that need a fixed URL: `public/documents/…`, linked as `/documents/…`.
+
+Never publish documents or photographs of people without their agreement.
 
 ## What must never be committed
 
-See `SECURITY.md`: databases, dumps, archives, `.env` files, credentials, password
-hashes, logs, migration scratch material, private contact details or documents. The
-verification script rejects the common file types automatically.
+See `SECURITY.md`: databases, dumps, archives, `.env` files, credentials, logs, migration
+scratch material, private contact details or documents. `npm run verify` rejects the common
+file types automatically.

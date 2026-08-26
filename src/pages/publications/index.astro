@@ -3,16 +3,20 @@ import EmptyState from '../../components/EmptyState.astro';
 import PublicationList from '../../components/PublicationList.astro';
 import PageLayout from '../../layouts/PageLayout.astro';
 import { getPeople, getPublications, publicationData } from '../../lib/content.ts';
+import { site } from '../../data/site.ts';
 
 const entries = await getPublications();
 const publications = publicationData(entries);
 const people = await getPeople();
 const years = publications.map((p) => p.year);
 const span = years.length > 0 ? `${Math.min(...years)}–${Math.max(...years)}` : '';
-const lede = publications.length > 0 ? `${publications.length} publications, ${span}, from the group's bibliography.` : undefined;
+const lede =
+  publications.length > 0
+    ? `A selection of ${publications.length} publications, ${span}, by the people listed under People.`
+    : undefined;
 ---
 
-<PageLayout title="Publications" eyebrow="Electronic Systems Design" lede={lede} description="Publications of the ESD research group, University of Verona.">
+<PageLayout title="Publications" eyebrow={site.shortName} lede={lede} description="Publications of the CISD research groups, University of Verona.">
   <div slot="header" class="tools">
     <a class="more" href="/publications.bib">Download BibTeX</a>
     <form class="filter" hidden data-pub-filter role="search">

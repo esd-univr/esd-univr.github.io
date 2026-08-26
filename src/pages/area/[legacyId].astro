@@ -1,12 +1,17 @@
 ---
-/** Legacy /area/<id>/ → /research/<slug>/ compatibility stubs (from `legacyId`). */
+/** Legacy /area/<id>/ → the group's section on /research/ (from `legacyAreaId`). */
 import LegacyRedirect from '../../layouts/LegacyRedirect.astro';
-import { getResearchAreas } from '../../lib/content.ts';
-import { legacyTargets, type LegacyTarget } from '../../lib/legacy.ts';
+import { getGroups } from '../../lib/content.ts';
+import type { LegacyTarget } from '../../lib/legacy.ts';
 
 export async function getStaticPaths() {
-  const targets = legacyTargets(await getResearchAreas(), (a) => `/research/${a.id}/`, (a) => a.data.name);
-  return targets.map((target) => ({ params: { legacyId: target.legacyId }, props: { target } }));
+  const groups = await getGroups();
+  return groups
+    .filter((group) => group.data.legacyAreaId !== undefined)
+    .map((group) => ({
+      params: { legacyId: String(group.data.legacyAreaId) },
+      props: { target: { legacyId: String(group.data.legacyAreaId), to: `/research/#${group.id}`, title: group.data.name } },
+    }));
 }
 
 interface Props {

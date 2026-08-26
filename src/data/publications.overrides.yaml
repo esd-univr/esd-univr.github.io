@@ -1,13 +1,39 @@
-# Optional per-publication metadata, keyed by the BibTeX citation key used in
-# publications.bib. Every key is optional; unknown keys make the build warn.
-#
-# DBLP:conf/date/Example24:
-#   featured: true                         # shown on the home page
-#   pdf: /documents/papers/example24.pdf   # local file under public/ or an https URL
-#   code: https://github.com/esd-univr/example
-#   projects: [strategus]                  # slugs of src/content/projects/*.md
-#   research: [electronic-systems-design]  # slugs of src/content/research/*.md
-#   people: [franco-fummi]                 # force an author↔person link when name matching fails
-#   hidden: true                           # keep the entry but never show or export it
-#   note: Best paper award
-{}
+# Extras for individual publications, keyed by BibTeX key (see MAINTENANCE.md).
+#   featured: true      -> shown in "Selected publications" on the home page
+#   projects: [slug]    -> links the entry to a project page
+# Everything else about a publication comes from publications.bib.
+
+DBLP:conf/date/TurettaADP25:
+  featured: true
+DBLP:journals/tc/TosoniDFVF24:
+  featured: true
+DBLP:conf/dac/MascoliniGPDMVC24:
+  featured: true
+DBLP:conf/date/LoraGOS0F24:
+  featured: true
+DBLP:conf/isola/BoldoBCMDPQT22:
+  featured: true
+DBLP:conf/date/GaiardelliSPLF22:
+  projects: [defacto]
+DBLP:conf/date/LeetOLKN23:
+  projects: [defacto]
+DBLP:conf/date/SpelliniCPLF20:
+  projects: [defacto]
+DBLP:conf/ddecs/CapogrossoCLCFQ23:
+  projects: [defacto]
+DBLP:conf/etfa/SpelliniGLF21:
+  projects: [defacto]
+DBLP:conf/fdl/GaiardelliSLF21:
+  projects: [defacto]
+DBLP:conf/iccad/OhLN22:
+  projects: [defacto]
+DBLP:conf/iccps/LoraN22:
+  projects: [defacto]
+DBLP:conf/iros/LeetOLK023:
+  projects: [defacto]
+DBLP:conf/isie/GaiardelliSLF22:
+  projects: [defacto]
+DBLP:journals/tii/GaiardelliLSF24:
+  projects: [defacto]
+DBLP:journals/tii/SpelliniCPLF21:
+  projects: [defacto]

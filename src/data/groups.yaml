@@ -1,0 +1,35 @@
+# The research groups that make up CISD. One entry per group; `id` is used in the
+# `groups:` field of people, projects, research topics and news, and as the anchor
+# on the Research page (/research/#esd).
+#
+# legacyAreaId is the id the group had on the former CISD website (/area/<id>/) and
+# generates the compatibility page for that old address. Leave it out for new groups.
+
+- id: esd
+  name: Electronic Systems Design
+  shortName: ESD
+  order: 1
+  legacyAreaId: 9
+  summary: >-
+    Design automation for electronic and cyber-physical systems: languages, models and
+    tools for modelling, verification, testing and optimisation, from circuit level to
+    smart manufacturing.
+
+- id: parco
+  name: PARCO Lab
+  shortName: PARCO
+  order: 2
+  legacyAreaId: 8
+  summary: >-
+    Parallel and heterogeneous computing: design and optimisation of software for
+    multi-core CPUs and many-core GPUs, from resource-constrained edge devices to
+    high-performance computing platforms.
+
+- id: iot4care
+  name: Internet of Things 4 Care
+  shortName: IoT4Care
+  order: 3
+  legacyAreaId: 7
+  summary: >-
+    Internet of Things for care: systems that support well-being, health monitoring and
+    rehabilitation through wearable devices, smart objects and ambient sensing.

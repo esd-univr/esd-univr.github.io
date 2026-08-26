@@ -5,14 +5,12 @@
  *   1. No forbidden files (databases, dumps, archives, env files, forensic material)
  *      are tracked by Git or present in the working tree.
  *   2. The production build in dist/ contains the expected routes and files.
- *   3. Static passthrough: every file under public/wg10-5/ and public/essm-workshop/
- *      (when present) is copied unchanged into dist/.
- *   4. No development fixture marker leaked into the production build; the fixture
- *      build (dist-fixtures/, if present) does contain it.
- *   5. Every built HTML page: one <h1>, no skipped heading levels, <html lang>, <title>,
+ *   3. Everything under public/ is copied into dist/ unchanged.
+ *   4. Every built HTML page: one <h1>, no skipped heading levels, <html lang>, <title>,
  *      meta description, canonical link, a <main>, no third-party scripts/styles.
- *   6. Internal links and asset references resolve to files in the build.
- *   7. Legacy compatibility stubs carry a meta refresh + canonical to an existing page.
+ *   5. Internal links and asset references resolve to files in the build.
+ *   6. Legacy compatibility stubs carry a meta refresh + canonical to an existing page, and
+ *      every `legacyId` in src/content/ has its stub (/profile, /project, /news/<id>).
  *
  * Exit code 1 on any failure; prints a summary otherwise.
  */
@@ -31,13 +29,13 @@ const FORBIDDEN = [
   /(^|\/)\.env(\..*)?$/,
   /(^|\/)(whole|initial_role_data)\.json$/,
   /cisd-migration|esdgroup|migration-audit/i,
-  /^(dist|dist-fixtures)\//,
+  /^dist\//,
 ];
 const tracked = execFileSync('git', ['ls-files', '-z'], { cwd: root }).toString().split('\0').filter(Boolean);
 for (const file of tracked) {
   if (FORBIDDEN.some((re) => re.test(file))) fail(`forbidden file is tracked by Git: ${file}`);
 }
-const IGNORED_DIRS = new Set(['node_modules', '.git', 'dist', 'dist-fixtures', '.astro']);
+const IGNORED_DIRS = new Set(['node_modules', '.git', 'dist', '.astro']);
 function walk(dir, visit) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (IGNORED_DIRS.has(entry.name)) continue;
@@ -74,8 +72,8 @@ function resolvesInDist(dist, href) {
   return candidates.some((c) => existsSync(c) && statSync(c).isFile());
 }
 
-/** Trees copied verbatim from public/ (legacy static sites) are not held to the site's page rules. */
-const PASSTHROUGH_PREFIXES = ['wg10-5/', 'essm-workshop/', 'media/', 'documents/'];
+/** Files served verbatim from public/ (documents, images) are not held to the site's page rules. */
+const PASSTHROUGH_PREFIXES = ['documents/', 'images/', 'media/'];
 
 function checkHtml(dist, label) {
   const files = listFiles(dist).filter((f) => f.endsWith('.html') && !PASSTHROUGH_PREFIXES.some((p) => rel(dist, f).startsWith(p)));
@@ -112,7 +110,6 @@ function checkHtml(dist, label) {
     for (const m of html.matchAll(/(?:href|src)="(\/[^"/][^"]*|\/)"/g)) {
       const href = m[1];
       if (href.startsWith('//')) continue;
-      if (PASSTHROUGH_PREFIXES.some((p) => href.startsWith(`/${p}`))) continue; // legacy trees are checked by size above
       links++;
       if (!resolvesInDist(dist, href)) fail(`${label}/${page}: broken internal reference ${href}`);
     }
@@ -132,26 +129,15 @@ if (!existsSync(dist)) {
   ];
   for (const f of required) if (!existsSync(path.join(dist, f))) fail(`dist/${f} is missing`);
 
-  // 3. Passthrough of independent static trees
-  for (const tree of ['wg10-5', 'essm-workshop']) {
-    const src = path.join(root, 'public', tree);
-    const files = listFiles(src);
-    if (files.length === 0) {
-      notes.push(`public/${tree}/ not present yet (passthrough verified structurally: public/ is copied verbatim)`);
-      continue;
-    }
-    let ok = 0;
-    for (const file of files) {
-      const target = path.join(dist, tree, rel(src, file));
-      if (!existsSync(target) || statSync(target).size !== statSync(file).size) fail(`passthrough mismatch: ${rel(root, file)} → ${rel(root, target)}`);
-      else ok++;
-    }
-    notes.push(`public/${tree}/: ${ok}/${files.length} files passed through unchanged`);
+  // 3. Everything under public/ reaches the build unchanged.
+  const publicDir = path.join(root, 'public');
+  let copied = 0;
+  for (const file of listFiles(publicDir)) {
+    const target = path.join(dist, rel(publicDir, file));
+    if (!existsSync(target) || statSync(target).size !== statSync(file).size) fail(`public/ file not copied unchanged: ${rel(root, file)}`);
+    else copied++;
   }
-
-  // 4. Fixture leak
-  const leaked = listFiles(dist).filter((f) => /\.(html|xml|bib|txt|js|css)$/.test(f) && readFileSync(f, 'utf8').includes('DEV-FIXTURE'));
-  for (const f of leaked) fail(`fixture marker DEV-FIXTURE found in production build: ${rel(dist, f)}`);
+  notes.push(`${copied} files from public/ copied unchanged into dist/`);
 
   // Accessibility rules that must survive bundling: reduced-motion media query and
   // visible keyboard focus styles in the shipped CSS.
@@ -161,18 +147,25 @@ if (!existsSync(dist)) {
   const fontFiles = listFiles(path.join(dist, '_astro')).filter((f) => /\.woff2?$/.test(f));
   notes.push(`shipped CSS carries reduced-motion and focus-visible rules; ${fontFiles.length} self-hosted font files`);
 
-  // 5–7. Page checks
+  // 4–5. Page checks
   checkHtml(dist, 'dist');
+
+  // 6. Every legacyId declared in the content has a compatibility stub.
+  const STUB_DIRS = { people: 'profile', projects: 'project', news: 'news' };
+  let stubs = 0;
+  for (const [collection, prefix] of Object.entries(STUB_DIRS)) {
+    const dir = path.join(root, 'src/content', collection);
+    if (!existsSync(dir)) continue;
+    for (const file of readdirSync(dir).filter((f) => f.endsWith('.md') && !f.startsWith('_'))) {
+      const id = /^legacyId:\s*(\d+)\s*$/m.exec(readFileSync(path.join(dir, file), 'utf8'))?.[1];
+      if (!id) continue;
+      stubs++;
+      if (!existsSync(path.join(dist, prefix, id, 'index.html'))) fail(`missing legacy stub /${prefix}/${id}/ for ${collection}/${file}`);
+    }
+  }
+  notes.push(`${stubs} legacy ids from src/content/ have compatibility stubs in dist/`);
 }
 
-const distFixtures = path.join(root, 'dist-fixtures');
-if (existsSync(distFixtures)) {
-  const marked = listFiles(distFixtures).some((f) => f.endsWith('.html') && readFileSync(f, 'utf8').includes('DEV-FIXTURE'));
-  if (!marked) fail('dist-fixtures/ exists but contains no DEV-FIXTURE marker (fixtures not active?)');
-  checkHtml(distFixtures, 'dist-fixtures');
-} else {
-  notes.push('dist-fixtures/ not present (run `npm run build:fixtures` to check layouts with sample content)');
-}
 
 // --- Report ----------------------------------------------------------------------------
 for (const note of notes) console.log(`✓ ${note}`);

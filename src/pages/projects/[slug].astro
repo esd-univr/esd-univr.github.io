@@ -1,12 +1,11 @@
 ---
-import { Image } from 'astro:assets';
 import { getEntries, render } from 'astro:content';
 import LinkList from '../../components/LinkList.astro';
 import NewsList from '../../components/NewsList.astro';
 import PeopleList from '../../components/PeopleList.astro';
 import PublicationList from '../../components/PublicationList.astro';
 import PageLayout from '../../layouts/PageLayout.astro';
-import { getNewsFor, getPeople, getProjects, getPublicationsForProject, type Project } from '../../lib/content.ts';
+import { getGroups, getNewsFor, getPeople, getProjects, getPublicationsForProject, type Project } from '../../lib/content.ts';
 import { formatYearRange } from '../../lib/format.ts';
 
 export async function getStaticPaths() {
@@ -22,23 +21,19 @@ const { project } = Astro.props;
 const d = project.data;
 const { Content } = await render(project);
 const hasBody = (project.body ?? '').trim().length > 0;
-const areas = await getEntries(d.research);
+const groups = (await getGroups()).filter((group) => d.groups.some((id) => id === group.id));
 const team = await getEntries(d.people);
 const publications = await getPublicationsForProject(project);
 const news = await getNewsFor('projects', project.id);
 const people = await getPeople();
 
-const STATUS_LABEL = { active: 'Active', completed: 'Completed', archived: 'Archived' } as const;
+const STATUS_LABEL = { active: 'Active', completed: 'Completed' } as const;
 const fundingLine = d.funding
   ? [d.funding.programme, d.funding.funder, d.funding.grant && `grant ${d.funding.grant}`].filter(Boolean).join(' · ')
   : '';
-const amount =
-  d.funding?.showAmount && d.funding.amount !== undefined
-    ? new Intl.NumberFormat('en-GB', { style: 'currency', currency: d.funding.currency, maximumFractionDigits: 0 }).format(d.funding.amount)
-    : undefined;
 const links = [
   d.url && { label: 'Project website', href: d.url },
-  ...areas.map((a) => ({ label: 'Research theme', href: `/research/${a.id}/`, text: a.data.name })),
+  ...groups.map((group) => ({ label: 'Group', href: `/research/#${group.id}`, text: group.data.name })),
 ].filter((x): x is { label: string; href: string; text?: string } => Boolean(x));
 ---
 
@@ -46,14 +41,11 @@ const links = [
   <p slot="header" class="facts">
     <span><span class="eyebrow">Period</span> {formatYearRange(d.start, d.end)}</span>
     <span><span class="eyebrow">Status</span> {STATUS_LABEL[d.status]}</span>
-    {fundingLine && <span><span class="eyebrow">Funding</span> {fundingLine}{amount ? ` · ${amount}` : ''}</span>}
+    {fundingLine && <span><span class="eyebrow">Funding</span> {fundingLine}</span>}
   </p>
 
   <div class="layout">
     <div class="main">
-      {d.image && (
-        <Image class="figure" src={d.image} alt={d.imageAlt ?? ''} widths={[640, 960, 1280]} sizes="(min-width: 60rem) 56rem, 100vw" />
-      )}
       {hasBody && (
         <section class="section prose">
           <Content />
@@ -107,13 +99,6 @@ const links = [
     grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
     gap: var(--space-2xl);
     padding-block: var(--space-xl);
-  }
-
-  .figure {
-    width: 100%;
-    height: auto;
-    border-radius: var(--radius);
-    margin-bottom: var(--space-xl);
   }
 
   .main .section {

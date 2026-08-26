@@ -31,10 +31,11 @@ const bib = `
   url = {https://arxiv.org/abs/2101.1}
 }
 @phdthesis{thesis1, author = {Dora Fixture}, title = {Thesis}, school = {University of Verona}, year = {2022}}
+@proceedings{DBLP:conf/fixture/2018, editor = {Ada Fixture and Ben Fixture}, title = {Proceedings of the Fixture Conference}, booktitle = {FIX}, series = {LNCS}, year = {2018}}
 `;
 
 test('entryToPublication derives venue, DOI and DBLP link', () => {
-  const [conf, preprint, thesis] = parseBibtex(bib).map(entryToPublication);
+  const [conf, preprint, thesis, proceedings] = parseBibtex(bib).map(entryToPublication);
   assert.equal(conf.venueKind, 'conference');
   assert.equal(conf.venue, 'DATE');
   assert.equal(conf.doi, '10.23919/DATE.2024.1');
@@ -47,6 +48,9 @@ test('entryToPublication derives venue, DOI and DBLP link', () => {
   assert.equal(preprint.url, 'https://arxiv.org/abs/2101.1');
   assert.equal(thesis.venueKind, 'thesis');
   assert.equal(thesis.venue, 'University of Verona');
+  assert.equal(proceedings.venueKind, 'book');
+  assert.equal(proceedings.venue, 'FIX', 'edited proceedings use booktitle as venue');
+  assert.deepEqual(proceedings.authors, ['Ada Fixture', 'Ben Fixture'], 'editors stand in for authors');
 });
 
 test('entryToPublication rejects entries without year or title', () => {

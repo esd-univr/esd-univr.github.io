@@ -1,0 +1,78 @@
+# Research topics shown on the Research page, grouped by CISD group.
+# `id` must be unique; `groups` lists ids from groups.yaml; `order` sorts the
+# topics inside a group. `details` is an optional short list of concrete subjects.
+
+- id: electronic-design-automation
+  name: Electronic Design Automation
+  groups: [esd]
+  order: 1
+  summary: >-
+    Languages, methodologies and tools to describe, abstract and test electronic
+    systems, from transistor-level netlists to system-level models.
+  details:
+    - Hardware description language manipulation and code conversion
+    - Mixed-signal netlist parsing and transformation
+    - Analog and multi-domain fault modelling and injection
+    - Test generation and coverage analysis
+
+- id: embedded-and-cyber-physical-systems
+  name: Embedded and Cyber-Physical Systems
+  groups: [esd]
+  order: 2
+  summary: >-
+    Design of embedded and cyber-physical systems in which computation, communication
+    and physical processes are tightly coupled.
+  details:
+    - Embedded system design and abstraction
+    - Networked and industrial IoT systems
+    - Functional safety of smart systems
+
+- id: modelling-simulation-and-verification
+  name: Modelling, Simulation and Verification
+  groups: [esd]
+  order: 3
+  summary: >-
+    Formal, semi-formal and simulation-based techniques that establish whether a system
+    behaves as specified.
+  details:
+    - Assume-guarantee contracts for requirement engineering
+    - Multi-domain simulation of heterogeneous models
+    - Synthesis and verification of control software
+
+- id: digital-twins-and-smart-manufacturing
+  name: Digital Twins and Smart Manufacturing
+  groups: [esd]
+  order: 4
+  summary: >-
+    Digital representations of production plants used to analyse timing, predict
+    behaviour and optimise the line.
+  details:
+    - Digital twins of cyber-physical production systems
+    - Scheduling and optimisation of production activities
+    - Predictive maintenance
+
+- id: parallel-and-heterogeneous-computing
+  name: Parallel and Heterogeneous Computing
+  groups: [parco]
+  order: 1
+  summary: >-
+    Development and optimisation of software targeting multi-core CPUs and many-core
+    GPUs, both for resource-constrained platforms such as edge devices and for
+    high-performance computing.
+  details:
+    - Edge computing
+    - High-performance computing
+    - Parallel programming languages and libraries
+
+- id: iot-for-health-and-wellbeing
+  name: IoT for Health and Wellbeing
+  groups: [iot4care]
+  order: 1
+  summary: >-
+    Design and validation of systems that promote the well-being and health of people
+    through Internet of Things technologies: environmental sensors and actuators,
+    wearable devices and smart objects.
+  details:
+    - Human activity recognition
+    - Ambient assisted living and virtual coaching
+    - Monitoring and remote rehabilitation

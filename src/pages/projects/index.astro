@@ -3,13 +3,14 @@ import EmptyState from '../../components/EmptyState.astro';
 import ProjectList from '../../components/ProjectList.astro';
 import PageLayout from '../../layouts/PageLayout.astro';
 import { getProjects } from '../../lib/content.ts';
+import { site } from '../../data/site.ts';
 
 const projects = await getProjects();
 const active = projects.filter((p) => p.data.status === 'active');
-const completed = projects.filter((p) => p.data.status !== 'active');
+const completed = projects.filter((p) => p.data.status === 'completed');
 ---
 
-<PageLayout title="Projects" eyebrow="Electronic Systems Design" description="Research projects of the ESD group.">
+<PageLayout title="Projects" eyebrow={site.shortName} description="Research projects of the CISD groups.">
   {projects.length === 0 && <EmptyState message="Projects will be listed here." />}
 
   {active.length > 0 && (

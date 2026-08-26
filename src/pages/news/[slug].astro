@@ -34,7 +34,6 @@ const related = entry
   ? [
       ...(await getEntries(d!.people)).map((p) => ({ label: 'People', href: `/people/${p.id}/`, text: p.data.name })),
       ...(await getEntries(d!.projects)).map((p) => ({ label: 'Project', href: `/projects/${p.id}/`, text: p.data.acronym ?? p.data.name })),
-      ...(await getEntries(d!.research)).map((r) => ({ label: 'Research', href: `/research/${r.id}/`, text: r.data.name })),
     ]
   : [];
 const rendered = entry ? await render(entry) : undefined;

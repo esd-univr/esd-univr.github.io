@@ -1,115 +1,111 @@
 ---
-import { Image } from 'astro:assets';
-import EmptyState from '../../components/EmptyState.astro';
+/** Research page: one section per CISD group, with that group's topics. */
 import PageLayout from '../../layouts/PageLayout.astro';
-import { getResearchAreas } from '../../lib/content.ts';
+import { getGroups, getResearchForGroup } from '../../lib/content.ts';
+import { site } from '../../data/site.ts';
 
-const areas = await getResearchAreas();
-const active = areas.filter((a) => a.data.status === 'active');
-const archived = areas.filter((a) => a.data.status === 'archived');
+const groups = await getGroups();
+const sections = await Promise.all(
+  groups.map(async (group) => ({ group, topics: await getResearchForGroup(group.id) })),
+);
 ---
 
-<PageLayout title="Research" eyebrow="Electronic Systems Design" description="Research themes of the ESD group.">
-  {areas.length === 0 && <EmptyState message="Research themes will be listed here." />}
-
-  {active.length > 0 && (
-    <section class="section">
-      <ol class="areas">
-        {active.map((area, index) => (
-          <li class="area">
-            <span class="area__index">{String(index + 1).padStart(2, '0')}</span>
-            <div class="area__body">
-              <h2 class="area__name"><a href={`/research/${area.id}/`}>{area.data.name}</a></h2>
-              <p class="area__summary">{area.data.summary}</p>
-            </div>
-            {area.data.logo && (
-              <Image class="area__logo" src={area.data.logo} alt={area.data.logoAlt ?? `${area.data.name} logo`} width={200} height={100} fit="contain" />
-            )}
-          </li>
-        ))}
-      </ol>
+<PageLayout
+  title="Research"
+  eyebrow={site.shortName}
+  lede={`The ${site.shortName} groups and the topics they work on.`}
+  description="Research groups and topics of CISD, University of Verona."
+>
+  {sections.map(({ group, topics }) => (
+    <section class="section group" id={group.id} aria-labelledby={`group-${group.id}`}>
+      <div class="group__intro">
+        <p class="eyebrow">{group.data.shortName}</p>
+        <h2 id={`group-${group.id}`}>{group.data.name}</h2>
+        <p class="group__summary">{group.data.summary}</p>
+      </div>
+      {topics.length > 0 && (
+        <ol class="topics">
+          {topics.map((topic, index) => (
+            <li class="topic">
+              <span class="topic__index">{String(index + 1).padStart(2, '0')}</span>
+              <div>
+                <h3 class="topic__name">{topic.data.name}</h3>
+                <p class="topic__summary">{topic.data.summary}</p>
+                {topic.data.details.length > 0 && (
+                  <ul class="topic__details">
+                    {topic.data.details.map((detail) => <li>{detail}</li>)}
+                  </ul>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
     </section>
-  )}
-
-  {archived.length > 0 && (
-    <section class="section">
-      <h2 class="eyebrow">Archived themes</h2>
-      <ul class="archived">
-        {archived.map((area) => (
-          <li><a href={`/research/${area.id}/`}>{area.data.name}</a> — {area.data.summary}</li>
-        ))}
-      </ul>
-    </section>
-  )}
+  ))}
 </PageLayout>
 
 <style>
-  .areas {
-    list-style: none;
-    padding: 0;
-    display: grid;
-  }
-
-  .area {
-    display: grid;
-    grid-template-columns: 3rem 1fr auto;
-    gap: var(--space-md) var(--space-lg);
-    align-items: start;
-    padding-block: var(--space-xl);
+  .group {
+    padding-block: var(--space-2xl);
     border-top: var(--rule);
   }
 
-  .area:first-child {
+  .group:first-of-type {
     border-top: 0;
-    padding-top: 0;
   }
 
-  .area__index {
+  .group__intro {
+    max-width: var(--measure);
+    margin-bottom: var(--space-xl);
+  }
+
+  .group__intro h2 {
+    font-size: var(--text-3xl);
+    margin-block: var(--space-2xs) var(--space-sm);
+  }
+
+  .group__summary {
+    font-size: var(--text-lg);
+    color: var(--color-ink-2);
+  }
+
+  .topics {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: var(--space-xl);
+  }
+
+  .topic {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: var(--space-sm);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-rule-strong);
+  }
+
+  .topic__index {
     font-family: var(--font-mono);
     color: var(--color-accent);
-    padding-top: 0.4em;
   }
 
-  .area__name {
-    font-size: var(--text-2xl);
-    margin-bottom: var(--space-sm);
+  .topic__name {
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-xs);
   }
 
-  .area__name a {
-    text-decoration: none;
-  }
-
-  .area__name a:hover {
-    text-decoration: underline;
-  }
-
-  .area__summary {
-    max-width: var(--measure);
+  .topic__summary {
     color: var(--color-ink-2);
-    font-size: var(--text-lg);
   }
 
-  .area__logo {
-    width: 12.5rem;
-    height: 6.25rem;
-    object-fit: contain;
-  }
-
-  .archived {
-    padding-left: 1.2em;
-    margin-top: var(--space-md);
+  .topic__details {
+    margin-top: var(--space-sm);
+    padding-left: 1.1em;
     display: grid;
-    gap: var(--space-xs);
-    color: var(--color-ink-2);
-  }
-
-  @media (max-width: 48rem) {
-    .area {
-      grid-template-columns: 3rem 1fr;
-    }
-
-    .area__logo {
-      grid-column: 2;
-    }
+    gap: var(--space-2xs);
+    font-size: var(--text-sm);
+    color: var(--color-ink-3);
   }
 </style>
