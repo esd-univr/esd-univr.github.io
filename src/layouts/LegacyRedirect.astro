@@ -30,19 +30,22 @@ const newUrl = new URL(target.to, Astro.site).href;
       instead of reading them from src/styles/tokens.css. The four values below are
       --light-ink / --light-paper / --light-accent-strong and their dark equivalents;
       keep them in step when the palette changes (docs/site-settings.md).
+
+      IMPORTANT: every selector is anchored to .legacy-redirect-page. This component
+      is imported by the normal /news/[slug]/ route as well as numeric legacy routes;
+      unqualified html/body selectors would therefore leak into ordinary news pages.
     -->
     <style>
-      :root { color-scheme: light dark; }
-      body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 15vh auto; padding: 0 1.5rem; line-height: 1.5; color: #141a2e; background: #f6f7fb; }
-      a { color: #372c9e; }
-      code { font-family: ui-monospace, monospace; font-size: 0.9em; }
+      body.legacy-redirect-page { color-scheme: light dark; font-family: system-ui, sans-serif; max-width: 40rem; margin: 15vh auto; padding: 0 1.5rem; line-height: 1.5; color: #141a2e; background: #f6f7fb; }
+      .legacy-redirect-page a { color: #372c9e; }
+      .legacy-redirect-page code { font-family: ui-monospace, monospace; font-size: 0.9em; }
       @media (prefers-color-scheme: dark) {
-        body { color: #e6e9f5; background: #0a0f1e; }
-        a { color: #c6c4ff; }
+        body.legacy-redirect-page { color: #e6e9f5; background: #0a0f1e; }
+        .legacy-redirect-page a { color: #c6c4ff; }
       }
     </style>
   </head>
-  <body>
+  <body class="legacy-redirect-page">
     <h1>This page has moved</h1>
     <p>
       The address <code>{legacyPath}</code> belonged to the former CISD website.
