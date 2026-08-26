@@ -67,8 +67,26 @@ for this site and their exact titles still need confirmation.
   old database did not store (pages, volume, publisher) are absent; a DBLP refresh can add
   them.
 - **News** — four recent items. The rest of the 31 legacy posts were not published.
-- **Photographs** — none. The old site's portraits are not republished until each person
-  confirms; the People page is designed to work without them.
+- **Photographs** — the portrait each person had on the legacy site, for the six of the
+  eight published people who had one. The identification comes from the legacy profile
+  records themselves (profile id → name → image file), not from recognising faces. Each
+  file is the legacy original with its metadata chunks removed and no pixel re-encoding, so
+  the published pixels are identical to the legacy ones. Pietro Turco and Samuele Santacà
+  have no legacy portrait and show the monogram fallback; the People page is designed to
+  work either way. Publication still depends on each person confirming that the photograph
+  may appear on this site.
+
+  | Person | Legacy file | Published as | Size |
+  | --- | --- | --- | --- |
+  | Franco Fummi | `media/profile_images/franco_fummi.jpg` | `people/franco-fummi.jpg` | 93×120 |
+  | Michele Lora | `media/profile_images/MicheleLora.jpg` | `people/michele-lora.jpg` | 1235×1498 |
+  | Enrico Fraccaroli | `media/profile_images/foto034230.jpg` | `people/enrico-fraccaroli.jpg` | 100×120 |
+  | Francesco Biondani | `media/profile_images/profilolinkedin.jpg` | `people/francesco-biondani.jpg` | 960×1280 |
+  | Nicola Bombieri | `media/profile_images/nicola_bombieri.jpg` | `people/nicola-bombieri.jpg` | 119×128 |
+  | Graziano Pravadelli | `media/profile_images/GP_June_21.png` | `people/graziano-pravadelli.png` | 212×291 |
+
+  The other 24 portraits in the legacy media tree belong to people who are not published,
+  and were not copied. No CV, document or event photograph was migrated.
 - **Never migrated** — user accounts, password hashes, sessions, invite keys, admin logs;
   e-mail addresses, telephone, office and fax fields; CV files; deleted records.
 - **Not part of this site** — the independent `/wg10-5/` and `/essm-workshop/` static sites,

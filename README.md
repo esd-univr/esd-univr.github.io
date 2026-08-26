@@ -10,36 +10,62 @@ Engineering for Innovation Medicine of the University of Verona:
 One site, one design, one deployment: group membership is metadata on people, projects,
 research topics and news, not a set of separate mini-sites.
 
-GitHub Pages URL: <https://esd-univr.github.io/>. This site is intended to replace the former
-dynamic CISD web application (`cisd.di.univr.it`) once the migration is approved. This first
-version is a **curated** selection of content; `docs/migration-map.md` records where it came
-from.
+Live at <https://esd-univr.github.io/>.
+
+## Updating the site
+
+Content lives in plain text files. You never edit a template or write code to change what
+the site says. Find your task, open the guide, follow it.
+
+| I want to… | Read |
+| --- | --- |
+| Add or edit a person / portrait | [docs/people.md](docs/people.md) |
+| Add or edit a project | [docs/projects.md](docs/projects.md) |
+| Edit groups or research topics | [docs/research.md](docs/research.md) |
+| Add a publication | [docs/publications.md](docs/publications.md) |
+| Add news | [docs/news.md](docs/news.md) |
+| Change mission / affiliation / branding / theme | [docs/site-settings.md](docs/site-settings.md) |
+| Preview or deploy | [docs/deployment.md](docs/deployment.md) |
+| Publish anything about a person, or a photograph | [docs/content-safety.md](docs/content-safety.md) |
+
+The short version of every guide:
+
+```bash
+npm ci               # once, after cloning
+npm run dev          # http://localhost:4321 — reloads as you save
+npm run ci           # before pushing: checks, tests, build, verification
+```
+
+Work on a branch and open a pull request. Merging into `main` deploys the site
+automatically.
+
+If something is wrong the build stops and names the file and the field, for example
+`people/mario-rossi.md → role: Required`. Fix it and run again.
+
+Using an AI coding agent? Point it at [AGENTS.md](AGENTS.md) — it routes the agent to the
+right guide and lists the rules it must not break.
+
+## How it is built
 
 The site is **completely static**: no database, no server-side code, no login. Content is
-plain Markdown, YAML and BibTeX under `src/`, built with [Astro](https://astro.build) into
-HTML, CSS, a little JavaScript and optimised images.
+Markdown, YAML and BibTeX under `src/`, built with [Astro](https://astro.build) into HTML,
+CSS, a little JavaScript and optimised images.
 
-## Prerequisites
-
-- Node.js **24 LTS** (see `.nvmrc`; anything ≥ 22.12 works) and npm ≥ 9.
-- Git.
-
-## Commands
+Node.js **24** (see `.nvmrc`; anything from 22.12 works) and npm ≥ 9.
 
 | Command | What it does |
-| ------- | ------------ |
-| `npm ci` | Install the exact dependencies from `package-lock.json`. |
-| `npm run dev` | Development server (<http://localhost:4321>), reloads on save. |
-| `npm run build` | Production build into `dist/`. |
-| `npm run preview` | Serve `dist/` locally. |
-| `npm run check` | Astro + TypeScript checks (templates, schemas, types). |
-| `npm test` | Unit tests: BibTeX reader, publication helpers, people grouping, legacy paths, content invariants. |
-| `npm run verify` | Repository hygiene and built-site checks (see `scripts/verify.mjs`). |
-| `npm run ci` | Everything CI runs, in order. |
+| --- | --- |
+| `npm ci` | Install the exact dependencies from `package-lock.json` |
+| `npm run dev` | Development server on <http://localhost:4321> |
+| `npm run build` | Production build into `dist/` |
+| `npm run preview` | Serve `dist/` locally |
+| `npm run check` | Astro + TypeScript checks (templates, schemas, types) |
+| `npm test` | Unit tests and content invariants |
+| `npm run verify` | Repository hygiene and built-site checks |
+| `npm run strip-metadata <file…>` | Remove EXIF/GPS/IPTC/XMP from an image, losslessly |
+| `npm run ci` | Everything CI runs, in order |
 
-Before pushing: `npm run ci` must pass.
-
-## Repository structure
+### Repository structure
 
 ```
 astro.config.ts            site URL, sitemap, image defaults
@@ -50,48 +76,40 @@ src/data/
   publications.bib         curated bibliography (BibTeX)
   publications.overrides.yaml   featured / project links / PDFs
   site.ts                  name, mission, department, address, footer links
-src/content/               one Markdown file per record
+src/content/               one Markdown file per record (+ portraits next to people)
   people/  projects/  news/
-src/pages/                 routes (see below) — no content lives here
+src/pages/                 routes — no content lives here
 src/layouts/               HTML shell, inner-page layout, legacy-redirect stub
 src/components/            lists and small building blocks
 src/styles/                tokens.css (design tokens) + base.css (global styles)
 src/lib/                   plain TypeScript helpers (BibTeX, publications, people, legacy URLs)
 src/loaders/publications.ts   turns publications.bib into a collection
 public/                    copied verbatim: robots.txt, .nojekyll
-docs/migration-map.md      provenance of the published content
-scripts/verify.mjs         quality gate used by CI
-tests/                     unit tests (node --test)
-.github/workflows/         ci.yml (checks) and deploy.yml (GitHub Pages)
-MAINTENANCE.md             how to add or change content — start here
+scripts/                   verify.mjs (CI quality gate), strip-image-metadata.mjs
+tests/                     unit tests and content invariants (node --test)
+docs/                      the task guides linked above
+AGENTS.md                  rules for AI coding agents
+MAINTENANCE.md             pointer to docs/
 SECURITY.md                what must never be committed
 ```
 
-## Routes
+### Routes
 
 | URL | Source |
-| --- | ------ |
+| --- | --- |
 | `/` | `src/pages/index.astro` |
-| `/research/` | `src/pages/research/index.astro` (groups and their topics, anchors `#esd`, `#parco`, `#iot4care`) |
+| `/research/` | `src/pages/research/index.astro` (anchors `#esd`, `#parco`, `#iot4care`) |
 | `/people/`, `/people/<slug>/` | `src/pages/people/` |
 | `/projects/`, `/projects/<slug>/` | `src/pages/projects/` |
 | `/publications/`, `/publications.bib` | `src/pages/publications/`, `src/pages/publications.bib.ts` |
 | `/news/`, `/news/<slug>/` | `src/pages/news/` |
 | `/contacts/` | `src/pages/contacts.astro` |
 | `/404.html` | `src/pages/404.astro` |
-| `/profile/<id>/`, `/project/<id>/`, `/news/<id>/` | legacy compatibility stubs, generated from `legacyId` |
-| `/area/<id>/` | legacy compatibility stubs → the group's section on `/research/` |
-| `/news-list/`, `/areas/` | legacy compatibility stubs (`src/pages/news-list.astro`, `areas.astro`) |
+| `/profile/<id>/`, `/project/<id>/`, `/news/<id>/`, `/area/<id>/` | legacy compatibility stubs, generated from `legacyId` |
+| `/news-list/`, `/areas/` | legacy compatibility stubs |
 | `/sitemap-index.xml`, `/robots.txt` | generated / `public/` |
 
-## Deployment
-
-Every push to `main` runs `.github/workflows/deploy.yml`: install, check, test, build,
-verify, upload `dist/`, deploy with `actions/deploy-pages`. The repository's Pages source
-must be set to **GitHub Actions** (Settings → Pages). Pull requests run
-`.github/workflows/ci.yml` only. No custom domain or `CNAME` is configured.
-
-## Design notes
+### Design
 
 Plain CSS with custom properties (`src/styles/tokens.css`), self-hosted IBM Plex fonts
 (bundled at build, no third-party requests), an editorial layout built from lists and rules
@@ -99,3 +117,10 @@ rather than cards, and a single accent colour. Navigation is plain links and wor
 JavaScript; the only script is an optional text filter on the publications page. Official
 CISD / University of Verona brand assets are not included yet — `site.brand` in
 `src/data/site.ts` has the slots for them.
+
+### Provenance
+
+This site replaces the former dynamic CISD web application (`cisd.di.univr.it`). The first
+version is a **curated** selection of that content: [docs/migration-map.md](docs/migration-map.md)
+records what was published, which old addresses still work, and what was deliberately left
+out.

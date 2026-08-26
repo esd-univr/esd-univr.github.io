@@ -2,6 +2,10 @@
 
 This repository is public and is intended to contain only publishable source content and static website assets.
 
+This file is about files that must never be committed. For what may be *published*, and
+about whom — personal data, photographs, consent, claims — see
+[docs/content-safety.md](docs/content-safety.md).
+
 ## Never commit
 
 - SQLite databases or database dumps
