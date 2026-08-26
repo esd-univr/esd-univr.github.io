@@ -1,12 +1,12 @@
 ---
 name: Michele Lora
-role: Assistant Professor
+role: Tenure-track Researcher
 groups: [esd]
 order: 20
 legacyId: 9
 interests: [Cyber-physical systems, Assume-guarantee contracts, Smart manufacturing]
 photo: ./michele-lora.jpg
-website: "https://www.di.univr.it/?ent=persona&id=9255"
+website: "https://www.dimi.univr.it/?ent=persona&id=9255&lang=en"
 scholar: "https://scholar.google.com/citations?user=DNoGdSIAAAAJ"
 dblp: "https://dblp.org/pid/72/10001.html"
 ---

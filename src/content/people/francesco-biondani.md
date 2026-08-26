@@ -4,6 +4,7 @@ role: PhD Student
 groups: [esd]
 order: 40
 legacyId: 44
+affiliation: Department of Computer Science, University of Verona
 interests: [Digital twins, Predictive maintenance, Industry 5.0]
 photo: ./francesco-biondani.jpg
 orcid: "0009-0006-7070-4662"
