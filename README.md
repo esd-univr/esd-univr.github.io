@@ -1,7 +1,7 @@
 # CISD — Cyber-Physical and IoT Systems Design · University of Verona
 
 Static website of **CISD**, which brings together three research groups at the Department of
-Computer Science of the University of Verona:
+Engineering for Innovation Medicine of the University of Verona:
 
 - **ESD** — Electronic Systems Design
 - **PARCO** — PARCO Lab (parallel and heterogeneous computing)
@@ -10,9 +10,10 @@ Computer Science of the University of Verona:
 One site, one design, one deployment: group membership is metadata on people, projects,
 research topics and news, not a set of separate mini-sites.
 
-Production URL: <https://esd-univr.github.io/> (GitHub Pages). It replaces the former
-dynamic CISD web application (`cisd.di.univr.it`). This first version is a **curated**
-selection of content; `docs/migration-map.md` records where it came from.
+GitHub Pages URL: <https://esd-univr.github.io/>. This site is intended to replace the former
+dynamic CISD web application (`cisd.di.univr.it`) once the migration is approved. This first
+version is a **curated** selection of content; `docs/migration-map.md` records where it came
+from.
 
 The site is **completely static**: no database, no server-side code, no login. Content is
 plain Markdown, YAML and BibTeX under `src/`, built with [Astro](https://astro.build) into

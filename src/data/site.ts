@@ -9,16 +9,16 @@ export const site = {
   title: 'CISD — Cyber-Physical and IoT Systems Design · University of Verona',
   /** Default meta description (≤ 160 characters). */
   description:
-    'CISD brings together the ESD, PARCO and IoT4Care research groups at the Department of Computer Science, University of Verona.',
+    'CISD brings together the ESD, PARCO and IoT4Care research groups at the Department of Engineering for Innovation Medicine, University of Verona.',
   /** Hero copy on the home page. */
   mission:
-    'CISD brings together research groups at the Department of Computer Science of the University of Verona that address, with multi-domain knowledge, the design and verification of cyber-physical and IoT systems — from industrial IoT and smart manufacturing to parallel computing and healthcare.',
+    'CISD brings together research groups at the Department of Engineering for Innovation Medicine of the University of Verona that address, with multi-domain knowledge, the design and verification of cyber-physical and IoT systems — from industrial IoT and smart manufacturing to parallel computing and healthcare.',
   organisation: {
     university: 'University of Verona',
     universityUrl: 'https://www.univr.it/',
-    department: 'Department of Computer Science',
-    departmentUrl: 'https://www.di.univr.it/',
-    /** Postal address of the department (Ca' Vignal 2). */
+    department: 'Department of Engineering for Innovation Medicine',
+    departmentUrl: 'https://www.dimi.univr.it/',
+    /** Postal address of the department. */
     address: ['Strada le Grazie 15', '37134 Verona', 'Italy'],
     /** Link (not an embed) to a map; no third-party iframes are loaded. */
     mapUrl: 'https://www.openstreetmap.org/search?query=Strada%20le%20Grazie%2015%2C%20Verona',

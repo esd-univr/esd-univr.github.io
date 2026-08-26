@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Static website of CISD (Cyber-Physical and IoT Systems Design) — the ESD, PARCO and IoT4Care research groups, Department of Computer Science, University of Verona",
+  "description": "Static website of CISD (Cyber-Physical and IoT Systems Design) — the ESD, PARCO and IoT4Care research groups, Department of Engineering for Innovation Medicine, University of Verona",
   "engines": {
     "node": ">=22.12.0"
   },
