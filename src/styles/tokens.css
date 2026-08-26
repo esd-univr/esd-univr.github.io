@@ -1,7 +1,16 @@
-/* Design tokens. Change colours, type and spacing here; components only use variables. */
+/*
+ * Design tokens — the only source of truth for the site's colours, type, spacing and
+ * widths. Components never hard-code a colour or a width; they read a variable from here.
+ *
+ * Colour works in three layers:
+ *   1. the light palette   (--light-*)   the real hex values, defined once
+ *   2. the dark palette    (--dark-*)    the real hex values, defined once
+ *   3. the active theme    (--color-*)   an alias to one of the two palettes
+ *
+ * Only layer 3 is switched; edit a colour in layer 1 or 2 and nothing else changes.
+ * See docs/site-settings.md for the theme behaviour and how to repalette safely.
+ */
 :root {
-  color-scheme: light;
-
   --font-sans: 'IBM Plex Sans Variable', 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-serif: 'IBM Plex Serif', Georgia, 'Times New Roman', serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -26,21 +35,95 @@
   --space-2xl: clamp(3rem, 2.6rem + 2vw, 4.5rem);
   --space-3xl: clamp(4.5rem, 3.8rem + 3.5vw, 7rem);
 
-  /* Colour: ink on warm paper, a single accent, blue focus ring. */
-  --color-paper: #fbfaf7;
-  --color-paper-2: #f3f1eb;
-  --color-ink: #16171b;
-  --color-ink-2: #43464d;
-  --color-ink-3: #6b6f78;
-  --color-rule: #dcd8ce;
-  --color-rule-strong: #16171b;
-  --color-accent: #9a2f2f;
-  --color-accent-strong: #741f1f;
-  --color-focus: #0b57d0;
-
+  /*
+   * Widths. Long prose is capped at --measure so lines stay readable; structured
+   * sections (grids, rosters, lists) use the far wider --container. See .container,
+   * .container--wide and .container--narrow in base.css.
+   */
   --measure: 66ch;
-  --container: 76rem;
+  --container: 94rem;
+  --container-wide: 108rem;
+  --container-narrow: 56rem;
   --gutter: clamp(1rem, 4vw, 2.5rem);
+
   --rule: 1px solid var(--color-rule);
   --radius: 2px;
+
+  /* ---- Palette: light — cool off-white paper, deep navy ink, indigo accents ---- */
+  --light-paper: #f6f7fb;
+  --light-paper-2: #eaecf5;
+  --light-selection: #dcd9f7;
+  --light-ink: #141a2e;
+  --light-ink-2: #3b4468;
+  --light-ink-3: #5a6383;
+  --light-rule: #d3d8e8;
+  --light-rule-strong: #141a2e;
+  --light-accent: #4a3ec4;
+  --light-accent-strong: #372c9e;
+  --light-focus: #3b30b8;
+
+  /* ---- Palette: dark — deep navy ground, soft off-white ink, periwinkle accents ---- */
+  --dark-paper: #0a0f1e;
+  --dark-paper-2: #151b2f;
+  --dark-selection: #2c2f63;
+  --dark-ink: #e6e9f5;
+  --dark-ink-2: #b2b9d4;
+  --dark-ink-3: #888fae;
+  --dark-rule: #262e47;
+  --dark-rule-strong: #c3c9de;
+  --dark-accent: #a9a6f7;
+  --dark-accent-strong: #c6c4ff;
+  --dark-focus: #93a8ff;
+
+  /* ---- Active theme: light ---- */
+  color-scheme: light;
+  --color-paper: var(--light-paper);
+  --color-paper-2: var(--light-paper-2);
+  --color-selection: var(--light-selection);
+  --color-ink: var(--light-ink);
+  --color-ink-2: var(--light-ink-2);
+  --color-ink-3: var(--light-ink-3);
+  --color-rule: var(--light-rule);
+  --color-rule-strong: var(--light-rule-strong);
+  --color-accent: var(--light-accent);
+  --color-accent-strong: var(--light-accent-strong);
+  --color-focus: var(--light-focus);
+}
+
+/*
+ * Dark theme, twice over — the two ways a visitor can end up in it. The blocks are
+ * identical aliasing, no colour values: the system preference (unless the visitor has
+ * explicitly asked for light), and an explicit choice stored in localStorage and applied
+ * to <html data-theme> before first paint by the inline script in BaseLayout.astro.
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --color-paper: var(--dark-paper);
+    --color-paper-2: var(--dark-paper-2);
+    --color-selection: var(--dark-selection);
+    --color-ink: var(--dark-ink);
+    --color-ink-2: var(--dark-ink-2);
+    --color-ink-3: var(--dark-ink-3);
+    --color-rule: var(--dark-rule);
+    --color-rule-strong: var(--dark-rule-strong);
+    --color-accent: var(--dark-accent);
+    --color-accent-strong: var(--dark-accent-strong);
+    --color-focus: var(--dark-focus);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-paper: var(--dark-paper);
+  --color-paper-2: var(--dark-paper-2);
+  --color-selection: var(--dark-selection);
+  --color-ink: var(--dark-ink);
+  --color-ink-2: var(--dark-ink-2);
+  --color-ink-3: var(--dark-ink-3);
+  --color-rule: var(--dark-rule);
+  --color-rule-strong: var(--dark-rule-strong);
+  --color-accent: var(--dark-accent);
+  --color-accent-strong: var(--dark-accent-strong);
+  --color-focus: var(--dark-focus);
 }

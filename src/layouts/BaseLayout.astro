@@ -44,6 +44,61 @@ const { title, description, type, image, noindex } = Astro.props;
     <Seo title={title} description={description} type={type} image={image} noindex={noindex} />
     {site.brand.favicon && <link rel="icon" href={site.brand.favicon} />}
     <link rel="sitemap" href="/sitemap-index.xml" />
+    {/*
+      Theme, resolved before first paint so pages never flash the wrong palette.
+      With no explicit choice nothing is set and the CSS follows prefers-color-scheme
+      (so the site still themes itself correctly without JavaScript). An explicit
+      choice becomes <html data-theme>, and only then does the toggle appear.
+    */}
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        root.dataset.js = '';
+        const KEY = 'cisd-theme';
+        const system = () => (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        const read = () => {
+          try {
+            const stored = localStorage.getItem(KEY);
+            return stored === 'light' || stored === 'dark' ? stored : null;
+          } catch {
+            return null;
+          }
+        };
+        const stored = read();
+        if (stored) root.dataset.theme = stored;
+
+        /** Label the toggle with the action it performs, not the state it is in. */
+        const label = (button) => {
+          const next = (root.dataset.theme ?? system()) === 'dark' ? 'light' : 'dark';
+          button.setAttribute('aria-label', `Switch to the ${next} theme`);
+          button.setAttribute('title', `Switch to the ${next} theme`);
+        };
+
+        document.addEventListener('click', (event) => {
+          const button = event.target.closest('[data-theme-toggle]');
+          if (!button) return;
+          const next = (root.dataset.theme ?? system()) === 'dark' ? 'light' : 'dark';
+          try {
+            // Choosing your own system preference clears the override again.
+            if (next === system()) {
+              localStorage.removeItem(KEY);
+              delete root.dataset.theme;
+            } else {
+              localStorage.setItem(KEY, next);
+              root.dataset.theme = next;
+            }
+          } catch {
+            root.dataset.theme = next;
+          }
+          label(button);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+          const button = document.querySelector('[data-theme-toggle]');
+          if (button) label(button);
+        });
+      })();
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

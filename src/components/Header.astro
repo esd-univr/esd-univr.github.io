@@ -20,15 +20,30 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
       <span class="wordmark__short">{site.shortName}</span>
       <span class="wordmark__long">{site.name}<span class="wordmark__affiliation"> · {site.organisation.university}</span></span>
     </a>
-    <nav class="nav" aria-label="Main">
-      <ul class="nav__list">
-        {NAV.map((item) => (
-          <li>
-            <a href={item.href} aria-current={current === item.href ? 'page' : undefined}>{item.label}</a>
-          </li>
-        ))}
-      </ul>
-    </nav>
+    <div class="masthead__end">
+      <nav class="nav" aria-label="Main">
+        <ul class="nav__list">
+          {NAV.map((item) => (
+            <li>
+              <a href={item.href} aria-current={current === item.href ? 'page' : undefined}>{item.label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      {/*
+        Light/dark switch. Hidden until the inline script in BaseLayout.astro marks the
+        document as scripted, because without JavaScript the theme follows the operating
+        system and the button would do nothing. The half-filled disc reads as "change
+        appearance" in either theme, so no icon swapping is needed; the script keeps the
+        accessible name pointed at the action.
+      */}
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+          <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.4" />
+          <path d="M8 1.75a6.25 6.25 0 0 0 0 12.5Z" fill="currentColor" />
+        </svg>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -78,6 +93,40 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
 
   .wordmark__affiliation {
     color: var(--color-ink-3);
+  }
+
+  .masthead__end {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs) var(--space-lg);
+  }
+
+  /* Only offered when the theme script is running — see BaseLayout.astro. */
+  .theme-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    color: var(--color-ink-3);
+    background: none;
+    border: var(--rule);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: color 120ms ease, border-color 120ms ease, background-color 120ms ease;
+  }
+
+  :root[data-js] .theme-toggle {
+    display: inline-flex;
+  }
+
+  .theme-toggle:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    background: var(--color-paper-2);
   }
 
   .nav__list {

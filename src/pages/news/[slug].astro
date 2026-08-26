@@ -44,7 +44,7 @@ const Content = rendered?.Content;
   <LegacyRedirect target={legacy} legacyPath={`/news/${legacy.legacyId}/`} />
 ) : (
   <BaseLayout title={d!.title} description={d!.summary} type="article">
-    <article class="container article" lang={d!.lang}>
+    <article class="container container--narrow article" lang={d!.lang}>
       <header class="article__header">
         <p class="eyebrow" lang="en">
           <time datetime={isoDate(d!.date)}>{formatDate(d!.date)}</time>
@@ -79,8 +79,8 @@ const Content = rendered?.Content;
 )}
 
 <style>
+  /* Width comes from .container--narrow (--container-narrow) on the element. */
   .article {
-    max-width: 56rem;
     padding-block: var(--space-2xl);
   }
 

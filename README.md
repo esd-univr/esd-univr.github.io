@@ -112,10 +112,13 @@ SECURITY.md                what must never be committed
 ### Design
 
 Plain CSS with custom properties (`src/styles/tokens.css`), self-hosted IBM Plex fonts
-(bundled at build, no third-party requests), an editorial layout built from lists and rules
-rather than cards, and a single accent colour. Navigation is plain links and works without
-JavaScript; the only script is an optional text filter on the publications page. Official
-CISD / University of Verona brand assets are not included yet — `site.brand` in
+(bundled at build, no third-party requests), and an editorial layout built from lists and
+rules rather than cards. Deep navy and indigo, in a **light and a dark theme**: the site
+follows the operating system by default and the toggle in the masthead overrides it. Long
+prose stays at a readable measure while structured sections use the full width of a large
+screen. Navigation is plain links and works without JavaScript; the only scripts are the
+inline theme switch and an optional text filter on the publications page. Official CISD /
+University of Verona brand assets are not included yet — `site.brand` in
 `src/data/site.ts` has the slots for them.
 
 ### Provenance

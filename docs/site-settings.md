@@ -4,7 +4,8 @@ Two files hold everything that is not a content record:
 
 ```
 src/data/site.ts          name, mission, department, address, footer links, brand slots
-src/styles/tokens.css     colours, type scale, spacing — the whole visual language
+src/styles/tokens.css     colours (light + dark), type, spacing, widths — the whole
+                          visual language
 ```
 
 ## `src/data/site.ts`
@@ -63,44 +64,143 @@ permission to use it.** Trademarked brand assets are not "just images".
 
 ## `src/styles/tokens.css`
 
-Every colour, font size, spacing step, rule and radius the site uses is a custom property
-declared once in `:root`. Components only ever reference the variables, so changing the
-look means changing this file — not the components.
+Every colour, font size, spacing step, width, rule and radius the site uses is a custom
+property declared once in this file. Components only ever reference the variables, so
+changing the look means changing this file — not the components. **Custom properties are
+the only theme source of truth**; a hard-coded colour anywhere else is a bug.
+
+### Type, spacing, widths
 
 | Group | Tokens |
 | --- | --- |
 | Type | `--font-sans`, `--font-serif`, `--font-mono`, `--text-xs` … `--text-4xl` |
 | Spacing | `--space-2xs` … `--space-3xl` |
-| Colour | `--color-paper`, `--color-paper-2`, `--color-ink`, `--color-ink-2`, `--color-ink-3`, `--color-rule`, `--color-rule-strong`, `--color-accent`, `--color-accent-strong`, `--color-focus` |
-| Layout | `--measure`, `--container`, `--gutter`, `--rule`, `--radius` |
+| Widths | `--measure`, `--container`, `--container-wide`, `--container-narrow`, `--gutter` |
+| Detail | `--rule`, `--radius` |
 
 The type and spacing scales use `clamp()` so they grow with the viewport; change the three
-numbers of a `clamp()`, not the places that use it.
+numbers inside a `clamp()`, not the places that use it.
 
-To change the accent colour, edit `--color-accent` and `--color-accent-strong` (the hover
-and active shade) together, and check the contrast against `--color-paper` — body text and
-links must stay at 4.5:1 or better.
+The width tokens draw the line between reading and structure:
 
-Fonts are self-hosted IBM Plex, installed as npm packages and bundled at build time. The
-site loads nothing from Google Fonts or any other third party, and `npm run verify` fails
-if a build ever references a CDN.
+| Token | Value | Used for |
+| --- | --- | --- |
+| `--measure` | `66ch` | Long prose. Every `.prose`, `.lede`, `.measure` block and every list summary is capped here, so no line of running text ever gets too long to read. |
+| `--container` | `94rem` | The default page width: masthead, footer, page headers, and every structured section — grids, rosters, project and publication lists. |
+| `--container-wide` | `108rem` | Sections that should feel almost full-width. Currently the People directory grid and the home page's people section. |
+| `--container-narrow` | `56rem` | Long-form reading pages. Currently a news item. |
+| `--gutter` | `clamp(1rem, 4vw, 2.5rem)` | The margin kept on both sides at every width. |
 
-### Theme
+Three utility classes in `base.css` apply them. The modifiers only rebind `--container`, so
+the width arithmetic lives in exactly one rule:
 
-`tokens.css` currently declares `color-scheme: light` and one light palette. A dark theme
-is planned as a separate piece of work: it will add a second set of colour tokens, and it
-must not require touching any component. **Do not add dark-mode rules as a side effect of
-another change.**
+```html
+<div class="container">…</div>                    <!-- 94rem  -->
+<div class="container container--wide">…</div>     <!-- 108rem -->
+<div class="container container--narrow">…</div>   <!-- 56rem  -->
+```
 
-`npm run verify` requires the shipped CSS to keep a `prefers-reduced-motion` rule and a
-`:focus-visible` rule, so do not remove them.
+`PageLayout.astro` takes a `width` prop (`"default" | "wide" | "narrow"`) that picks one for
+a whole page:
+
+```astro
+<PageLayout title="People" width="wide">
+```
+
+Widening a container never widens running text: the prose caps are independent, so a wide
+page gets more columns and more air, not longer lines.
+
+### Colour: two palettes, one active theme
+
+Colour is declared in three layers, all in `tokens.css`:
+
+1. `--light-*` — the light palette. Real hex values, defined once.
+2. `--dark-*` — the dark palette. Real hex values, defined once.
+3. `--color-*` — the active theme. An alias pointing at one of the two.
+
+Only layer 3 is switched. Components read layer 3 and never mention layer 1 or 2, so a
+component cannot be "light-only" by accident.
+
+| Active token | Light | Dark | Used for |
+| --- | --- | --- | --- |
+| `--color-paper` | `#f6f7fb` | `#0a0f1e` | Page background |
+| `--color-paper-2` | `#eaecf5` | `#151b2f` | Surfaces: code, `pre`, portrait placeholder, toggle hover |
+| `--color-selection` | `#dcd9f7` | `#2c2f63` | `::selection` background |
+| `--color-ink` | `#141a2e` | `#e6e9f5` | Body text and headings |
+| `--color-ink-2` | `#3b4468` | `#b2b9d4` | Ledes, summaries, secondary prose |
+| `--color-ink-3` | `#5a6383` | `#888fae` | Eyebrows, meta, roles, captions |
+| `--color-rule` | `#d3d8e8` | `#262e47` | Hairline separators (`--rule`) |
+| `--color-rule-strong` | `#141a2e` | `#c3c9de` | Masthead and footer edges, blockquote bar, current nav item |
+| `--color-accent` | `#4a3ec4` | `#a9a6f7` | Link hover, group acronyms, toggle hover |
+| `--color-accent-strong` | `#372c9e` | `#c6c4ff` | Selected text, the heavier accent |
+| `--color-focus` | `#3b30b8` | `#93a8ff` | Focus ring |
+
+Light is a cool off-white ground with deep navy ink and indigo accents; dark is a deep navy
+ground with soft off-white ink and periwinkle accents. There are no gradients, and no colour
+is used decoratively — every one of these has a job.
+
+### How the theme is chosen
+
+In order:
+
+1. **No choice made (the default).** Nothing is set on `<html>` and the CSS follows the
+   operating system through `@media (prefers-color-scheme: dark)`. This is the path with
+   JavaScript disabled too, so the site is correctly themed either way.
+2. **An explicit choice.** The toggle in the masthead writes `light` or `dark` to
+   `localStorage` under the key `cisd-theme`, and sets `<html data-theme="…">`.
+   `:root[data-theme='dark']` and `:root:not([data-theme='light'])` make that win over the
+   system preference in both directions.
+3. **Choosing your own system default clears the override.** If the theme you pick is the
+   one your system already asks for, the stored value is removed and you are back on
+   "follow the system" — the site has no third button for it.
+
+The inline script that applies step 2 lives in the `<head>` of `BaseLayout.astro`. It runs
+**before first paint**, so navigating between pages never flashes the wrong palette. It is
+inline and tiny on purpose: a deferred or bundled script would paint first and correct
+afterwards. It also sets `data-js` on `<html>`, which is what reveals the toggle — without
+JavaScript the button would do nothing, so it is not shown.
+
+`color-scheme` is set per theme (`light` or `dark`), which is what makes scrollbars, form
+controls and other browser-drawn surfaces match.
+
+### Changing the palette safely
+
+1. **Edit `--light-*` and `--dark-*` in `tokens.css`. Nothing else.** Never touch the
+   `--color-*` aliases and never put a colour in a component.
+2. **Change both palettes.** A token that exists in one and not the other is a hole; the
+   dark theme is not optional.
+3. **Check the contrast before committing.** The current palette clears WCAG AA everywhere
+   and AAA for body text. Keep at least:
+   - 7:1 for `--color-ink` on `--color-paper` and on `--color-paper-2`;
+   - 4.5:1 for `--color-ink-2`, `--color-ink-3`, `--color-accent` and
+     `--color-accent-strong` on the backgrounds they appear on — `--color-ink-3` is used for
+     small text, so it needs the full 4.5:1;
+   - 3:1 for `--color-focus` against both `--color-paper` and `--color-paper-2`, and for
+     `--color-rule-strong` against `--color-paper`.
+
+   `--color-rule` is deliberately low-contrast (about 1.4:1): the hairlines are decorative
+   separators and never the only way information is conveyed.
+4. **Look at both themes.** `npm run dev`, then use the toggle. Check a text-heavy page
+   (`/research/`), a list-heavy one (`/publications/`), a page with portraits (`/people/`)
+   and a legacy stub (`/profile/12/`).
+5. **`src/layouts/LegacyRedirect.astro` repeats four values.** The compatibility stubs load
+   no stylesheet at all — they exist for half a second — so they carry their own inline
+   colours. It is the one sanctioned exception, it is commented as such, and it must be
+   updated in step with the palette.
 
 ## What not to do
 
 - Do not hard-code the group name, the department, the address or a colour into a component
   or a page. Everything comes from `site.ts` or a token.
+- Do not add a colour that exists in only one of the two palettes.
 - Do not add a third-party script, font, analytics tag, map embed or CDN reference. The
   site is designed to make no external request at all, and `npm run verify` enforces it.
+- Do not move the theme script out of the `<head>`, defer it, or bundle it — it has to run
+  before first paint or every page load flashes.
+- Do not remove the `prefers-reduced-motion` block or the `:focus-visible` rule from
+  `base.css`; `npm run verify` fails if either disappears from the shipped CSS.
+- Do not widen `--measure` to fill a wide container. Wide pages get more columns, not
+  longer lines.
 - Do not change the layout or the visual design while doing editorial work.
 - Do not add a brand asset you do not have permission to publish.
 - Do not edit `astro.config.ts` (site URL, sitemap, image defaults) for a content change —
@@ -115,7 +215,8 @@ npm run ci     # checks, unit tests, production build, verification
 
 After a change to `site.ts`, look at the home page, `/contacts/` and the footer of any inner
 page; after a change to `tokens.css`, look at a text-heavy page (`/research/`) and a
-list-heavy one (`/publications/`).
+list-heavy one (`/publications/`) **in both themes**, and check a wide page (`/people/`) on
+the largest screen you have.
 
 ## See also
 

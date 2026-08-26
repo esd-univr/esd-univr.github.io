@@ -14,7 +14,7 @@ const sections = groupPeople(
 );
 ---
 
-<PageLayout title="People" eyebrow={site.shortName} description="Members of the CISD research groups." >
+<PageLayout title="People" eyebrow={site.shortName} description="Members of the CISD research groups." width="wide">
   {people.length === 0 && <EmptyState message="Group members will be listed here." />}
 
   {sections.map((section) => (

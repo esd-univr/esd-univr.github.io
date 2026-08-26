@@ -24,10 +24,22 @@ const newUrl = new URL(target.to, Astro.site).href;
     <meta name="robots" content="noindex, follow" />
     <link rel="canonical" href={newUrl} />
     <title>{target.title} — moved</title>
+    <!--
+      This page exists for half a second and deliberately loads neither the site
+      stylesheet nor the fonts, so it is the one place that repeats colour values
+      instead of reading them from src/styles/tokens.css. The four values below are
+      --light-ink / --light-paper / --light-accent-strong and their dark equivalents;
+      keep them in step when the palette changes (docs/site-settings.md).
+    -->
     <style>
-      body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 15vh auto; padding: 0 1.5rem; line-height: 1.5; color: #16171b; background: #fbfaf7; }
-      a { color: #741f1f; }
+      :root { color-scheme: light dark; }
+      body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 15vh auto; padding: 0 1.5rem; line-height: 1.5; color: #141a2e; background: #f6f7fb; }
+      a { color: #372c9e; }
       code { font-family: ui-monospace, monospace; font-size: 0.9em; }
+      @media (prefers-color-scheme: dark) {
+        body { color: #e6e9f5; background: #0a0f1e; }
+        a { color: #c6c4ff; }
+      }
     </style>
   </head>
   <body>

@@ -65,7 +65,7 @@ const news = (await getNews()).slice(0, 3);
   )}
 
   {people.length > 0 && (
-    <section class="section container" aria-labelledby="home-people">
+    <section class="section container container--wide" aria-labelledby="home-people">
       <SectionHeading eyebrow="People" title="The groups' members" id="home-people" moreHref="/people/" moreLabel="All people" />
       <PeopleList people={people} />
     </section>

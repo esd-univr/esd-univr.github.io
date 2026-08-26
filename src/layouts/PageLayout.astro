@@ -9,13 +9,15 @@ interface Props {
   lede?: string;
   type?: 'website' | 'article';
   image?: string;
+  /** Page width: `wide` for a directory or grid, `narrow` for long-form reading. */
+  width?: 'default' | 'wide' | 'narrow';
 }
 
-const { title, description, eyebrow, lede, type, image } = Astro.props;
+const { title, description, eyebrow, lede, type, image, width = 'default' } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description ?? lede} type={type} image={image}>
-  <div class="container">
+  <div class:list={['container', width !== 'default' && `container--${width}`]}>
     <header class="page-header">
       {eyebrow && <p class="eyebrow">{eyebrow}</p>}
       <h1>{title}</h1>

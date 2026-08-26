@@ -99,7 +99,7 @@ a:hover {
 }
 
 ::selection {
-  background: var(--color-paper-2);
+  background: var(--color-selection);
   color: var(--color-accent-strong);
 }
 
@@ -122,11 +122,25 @@ time {
 
 /* --- Utilities ------------------------------------------------------------- */
 
+/*
+ * Page container. The modifiers only rebind --container, so the width rule itself lives
+ * in one place: --wide for sections that should feel almost full-width (a roster grid),
+ * --narrow for long-form reading pages (a news item).
+ */
 .container {
   width: min(100% - 2 * var(--gutter), var(--container));
   margin-inline: auto;
 }
 
+.container--wide {
+  --container: var(--container-wide);
+}
+
+.container--narrow {
+  --container: var(--container-narrow);
+}
+
+/* Caps a block at a readable line length; long prose always gets this. */
 .measure {
   max-width: var(--measure);
 }
