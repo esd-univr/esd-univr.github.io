@@ -1,6 +1,6 @@
 ---
 title: Edge-cloud verification for robotic applications
- date: 2026-08-26
+date: 2026-08-26
 summary: A 2026 ACM TECS article by Nicola Bombieri, Graziano Pravadelli and collaborators studies edge-cloud orchestration of assertion-based monitors for robotic applications.
 groups: [parco, iot4care]
 category: Publication
