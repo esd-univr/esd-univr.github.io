@@ -19,8 +19,8 @@ of Verona, covering three research groups: **ESD**, **PARCO** and **IoT4Care**.
 ## Principles
 
 1. **A content change touches content files.** Editing a person, project, topic,
-   publication or news item means editing files under `src/content/` or `src/data/` —
-   nothing else.
+   publication, news item or student opportunity means editing files under `src/content/`
+   or `src/data/` — nothing else.
 2. **Do not refactor while doing editorial work.** No renames, no restructuring, no
    dependency bumps, no CSS tidying as a side effect of adding a person.
 3. **Never invent academic or personnel information.** Roles, titles, affiliations,
@@ -42,6 +42,7 @@ Find your task, read every guide listed for it, then act.
 | --- | --- |
 | Add, update or remove a person; add or replace a portrait | `docs/people.md`, `docs/content-safety.md` |
 | Add or update a project | `docs/projects.md`, `docs/content-safety.md` |
+| Add, edit, close or remove a student opportunity (thesis / project / internship proposal) | `docs/opportunities.md`, `docs/content-safety.md` |
 | Edit CISD groups or research topics | `docs/research.md` |
 | Add or update publications | `docs/publications.md` |
 | Add or update news | `docs/news.md`, `docs/content-safety.md` |
@@ -81,12 +82,24 @@ probably not an editorial task — say so before changing anything.
   private migration work area. `SECURITY.md` lists what is forbidden; `npm run verify`
   rejects the common cases.
 
+**Opportunities**
+
+- Adding, editing, closing or removing an opportunity is **one Markdown file** under
+  `src/content/opportunities/`. Agents MUST NOT modify a layout, a component, a route or
+  the schema while doing it — unless the requested content genuinely cannot be represented
+  by the documented schema, in which case say so and explain why before changing anything.
+- The vocabulary of `areas:` is the research taxonomy in `src/data/research.yaml`. Never
+  invent an area, and never edit `research.yaml` to make one proposal fit.
+- Never publish a legacy thesis or stage proposal. The 11 proposals on the old site are
+  historical source material awaiting human review; none of them is approved.
+- Never put an e-mail address, a telephone number or a student's name in a proposal.
+
 **Legacy ids**
 
 - `legacyId` maps an old numeric URL to a new page. **Preserve it** when you edit an
   existing migrated record.
-- **Never invent a `legacyId`** for a new record. A new person, project or news item has
-  no legacy address, so it gets no `legacyId`.
+- **Never invent a `legacyId`** for a new record. A new person, project, news item or
+  opportunity has no legacy address, so it gets no `legacyId`.
 
 **Finishing**
 
@@ -103,6 +116,7 @@ probably not an editorial task — say so before changing anything.
 | `src/content/people/` | One Markdown file per person, plus their portrait image |
 | `src/content/projects/` | One Markdown file per project |
 | `src/content/news/` | One Markdown file per news item, `YYYY-MM-DD-<slug>.md` |
+| `src/content/opportunities/` | One Markdown file per thesis / project / internship proposal |
 | `src/data/` | `groups.yaml`, `research.yaml`, `publications.bib`, `publications.overrides.yaml`, `site.ts` |
 | `src/content.config.ts` | The schema of every content type — the definition of which fields exist |
 | `src/pages/` | Routes. No content lives here |

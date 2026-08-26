@@ -1,0 +1,181 @@
+---
+/**
+ * Editorial list of student opportunities. The margin answers "what is this, who is it
+ * for, is it still open"; the body carries everything a student needs before clicking:
+ * summary, research areas, activities, workload and supervisors.
+ *
+ * Each row also carries the `data-*` attributes the filter on /opportunities/ reads
+ * (see src/lib/opportunities.ts); they are inert on pages without the filter.
+ */
+import { getGroups, getPeople, getResearchTopics, type Opportunity } from '../lib/content.ts';
+import { filterAttributes, kindLine, STATUS_LABEL, workloadLine } from '../lib/opportunities.ts';
+
+interface Props {
+  opportunities: Opportunity[];
+  /** `muted` plays a closed-proposal section down so it cannot compete with the open ones. */
+  tone?: 'default' | 'muted';
+}
+
+const { opportunities, tone = 'default' } = Astro.props;
+
+const groupName = new Map((await getGroups()).map((group) => [group.id, group.data.shortName]));
+const topicName = new Map((await getResearchTopics()).map((topic) => [topic.id, topic.data.name]));
+const personName = new Map((await getPeople()).map((person) => [person.id, person.data.name]));
+
+const rows = opportunities.map((opportunity) => {
+  const d = opportunity.data;
+  return {
+    opportunity,
+    attributes: filterAttributes(opportunity),
+    kind: kindLine(d.type, d.levels),
+    groups: d.groups.map((id) => groupName.get(id) ?? id).join(' · '),
+    areas: d.areas.map((ref) => ({ href: `/research/#${ref.id}`, name: topicName.get(ref.id) ?? ref.id })),
+    supervisors: d.supervisors.map((ref) => ({ href: `/people/${ref.id}/`, name: personName.get(ref.id) ?? ref.id })),
+  };
+});
+---
+
+<ol class:list={['opportunities', tone === 'muted' && 'opportunities--muted']}>
+  {rows.map(({ opportunity, attributes, kind, groups, areas, supervisors }) => (
+    <li class="opportunity" {...attributes}>
+      <div class="opportunity__margin">
+        <p class="opportunity__kind">{kind}</p>
+        <p class="meta">{groups}</p>
+        <p class="opportunity__status" data-status-label={opportunity.data.status}>
+          {STATUS_LABEL[opportunity.data.status]}
+        </p>
+      </div>
+      <div class="opportunity__body">
+        <h3 class="opportunity__title" lang={opportunity.data.language}>
+          <a href={`/opportunities/${opportunity.id}/`}>{opportunity.data.title}</a>
+        </h3>
+        <p class="opportunity__summary" lang={opportunity.data.language}>{opportunity.data.summary}</p>
+        <p class="opportunity__areas">
+          {areas.map((area, index) => (
+            <>
+              {index > 0 ? ' · ' : ''}
+              <a href={area.href}>{area.name}</a>
+            </>
+          ))}
+        </p>
+        <p class="meta opportunity__activities">{opportunity.data.activities.join(' · ')}</p>
+        <p class="meta opportunity__workload">{workloadLine(opportunity.data.workload)}</p>
+        <p class="opportunity__supervisors">
+          {supervisors.map((person, index) => (
+            <>
+              {index > 0 ? ' · ' : ''}
+              <a href={person.href}>{person.name}</a>
+            </>
+          ))}
+        </p>
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .opportunities {
+    list-style: none;
+    padding: 0;
+    display: grid;
+  }
+
+  .opportunity {
+    display: grid;
+    grid-template-columns: minmax(9rem, 13rem) 1fr;
+    gap: var(--space-sm) var(--space-xl);
+    padding-block: var(--space-lg);
+    border-top: var(--rule);
+  }
+
+  .opportunity:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .opportunity__margin {
+    display: grid;
+    gap: var(--space-2xs);
+    align-content: start;
+  }
+
+  .opportunity__kind {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-ink-2);
+  }
+
+  /* Status is a word, not a badge: colour carries "open", weight carries the rest. */
+  .opportunity__status {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+
+  .opportunity__status[data-status-label='open'] {
+    color: var(--color-accent);
+  }
+
+  .opportunity__title {
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-xs);
+  }
+
+  .opportunity__title a {
+    text-decoration: none;
+  }
+
+  .opportunity__title a:hover {
+    text-decoration: underline;
+  }
+
+  .opportunity__summary {
+    max-width: var(--measure);
+    color: var(--color-ink-2);
+  }
+
+  .opportunity__areas,
+  .opportunity__supervisors {
+    max-width: var(--measure);
+    font-size: var(--text-sm);
+    margin-top: var(--space-xs);
+  }
+
+  .opportunity__activities {
+    margin-top: var(--space-xs);
+  }
+
+  .opportunity__workload {
+    margin-top: var(--space-2xs);
+  }
+
+  /* Past proposals: same structure, lower contrast and a smaller title. */
+  .opportunities--muted .opportunity__title {
+    font-size: var(--text-lg);
+  }
+
+  .opportunities--muted .opportunity__title a,
+  .opportunities--muted .opportunity__kind,
+  .opportunities--muted .opportunity__summary,
+  .opportunities--muted .opportunity__areas,
+  .opportunities--muted .opportunity__supervisors {
+    color: var(--color-ink-3);
+  }
+
+  @media (max-width: 40rem) {
+    .opportunity {
+      grid-template-columns: 1fr;
+      gap: var(--space-xs);
+    }
+
+    .opportunity__margin {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: var(--space-xs) var(--space-md);
+    }
+  }
+</style>

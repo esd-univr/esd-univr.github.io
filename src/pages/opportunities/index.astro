@@ -1,0 +1,203 @@
+---
+/**
+ * Student opportunities: thesis, project and internship proposals.
+ *
+ * Open proposals lead, paused ones follow, and closed ones sit in a quiet "Past
+ * opportunities" section at the bottom so their stable URLs keep working without
+ * competing with what a student can still apply for.
+ *
+ * The filter is progressive enhancement: without JavaScript the form stays hidden and
+ * the complete list is readable. Its options are derived from the published proposals,
+ * so no filter ever offers a choice that would empty the list.
+ */
+import EmptyState from '../../components/EmptyState.astro';
+import OpportunityList from '../../components/OpportunityList.astro';
+import PageLayout from '../../layouts/PageLayout.astro';
+import { getGroups, getOpportunities } from '../../lib/content.ts';
+import { buildFilters } from '../../lib/opportunities.ts';
+import { site } from '../../data/site.ts';
+
+const opportunities = await getOpportunities();
+const open = opportunities.filter((o) => o.data.status === 'open');
+const paused = opportunities.filter((o) => o.data.status === 'paused');
+const closed = opportunities.filter((o) => o.data.status === 'closed');
+
+const groups = await getGroups();
+const filters = buildFilters(
+  opportunities,
+  groups.map((group) => ({ id: group.id, label: group.data.name })),
+);
+// A filter is only worth showing when there is more than one row to sift.
+const showFilters = filters.length > 0 && opportunities.length > 1;
+
+const lede =
+  open.length > 0
+    ? `${open.length} open thesis, project and internship proposal${open.length === 1 ? '' : 's'} from the ${site.shortName} groups.`
+    : `Thesis, project and internship proposals for students, from the ${site.shortName} groups.`;
+
+const sections = [
+  { id: 'open', title: 'Open', items: open, tone: 'default' as const },
+  { id: 'paused', title: 'Paused', items: paused, tone: 'default' as const },
+  { id: 'past', title: 'Past opportunities', items: closed, tone: 'muted' as const },
+].filter((section) => section.items.length > 0);
+---
+
+<PageLayout
+  title="Opportunities"
+  eyebrow={site.shortName}
+  lede={lede}
+  description="Thesis, project and internship proposals for students at CISD, University of Verona."
+  width="wide"
+>
+  {showFilters && (
+    <form slot="header" class="filter" hidden data-opp-filter>
+      {filters.map((filter) => (
+        <p class="filter__field">
+          <label class="eyebrow" for={`opp-${filter.key}`}>{filter.label}</label>
+          <select id={`opp-${filter.key}`} data-key={filter.key}>
+            <option value="">All</option>
+            {filter.options.map((option) => <option value={option.value}>{option.label}</option>)}
+          </select>
+        </p>
+      ))}
+      <button class="filter__reset" type="button" data-opp-reset>Reset</button>
+      <p class="filter__count meta" data-opp-count aria-live="polite"></p>
+    </form>
+  )}
+
+  {opportunities.length === 0 ? (
+    <div class="section empty">
+      <EmptyState message="No thesis or project proposals are published at the moment." />
+      <p class="empty__help">
+        Thesis, student-project and internship proposals from the ESD, PARCO and IoT4Care groups
+        will be listed on this page. In the meantime, look through the <a href="/research/">research
+        topics</a>{' '}and write to the member of <a href="/people/">the groups</a>{' '}whose work
+        interests you — a supervisor is glad to discuss a subject that is not advertised here.
+        The department's address is on the <a href="/contacts/">contacts page</a>.
+      </p>
+    </div>
+  ) : (
+    <div class="list" data-opp-list>
+      {sections.map((section) => (
+        <section class="section" aria-labelledby={`opportunities-${section.id}`} data-opp-section>
+          <h2 id={`opportunities-${section.id}`} class="section-title">{section.title}</h2>
+          <OpportunityList opportunities={section.items} tone={section.tone} />
+        </section>
+      ))}
+      <p class="none meta" data-opp-none hidden>No opportunities match these filters.</p>
+    </div>
+  )}
+</PageLayout>
+
+<script>
+  // Progressive enhancement: filter the rendered rows on their data-* attributes.
+  // Without JavaScript the form stays hidden and every proposal remains readable.
+  const form = document.querySelector<HTMLFormElement>('[data-opp-filter]');
+  const list = document.querySelector<HTMLElement>('[data-opp-list]');
+  if (form && list) {
+    const selects = Array.from(form.querySelectorAll<HTMLSelectElement>('select[data-key]'));
+    const items = Array.from(list.querySelectorAll<HTMLElement>('[data-opp]'));
+    const sections = Array.from(list.querySelectorAll<HTMLElement>('[data-opp-section]'));
+    const none = list.querySelector<HTMLElement>('[data-opp-none]');
+    const count = form.querySelector<HTMLElement>('[data-opp-count]');
+    const reset = form.querySelector<HTMLButtonElement>('[data-opp-reset]');
+
+    /** Every active filter must match a whole token of the row's attribute. */
+    const matches = (item: HTMLElement) =>
+      selects.every((select) => {
+        if (!select.value) return true;
+        const key = select.dataset.key ?? '';
+        return (item.dataset[key] ?? '').split(' ').includes(select.value);
+      });
+
+    const apply = () => {
+      let visible = 0;
+      for (const item of items) {
+        const show = matches(item);
+        item.hidden = !show;
+        if (show) visible++;
+      }
+      for (const section of sections) {
+        section.hidden = !Array.from(section.querySelectorAll<HTMLElement>('[data-opp]')).some((i) => !i.hidden);
+      }
+      if (none) none.hidden = visible > 0;
+      if (count) {
+        count.textContent = selects.some((select) => select.value) ? `${visible} of ${items.length} shown` : '';
+      }
+    };
+
+    form.hidden = false;
+    form.addEventListener('submit', (event) => event.preventDefault());
+    for (const select of selects) select.addEventListener('change', apply);
+    reset?.addEventListener('click', () => {
+      for (const select of selects) select.value = '';
+      apply();
+    });
+  }
+</script>
+
+<style>
+  .filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-sm) var(--space-lg);
+    margin-top: var(--space-sm);
+  }
+
+  .filter__field {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .filter select {
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-rule-strong);
+    border-radius: var(--radius);
+    background: var(--color-paper);
+  }
+
+  .filter__reset {
+    padding: var(--space-xs) var(--space-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-ink-2);
+    background: none;
+    border: var(--rule);
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+
+  .filter__reset:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .filter__count {
+    margin-bottom: var(--space-xs);
+  }
+
+  .section-title {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+    margin-bottom: var(--space-lg);
+  }
+
+  .empty {
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  .empty__help {
+    max-width: var(--measure);
+    color: var(--color-ink-2);
+  }
+
+  .none {
+    padding-block: var(--space-lg);
+  }
+</style>

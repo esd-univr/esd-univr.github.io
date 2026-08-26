@@ -1,13 +1,14 @@
 /**
  * Content collections — the single source of truth for what a group, research topic,
- * person, project, news item or publication may contain. Every field is validated at
- * build time; a typo or a missing required field fails the build with a message that
- * names the file and the field.
+ * person, project, news item, publication or student opportunity may contain. Every
+ * field is validated at build time; a typo or a missing required field fails the build
+ * with a message that names the file and the field.
  *
  * Where the content lives (see the task guides in docs/):
  *   src/data/groups.yaml     the CISD groups
  *   src/data/research.yaml   research topics
  *   src/content/people/<slug>.md, projects/<slug>.md, news/<date>-<slug>.md
+ *   src/content/opportunities/<slug>.md
  *   src/data/publications.bib (+ publications.overrides.yaml)
  */
 import { defineCollection, reference } from 'astro:content';
@@ -15,6 +16,13 @@ import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import YAML from 'yaml';
 import { publicationsLoader } from './loaders/publications.ts';
+import {
+  OPPORTUNITY_ACTIVITIES,
+  OPPORTUNITY_LEVELS,
+  OPPORTUNITY_STATUSES,
+  OPPORTUNITY_TYPES,
+  WORKLOAD_INTENSITIES,
+} from './lib/opportunities.ts';
 
 /** Markdown files; names starting with "_" (e.g. _README.md) are ignored. */
 const MARKDOWN = '**/[^_]*.md';
@@ -140,6 +148,53 @@ const news = defineCollection({
       .refine((n) => !n.image || !!n.imageAlt, { message: 'imageAlt is required when image is set', path: ['imageAlt'] }),
 });
 
+/**
+ * Student opportunities: thesis, student-project and internship proposals.
+ *
+ * Two references carry the taxonomy instead of repeating it: `areas` points at the
+ * research topics in src/data/research.yaml and `supervisors` at published people, so
+ * an unknown area or an unpublished supervisor fails the build. Adding a proposal is
+ * one Markdown file and nothing else — see docs/opportunities.md.
+ */
+const opportunities = defineCollection({
+  loader: glob({ pattern: MARKDOWN, base: './src/content/opportunities' }),
+  schema: z
+    .object({
+      title: z.string().min(1),
+      /** One or two sentences shown in the list and used as the page description. */
+      summary: z.string().min(1),
+      type: z.enum(OPPORTUNITY_TYPES),
+      /** Degree levels this suits; independent of `type`, so a thesis may fit both. */
+      levels: z.array(z.enum(OPPORTUNITY_LEVELS)).nonempty(),
+      status: z.enum(OPPORTUNITY_STATUSES),
+      /** When the proposal was published, `YYYY-MM-DD`. Sorts the list, newest first. */
+      posted: z.coerce.date(),
+      groups: groupIds,
+      /** Research topic ids from src/data/research.yaml — the site's one taxonomy. */
+      areas: z.array(reference('research')).nonempty(),
+      /** What the student will actually do. */
+      activities: z.array(z.enum(OPPORTUNITY_ACTIVITIES)).nonempty(),
+      supervisors: z.array(reference('people')).nonempty(),
+      /** Expected effort. `duration` is free text because thesis timing varies. */
+      workload: z.object({
+        duration: z.string().min(1),
+        intensity: z.enum(WORKLOAD_INTENSITIES),
+      }),
+      /** CFU, only where the number is genuinely established. */
+      credits: z.number().int().positive().optional(),
+      prerequisites: z.array(z.string().min(1)).default([]),
+      tools: z.array(z.string().min(1)).default([]),
+      language: z.enum(['en', 'it']).default('en'),
+      featured: z.boolean().default(false),
+      /** Numeric id on the legacy site (/thesis/<id>/details/); never invented. */
+      legacyId: z.number().int().positive().optional(),
+    })
+    .refine((o) => !o.featured || o.status === 'open', {
+      message: 'only an open opportunity may be featured — set status: open or featured: false',
+      path: ['featured'],
+    }),
+});
+
 const publications = defineCollection({
   loader: publicationsLoader({
     bib: './src/data/publications.bib',
@@ -170,4 +225,4 @@ const publications = defineCollection({
   }),
 });
 
-export const collections = { groups, research, people, projects, news, publications };
+export const collections = { groups, research, people, projects, news, opportunities, publications };

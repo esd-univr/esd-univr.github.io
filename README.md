@@ -21,6 +21,7 @@ the site says. Find your task, open the guide, follow it.
 | --- | --- |
 | Add or edit a person / portrait | [docs/people.md](docs/people.md) |
 | Add or edit a project | [docs/projects.md](docs/projects.md) |
+| Add, close or edit a thesis / project / internship proposal | [docs/opportunities.md](docs/opportunities.md) |
 | Edit groups or research topics | [docs/research.md](docs/research.md) |
 | Add a publication | [docs/publications.md](docs/publications.md) |
 | Add news | [docs/news.md](docs/news.md) |
@@ -77,7 +78,7 @@ src/data/
   publications.overrides.yaml   featured / project links / PDFs
   site.ts                  name, mission, department, address, footer links
 src/content/               one Markdown file per record (+ portraits next to people)
-  people/  projects/  news/
+  people/  projects/  news/  opportunities/
 src/pages/                 routes — no content lives here
 src/layouts/               HTML shell, inner-page layout, legacy-redirect stub
 src/components/            lists and small building blocks
@@ -98,9 +99,10 @@ SECURITY.md                what must never be committed
 | URL | Source |
 | --- | --- |
 | `/` | `src/pages/index.astro` |
-| `/research/` | `src/pages/research/index.astro` (anchors `#esd`, `#parco`, `#iot4care`) |
+| `/research/` | `src/pages/research/index.astro` (anchors per group, `#esd`, and per topic, `#electronic-design-automation`) |
 | `/people/`, `/people/<slug>/` | `src/pages/people/` |
 | `/projects/`, `/projects/<slug>/` | `src/pages/projects/` |
+| `/opportunities/`, `/opportunities/<slug>/` | `src/pages/opportunities/` |
 | `/publications/`, `/publications.bib` | `src/pages/publications/`, `src/pages/publications.bib.ts` |
 | `/news/`, `/news/<slug>/` | `src/pages/news/` |
 | `/contacts/` | `src/pages/contacts.astro` |
@@ -117,7 +119,8 @@ rules rather than cards. Deep navy and indigo, in a **light and a dark theme**: 
 follows the operating system by default and the toggle in the masthead overrides it. Long
 prose stays at a readable measure while structured sections use the full width of a large
 screen. Navigation is plain links and works without JavaScript; the only scripts are the
-inline theme switch and an optional text filter on the publications page. Official CISD /
+inline theme switch, an optional text filter on the publications page and optional filters
+on the opportunities page. Official CISD /
 University of Verona brand assets are not included yet — `site.brand` in
 `src/data/site.ts` has the slots for them.
 

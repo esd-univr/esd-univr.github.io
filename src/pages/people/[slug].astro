@@ -2,6 +2,7 @@
 import { render } from 'astro:content';
 import LinkList from '../../components/LinkList.astro';
 import NewsList from '../../components/NewsList.astro';
+import OpportunityList from '../../components/OpportunityList.astro';
 import Portrait from '../../components/Portrait.astro';
 import ProjectList from '../../components/ProjectList.astro';
 import PublicationList from '../../components/PublicationList.astro';
@@ -10,6 +11,7 @@ import { site } from '../../data/site.ts';
 import {
   getGroups,
   getNewsFor,
+  getOpportunitiesForSupervisor,
   getPeople,
   getProjectsForPerson,
   getPublicationsForPerson,
@@ -30,6 +32,8 @@ const d = person.data;
 const { Content } = await render(person);
 const hasBio = (person.body ?? '').trim().length > 0;
 const projects = await getProjectsForPerson(person);
+// Derived from the `supervisors:` references — never a second list kept inside a person.
+const opportunities = await getOpportunitiesForSupervisor(person);
 const publications = await getPublicationsForPerson(person);
 const news = await getNewsFor('people', person.id);
 const people = await getPeople();
@@ -76,6 +80,12 @@ const links = [
           <section class="section" aria-labelledby="person-projects">
             <h2 id="person-projects">Projects</h2>
             <ProjectList projects={projects} />
+          </section>
+        )}
+        {opportunities.length > 0 && (
+          <section class="section" aria-labelledby="person-opportunities">
+            <h2 id="person-opportunities">Open opportunities</h2>
+            <OpportunityList opportunities={opportunities} />
           </section>
         )}
         {publications.length > 0 && (

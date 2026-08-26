@@ -14,7 +14,7 @@ import { parseBibtex } from '../src/lib/bibtex.ts';
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const CONTENT = path.join(ROOT, 'src/content');
 const DATA = path.join(ROOT, 'src/data');
-const COLLECTIONS = ['people', 'projects', 'news'];
+const COLLECTIONS = ['people', 'projects', 'news', 'opportunities'];
 const EMAIL = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/;
 // Italian landline/mobile shapes, with or without the +39 prefix; not inside DOIs or URLs.
 const PHONE = /(?<![\w./-])(?:\+\d{2}\s?)?\(?0\d{1,3}\)?[\s.-]?\d{6,8}(?![\w./-])/;
@@ -38,6 +38,8 @@ function entries(collection) {
 }
 const all = Object.fromEntries(COLLECTIONS.map((c) => [c, entries(c)]));
 const slugs = Object.fromEntries(COLLECTIONS.map((c) => [c, new Set(all[c].map((e) => e.slug))]));
+// Research topics are a YAML list, not a directory, but `areas:` references them by id.
+slugs.research = new Set(research.map((t) => t.id));
 const label = (e) => `${e.collection}/${e.file}`;
 
 test('groups.yaml: unique ids and orders, no missing fields', () => {
@@ -126,7 +128,11 @@ test('no e-mail addresses or telephone numbers outside the sanctioned email fiel
 });
 
 test('cross-references point at existing records', () => {
-  const refs = { projects: [['people', 'people']], news: [['author', 'people'], ['people', 'people'], ['projects', 'projects']] };
+  const refs = {
+    projects: [['people', 'people']],
+    news: [['author', 'people'], ['people', 'people'], ['projects', 'projects']],
+    opportunities: [['supervisors', 'people'], ['areas', 'research']],
+  };
   for (const [c, fields] of Object.entries(refs)) {
     for (const e of all[c]) {
       for (const [field, target] of fields) {

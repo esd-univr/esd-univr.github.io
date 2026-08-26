@@ -1,0 +1,195 @@
+---
+/**
+ * One student opportunity. Everything a student needs to decide is above the body:
+ * what it is, who it suits, whether it is still open, how much work it is, who
+ * supervises it, which research topics it belongs to and what they would be doing.
+ */
+import PeopleList from '../../components/PeopleList.astro';
+import PageLayout from '../../layouts/PageLayout.astro';
+import { getEntries, render } from 'astro:content';
+import { getGroups, getOpportunities, getResearchTopics, type Opportunity } from '../../lib/content.ts';
+import { formatDate, isoDate } from '../../lib/format.ts';
+import { kindLine, STATUS_LABEL, workloadLine } from '../../lib/opportunities.ts';
+
+export async function getStaticPaths() {
+  const opportunities = await getOpportunities();
+  return opportunities.map((opportunity) => ({ params: { slug: opportunity.id }, props: { opportunity } }));
+}
+
+interface Props {
+  opportunity: Opportunity;
+}
+
+const { opportunity } = Astro.props;
+const d = opportunity.data;
+const { Content } = await render(opportunity);
+const hasBody = (opportunity.body ?? '').trim().length > 0;
+
+const supervisors = await getEntries(d.supervisors);
+const topicName = new Map((await getResearchTopics()).map((topic) => [topic.id, topic.data.name]));
+const areas = d.areas.map((ref) => ({ href: `/research/#${ref.id}`, name: topicName.get(ref.id) ?? ref.id }));
+const groups = (await getGroups()).filter((group) => d.groups.some((id) => id === group.id));
+
+const kind = kindLine(d.type, d.levels);
+const facts = [
+  { label: 'Status', value: STATUS_LABEL[d.status] },
+  { label: 'Workload', value: workloadLine(d.workload) },
+  d.credits !== undefined ? { label: 'Credits', value: `${d.credits} CFU` } : undefined,
+].filter((fact): fact is { label: string; value: string } => Boolean(fact));
+---
+
+<PageLayout title={d.title} eyebrow={kind} lede={d.summary} description={d.summary} type="article">
+  <p slot="header" class="facts">
+    {facts.map((fact) => (
+      <span><span class="eyebrow">{fact.label}</span> {fact.value}</span>
+    ))}
+    <span>
+      <span class="eyebrow">Posted</span>
+      <time datetime={isoDate(d.posted)}>{formatDate(d.posted)}</time>
+    </span>
+  </p>
+
+  {d.status !== 'open' && (
+    <p slot="header" class="notice">
+      {d.status === 'closed'
+        ? 'This proposal is closed. It is kept online for reference; it is not available to new students.'
+        : 'This proposal is paused and is not accepting new students at the moment.'}
+    </p>
+  )}
+
+  <div class="layout">
+    <div class="main">
+      {hasBody ? (
+        <section class="section prose" lang={d.language} aria-label="Proposal">
+          <Content />
+        </section>
+      ) : (
+        <section class="section">
+          <p class="measure">{d.summary}</p>
+        </section>
+      )}
+      <p class="back"><a href="/opportunities/">← All opportunities</a></p>
+    </div>
+
+    <aside class="aside">
+      <section>
+        <h2 class="eyebrow">Supervisors</h2>
+        <PeopleList people={supervisors} size={48} />
+      </section>
+
+      <section>
+        <h2 class="eyebrow">What you will do</h2>
+        <ul class="tags">
+          {d.activities.map((activity) => <li>{activity}</li>)}
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="eyebrow">Research areas</h2>
+        <ul class="links">
+          {areas.map((area) => <li><a href={area.href}>{area.name}</a></li>)}
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="eyebrow">{groups.length === 1 ? 'Group' : 'Groups'}</h2>
+        <ul class="links">
+          {groups.map((group) => <li><a href={`/research/#${group.id}`}>{group.data.name}</a></li>)}
+        </ul>
+      </section>
+
+      {d.prerequisites.length > 0 && (
+        <section>
+          <h2 class="eyebrow">Suggested background</h2>
+          <ul class="tags">
+            {d.prerequisites.map((item) => <li>{item}</li>)}
+          </ul>
+        </section>
+      )}
+
+      {d.tools.length > 0 && (
+        <section>
+          <h2 class="eyebrow">Tools</h2>
+          <ul class="tags">
+            {d.tools.map((tool) => <li>{tool}</li>)}
+          </ul>
+        </section>
+      )}
+    </aside>
+  </div>
+</PageLayout>
+
+<style>
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm) var(--space-xl);
+    font-size: var(--text-sm);
+    color: var(--color-ink-2);
+  }
+
+  .facts > span {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .notice {
+    max-width: var(--measure);
+    padding-left: var(--space-md);
+    border-left: 2px solid var(--color-rule-strong);
+    color: var(--color-ink-2);
+    font-size: var(--text-sm);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
+    gap: var(--space-2xl);
+    padding-block: var(--space-xl);
+  }
+
+  .main .section {
+    padding-block: var(--space-xl);
+  }
+
+  .main .section:first-child {
+    padding-top: 0;
+  }
+
+  .back {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    padding-top: var(--space-lg);
+    border-top: var(--rule);
+  }
+
+  .aside {
+    display: grid;
+    gap: var(--space-xl);
+    align-content: start;
+    padding-top: var(--space-sm);
+  }
+
+  .aside .eyebrow {
+    margin-bottom: var(--space-sm);
+  }
+
+  .links,
+  .tags {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .tags {
+    font-size: var(--text-sm);
+    color: var(--color-ink-2);
+  }
+
+  @media (max-width: 56rem) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

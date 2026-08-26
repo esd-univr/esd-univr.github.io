@@ -1,5 +1,11 @@
 ---
-/** Research page: one section per CISD group, with that group's topics. */
+/**
+ * Research page: one section per CISD group, with that group's topics.
+ *
+ * Each group section and each topic carries its own id, so `/research/#esd` and
+ * `/research/#digital-twins-and-smart-manufacturing` are both stable addresses. The
+ * `areas:` field of an opportunity links to the topic anchor.
+ */
 import PageLayout from '../../layouts/PageLayout.astro';
 import { getGroups, getResearchForGroup } from '../../lib/content.ts';
 import { site } from '../../data/site.ts';
@@ -26,7 +32,7 @@ const sections = await Promise.all(
       {topics.length > 0 && (
         <ol class="topics">
           {topics.map((topic, index) => (
-            <li class="topic">
+            <li class="topic" id={topic.id}>
               <span class="topic__index">{String(index + 1).padStart(2, '0')}</span>
               <div>
                 <h3 class="topic__name">{topic.data.name}</h3>

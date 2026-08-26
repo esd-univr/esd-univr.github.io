@@ -4,6 +4,7 @@
  * with ad-hoc sorting.
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { compareOpportunities } from './opportunities.ts';
 import { comparePeople } from './people.ts';
 import { publicationsForPerson } from './publications.ts';
 
@@ -12,6 +13,7 @@ export type ResearchTopic = CollectionEntry<'research'>;
 export type Person = CollectionEntry<'people'>;
 export type Project = CollectionEntry<'projects'>;
 export type NewsItem = CollectionEntry<'news'>;
+export type Opportunity = CollectionEntry<'opportunities'>;
 export type PublicationEntry = CollectionEntry<'publications'>;
 
 const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
@@ -20,9 +22,14 @@ export async function getGroups(): Promise<Group[]> {
   return (await getCollection('groups')).sort(byOrder);
 }
 
+/** Every research topic, in display order. Also the vocabulary of `areas:`. */
+export async function getResearchTopics(): Promise<ResearchTopic[]> {
+  return (await getCollection('research')).sort(byOrder);
+}
+
 /** Research topics of one group, in display order. */
 export async function getResearchForGroup(groupId: string): Promise<ResearchTopic[]> {
-  return (await getCollection('research')).filter((t) => t.data.groups.some((g) => g === groupId)).sort(byOrder);
+  return (await getResearchTopics()).filter((t) => t.data.groups.some((g) => g === groupId));
 }
 
 export async function getPeople(): Promise<Person[]> {
@@ -88,4 +95,23 @@ export async function getProjectsForPerson(person: Person): Promise<Project[]> {
 /** News that reference the given person or project. */
 export async function getNewsFor(kind: 'people' | 'projects', id: string): Promise<NewsItem[]> {
   return (await getNews()).filter((n) => n.data[kind].some((ref) => ref.id === id));
+}
+
+/** Every opportunity: open first, then paused, then closed; newest first within each. */
+export async function getOpportunities(): Promise<Opportunity[]> {
+  return (await getCollection('opportunities')).sort(compareOpportunities);
+}
+
+export async function getOpenOpportunities(): Promise<Opportunity[]> {
+  return (await getOpportunities()).filter((o) => o.data.status === 'open');
+}
+
+/** Open opportunities marked `featured`, for the home page. The schema rejects any other. */
+export async function getFeaturedOpportunities(limit = 3): Promise<Opportunity[]> {
+  return (await getOpenOpportunities()).filter((o) => o.data.featured).slice(0, limit);
+}
+
+/** Open opportunities this person supervises; drives the section on their page. */
+export async function getOpportunitiesForSupervisor(person: Person): Promise<Opportunity[]> {
+  return (await getOpenOpportunities()).filter((o) => o.data.supervisors.some((ref) => ref.id === person.id));
 }

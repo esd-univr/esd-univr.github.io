@@ -4,13 +4,21 @@
  * publications, people and recent news. Every section renders only when it has content.
  */
 import NewsList from '../components/NewsList.astro';
+import OpportunityList from '../components/OpportunityList.astro';
 import PeopleList from '../components/PeopleList.astro';
 import ProjectList from '../components/ProjectList.astro';
 import PublicationList from '../components/PublicationList.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import { site } from '../data/site.ts';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getFeaturedPublications, getGroups, getNews, getPeople, getProjects } from '../lib/content.ts';
+import {
+  getFeaturedOpportunities,
+  getFeaturedPublications,
+  getGroups,
+  getNews,
+  getPeople,
+  getProjects,
+} from '../lib/content.ts';
 
 const groups = await getGroups();
 const projects = await getProjects();
@@ -18,6 +26,8 @@ const featured = projects.filter((p) => p.data.featured);
 const highlightedProjects = (featured.length > 0 ? featured : projects).slice(0, 4);
 const people = await getPeople();
 const publications = await getFeaturedPublications(5);
+// Only explicitly featured open proposals, at most three — the section is omitted otherwise.
+const opportunities = await getFeaturedOpportunities(3);
 const news = (await getNews()).slice(0, 3);
 ---
 
@@ -61,6 +71,19 @@ const news = (await getNews()).slice(0, 3);
     <section class="section container" aria-labelledby="home-publications">
       <SectionHeading eyebrow="Publications" title="Selected publications" id="home-publications" moreHref="/publications/" moreLabel="All publications" />
       <PublicationList publications={publications} people={people} headingLevel={3} />
+    </section>
+  )}
+
+  {opportunities.length > 0 && (
+    <section class="section container" aria-labelledby="home-opportunities">
+      <SectionHeading
+        eyebrow="For students"
+        title="Student opportunities"
+        id="home-opportunities"
+        moreHref="/opportunities/"
+        moreLabel="All opportunities"
+      />
+      <OpportunityList opportunities={opportunities} />
     </section>
   )}
 

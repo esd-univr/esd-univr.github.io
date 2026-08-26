@@ -10,6 +10,7 @@ right one.
 | --- | --- |
 | Add or edit a person, or add a portrait | [docs/people.md](docs/people.md) |
 | Add or edit a project, mark one completed | [docs/projects.md](docs/projects.md) |
+| Add a thesis / project / internship proposal, or close one | [docs/opportunities.md](docs/opportunities.md) |
 | Edit the groups or the research topics | [docs/research.md](docs/research.md) |
 | Add or refresh publications | [docs/publications.md](docs/publications.md) |
 | Post a news item | [docs/news.md](docs/news.md) |
@@ -33,11 +34,12 @@ If you are an AI coding agent, read [AGENTS.md](AGENTS.md) first.
 | A project | `src/content/projects/<slug>.md` |
 | Publications | `src/data/publications.bib` (+ `publications.overrides.yaml`) |
 | A news item | `src/content/news/YYYY-MM-DD-<slug>.md` |
+| A student opportunity | `src/content/opportunities/<slug>.md` |
 | Address, mission, footer links | `src/data/site.ts` |
 
 You never edit a template, a component or a route to change content.
 
-**Groups.** Every person, project, research topic and news item carries a `groups:` list
+**Groups.** Every person, project, research topic, news item and opportunity carries a `groups:` list
 naming the groups it belongs to — `esd`, `parco`, `iot4care`, the ids in `groups.yaml`. That
 list is what puts a person in the right section of the People page and labels projects and
 topics. Something can belong to more than one: `groups: [esd, iot4care]`.

@@ -11,6 +11,8 @@
  *   5. Internal links and asset references resolve to files in the build.
  *   6. Legacy compatibility stubs carry a meta refresh + canonical to an existing page, and
  *      every `legacyId` in src/content/ has its stub (/profile, /project, /news/<id>).
+ *   7. Every opportunity has its page, carries the filter metadata the list page needs,
+ *      and appears on the page of every person who supervises it while it is open.
  *
  * Exit code 1 on any failure; prints a summary otherwise.
  */
@@ -126,6 +128,7 @@ if (!existsSync(dist)) {
     'index.html', '404.html', 'robots.txt', '.nojekyll', 'sitemap-index.xml', 'publications.bib',
     'research/index.html', 'people/index.html', 'projects/index.html', 'publications/index.html',
     'news/index.html', 'contacts/index.html', 'news-list/index.html', 'areas/index.html',
+    'opportunities/index.html',
   ];
   for (const f of required) if (!existsSync(path.join(dist, f))) fail(`dist/${f} is missing`);
 
@@ -144,8 +147,13 @@ if (!existsSync(dist)) {
   const css = listFiles(path.join(dist, '_astro')).filter((f) => f.endsWith('.css')).map((f) => readFileSync(f, 'utf8')).join('\n');
   if (!css.includes('prefers-reduced-motion')) fail('shipped CSS has no prefers-reduced-motion rule');
   if (!css.includes(':focus-visible')) fail('shipped CSS has no :focus-visible rule');
+  // Without the !important, any component `display` silently cancels the `hidden`
+  // attribute, and every list filter and progressively-enhanced form stops working.
+  if (!/\[hidden\]\{display:none!important\}/.test(css.replace(/\s+/g, ''))) {
+    fail('shipped CSS has no `[hidden] { display: none !important }` rule — filters and hidden forms would not hide');
+  }
   const fontFiles = listFiles(path.join(dist, '_astro')).filter((f) => /\.woff2?$/.test(f));
-  notes.push(`shipped CSS carries reduced-motion and focus-visible rules; ${fontFiles.length} self-hosted font files`);
+  notes.push(`shipped CSS carries reduced-motion, focus-visible and [hidden] rules; ${fontFiles.length} self-hosted font files`);
 
   // 4–5. Page checks
   checkHtml(dist, 'dist');
@@ -164,6 +172,75 @@ if (!existsSync(dist)) {
     }
   }
   notes.push(`${stubs} legacy ids from src/content/ have compatibility stubs in dist/`);
+
+  // --- 7. Opportunities ----------------------------------------------------------
+  const opportunityDir = path.join(root, 'src/content/opportunities');
+  const opportunities = existsSync(opportunityDir)
+    ? readdirSync(opportunityDir)
+        .filter((f) => f.endsWith('.md') && !f.startsWith('_'))
+        .map((f) => ({ slug: f.slice(0, -3), frontmatter: frontmatterOf(path.join(opportunityDir, f)) }))
+    : [];
+
+  for (const { slug, frontmatter } of opportunities) {
+    // Every proposal gets its own page at the address its file name promises.
+    if (!existsSync(path.join(dist, 'opportunities', slug, 'index.html'))) {
+      fail(`missing page /opportunities/${slug}/ for opportunities/${slug}.md`);
+      continue;
+    }
+    // An open proposal must be reachable from the page of everyone supervising it.
+    if (scalar(frontmatter, 'status') !== 'open') continue;
+    for (const supervisor of list(frontmatter, 'supervisors')) {
+      const page = path.join(dist, 'people', supervisor, 'index.html');
+      if (!existsSync(page)) {
+        fail(`opportunities/${slug}.md: supervisor "${supervisor}" has no page in dist/`);
+      } else if (!readFileSync(page, 'utf8').includes(`href="/opportunities/${slug}/"`)) {
+        fail(`dist/people/${supervisor}/: open opportunity "${slug}" is missing from the page`);
+      }
+    }
+  }
+
+  // The filter is progressive enhancement, so the metadata it reads must be in the HTML.
+  const listPage = readFileSync(path.join(dist, 'opportunities/index.html'), 'utf8');
+  const rows = [...listPage.matchAll(/<li class="opportunity"[^>]*>/g)].map((m) => m[0]);
+  if (rows.length !== opportunities.length) {
+    fail(`dist/opportunities/: ${opportunities.length} proposal(s) in src/content/ but ${rows.length} row(s) on the page`);
+  }
+  for (const row of rows) {
+    for (const attribute of ['data-opp', 'data-status', 'data-type', 'data-levels', 'data-groups', 'data-activities']) {
+      if (!row.includes(`${attribute}="`)) fail(`dist/opportunities/: a list row is missing ${attribute}`);
+    }
+  }
+  if (rows.length > 1 && !/<form[^>]*data-opp-filter/.test(listPage)) {
+    fail('dist/opportunities/: several proposals are listed but the filter form is absent');
+  }
+  notes.push(
+    opportunities.length === 0
+      ? 'no opportunities are published; /opportunities/ shows its empty state'
+      : `${opportunities.length} opportunity page(s), filter metadata and supervisor back-links checked`,
+  );
+}
+
+/** Frontmatter block of a Markdown file, as raw text. */
+function frontmatterOf(file) {
+  return /^---\n([\s\S]*?)\n---/.exec(readFileSync(file, 'utf8'))?.[1] ?? '';
+}
+
+/** `key: value` from a frontmatter block, unquoted. */
+function scalar(frontmatter, key) {
+  const value = new RegExp(`^${key}:\\s*(.+?)\\s*$`, 'm').exec(frontmatter)?.[1];
+  return value?.replace(/^["']|["']$/g, '');
+}
+
+/** A frontmatter list, written either inline (`[a, b]`) or as `- a` lines. */
+function list(frontmatter, key) {
+  const inline = new RegExp(`^${key}:\\s*\\[(.*?)\\]\\s*$`, 'm').exec(frontmatter);
+  if (inline) return inline[1].split(',').map((v) => v.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
+  const block = new RegExp(`^${key}:\\s*\\n((?:\\s*-\\s*.+\\n?)+)`, 'm').exec(frontmatter);
+  if (!block) return [];
+  return block[1]
+    .split('\n')
+    .map((line) => /^\s*-\s*(.+?)\s*$/.exec(line)?.[1]?.replace(/^["']|["']$/g, ''))
+    .filter(Boolean);
 }
 
 

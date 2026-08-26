@@ -120,6 +120,18 @@ time {
   font-variant-numeric: tabular-nums;
 }
 
+/*
+ * `hidden` must win over layout. The browser's own `[hidden] { display: none }` lives in
+ * the user-agent origin, which loses to *any* author declaration, so a component that
+ * sets `display: grid` or `display: flex` on an element silently cancels it. That breaks
+ * both progressive enhancement (a form marked `hidden` until a script unhides it) and
+ * every list filter (rows hidden by setting `.hidden = true`). `!important` is the only
+ * way an author rule can outrank another author rule it does not know about.
+ */
+[hidden] {
+  display: none !important;
+}
+
 /* --- Utilities ------------------------------------------------------------- */
 
 /*
