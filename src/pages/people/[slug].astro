@@ -38,6 +38,7 @@ const publications = await getPublicationsForPerson(person);
 const news = await getNewsFor('people', person.id);
 const people = await getPeople();
 const groups = (await getGroups()).filter((group) => d.groups.some((id) => id === group.id));
+const isCollaborator = d.relationship === 'collaborator';
 
 const githubUrl = d.github ? (d.github.startsWith('http') ? d.github : `https://github.com/${d.github}`) : undefined;
 const links = [
@@ -49,19 +50,14 @@ const links = [
   githubUrl && { label: 'GitHub', href: githubUrl },
   d.linkedin && { label: 'LinkedIn', href: d.linkedin, text: 'Profile' },
 ].filter((x): x is { label: string; href: string; text?: string } => Boolean(x));
+const groupEyebrow = groups.map((group) => group.data.shortName).join(' · ');
+const eyebrow = [isCollaborator && 'Collaborator', groupEyebrow].filter(Boolean).join(' · ');
 ---
 
-{/*
-  This page used to build its own frame on BaseLayout, with the portrait set beside a
-  --text-4xl name. That made it the one page whose h1 did not line up with every other
-  page's. It is now part of the same family as the project, news and proposal pages: the
-  reading order is unchanged — groups, name, role, affiliation — and the portrait moves into
-  the metadata column, where the other three already keep their entity's people and media.
-*/}
 <DetailLayout
   title={d.name}
   description={`${d.name}, ${d.role} — ${d.affiliation ?? `${site.shortName}, ${site.organisation.university}`}.`}
-  eyebrow={groups.map((group) => group.data.shortName).join(' · ')}
+  eyebrow={eyebrow}
   lede={d.role}
   group={d.groups[0]}
   back={{ href: '/people/', label: 'All people' }}
@@ -114,7 +110,9 @@ const links = [
     )}
     {groups.length > 0 && (
       <section>
-        <h2 class="eyebrow">{groups.length === 1 ? 'Group' : 'Groups'}</h2>
+        <h2 class="eyebrow">
+          {isCollaborator ? 'Collaborates with' : groups.length === 1 ? 'Group' : 'Groups'}
+        </h2>
         <ul class="groups">
           {groups.map((group) => (
             <li><a href={`/research/#${group.id}`}>{group.data.name}</a></li>

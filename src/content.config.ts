@@ -34,9 +34,8 @@ export const GROUP_IDS = ['esd', 'parco', 'iot4care'] as const;
 export type GroupId = (typeof GROUP_IDS)[number];
 const groupIds = z.array(z.enum(GROUP_IDS)).nonempty();
 /**
- * The same vocabulary, but allowed to be empty. Used where the legacy source simply did not
- * state which group owns a record: an empty list means "nobody has said yet", and it must
- * never be filled in by inference — see the rule in AGENTS.md.
+ * The same vocabulary, but allowed to be empty. Used where the source does not state a
+ * current CISD group association. An empty list must never be filled in by inference.
  */
 const optionalGroupIds = z.array(z.enum(GROUP_IDS)).default([]);
 
@@ -70,35 +69,43 @@ const research = defineCollection({
 const people = defineCollection({
   loader: glob({ pattern: MARKDOWN, base: './src/content/people' }),
   schema: ({ image }) =>
-    z.object({
-      name: z.string().min(1),
-      /** Free text shown next to the name, e.g. "Full Professor", "PhD student". */
-      role: z.string().min(1),
-      groups: groupIds,
-      /** Numeric id on the legacy site (/profile/<id>/); enables a compatibility page. */
-      legacyId: z.number().int().positive().optional(),
-      /** Sort key within a group (lower first); ties are broken by family name. */
-      order: z.number().int().default(100),
-      /** Only when it differs from the department on the Contacts page. */
-      affiliation: z.string().optional(),
-      interests: z.array(z.string()).default([]),
-      /** Portrait, relative to the Markdown file (e.g. ./photo.jpg). */
-      photo: image().optional(),
-      /** Public institutional e-mail — only when its publication has been approved. */
-      email: z.email().optional(),
-      website: z.url().optional(),
-      orcid: z
-        .string()
-        .regex(/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/, 'ORCID iD must look like 0000-0002-1825-0097')
-        .optional(),
-      scholar: z.url().optional(),
-      dblp: z.url().optional(),
-      /** GitHub user name or profile URL. */
-      github: z.string().optional(),
-      linkedin: z.url().optional(),
-      /** Other spellings under which this person appears as an author (e.g. "F. Fummi"). */
-      aliases: z.array(z.string()).default([]),
-    }),
+    z
+      .object({
+        name: z.string().min(1),
+        /** Free text shown next to the name, e.g. "Full Professor", "PhD Student". */
+        role: z.string().min(1),
+        /** Members belong to one or more current CISD groups; collaborators may be ungrouped. */
+        groups: optionalGroupIds,
+        /** Current relationship to CISD. Existing records default to member. */
+        relationship: z.enum(['member', 'collaborator']).default('member'),
+        /** Numeric id on the legacy site (/profile/<id>/); enables a compatibility page. */
+        legacyId: z.number().int().positive().optional(),
+        /** Sort key within a group or the collaborator section; ties break on family name. */
+        order: z.number().int().default(100),
+        /** Only when it differs from the department on the Contacts page. */
+        affiliation: z.string().optional(),
+        interests: z.array(z.string()).default([]),
+        /** Portrait, relative to the Markdown file (e.g. ./photo.jpg). */
+        photo: image().optional(),
+        /** Public institutional e-mail — only when its publication has been approved. */
+        email: z.email().optional(),
+        website: z.url().optional(),
+        orcid: z
+          .string()
+          .regex(/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/, 'ORCID iD must look like 0000-0002-1825-0097')
+          .optional(),
+        scholar: z.url().optional(),
+        dblp: z.url().optional(),
+        /** GitHub user name or profile URL. */
+        github: z.string().optional(),
+        linkedin: z.url().optional(),
+        /** Other spellings under which this person appears as an author (e.g. "F. Fummi"). */
+        aliases: z.array(z.string()).default([]),
+      })
+      .refine((p) => p.relationship === 'collaborator' || p.groups.length > 0, {
+        message: 'members must belong to at least one current CISD group',
+        path: ['groups'],
+      }),
 });
 
 const projects = defineCollection({
