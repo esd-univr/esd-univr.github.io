@@ -440,8 +440,12 @@ header a:has(img) > span:not(:last-of-type) {
  * width and height, so the box is reserved without the page jumping and without cropping.
  * The width is capped by the surrounding `.prose`, so a figure never outruns its column.
  */
+/*
+ * No `margin: 0` here. The reset already zeroes it, and this rule has the same specificity
+ * as `.prose > * + *` while coming later in the file — so the shorthand won a cascade tie
+ * and every figure sat flush against the paragraph above it, with no rhythm at all.
+ */
 .figure {
-  margin: 0;
   display: grid;
   gap: var(--space-xs);
 }

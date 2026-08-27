@@ -4,6 +4,15 @@ interface Props {
   items: Array<{ label: string; href: string; text?: string }>;
 }
 const { items } = Astro.props;
+
+/**
+ * With no `text` the address is its own label, trimmed to what a reader can recognise:
+ * no scheme, no query string, no fragment. Printed in full, a directory URL such as
+ * `https://www.dimi.univr.it/?ent=persona&id=59&lang=en` broke mid-query-string across two
+ * lines in the sidebar — a machine address masquerading as link text.
+ */
+const display = (item: Props['items'][number]): string =>
+  item.text ?? item.href.replace(/^mailto:/, '').replace(/^https?:\/\//, '').replace(/[?#].*$/, '');
 ---
 
 {items.length > 0 && (
@@ -11,7 +20,7 @@ const { items } = Astro.props;
     {items.map((item) => (
       <li>
         <span class="eyebrow">{item.label}</span>
-        <a href={item.href}>{item.text ?? item.href.replace(/^https?:\/\//, '').replace(/^mailto:/, '')}</a>
+        <a href={item.href}>{display(item)}</a>
       </li>
     ))}
   </ul>
