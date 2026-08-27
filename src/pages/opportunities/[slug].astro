@@ -5,7 +5,7 @@
  * supervises it, which research topics it belongs to and what they would be doing.
  */
 import PeopleList from '../../components/PeopleList.astro';
-import PageLayout from '../../layouts/PageLayout.astro';
+import DetailLayout, { type Fact } from '../../layouts/DetailLayout.astro';
 import { getEntries, render } from 'astro:content';
 import { getGroups, getOpportunities, getResearchTopics, type Opportunity } from '../../lib/content.ts';
 import { formatDate, isoDate } from '../../lib/format.ts';
@@ -31,24 +31,25 @@ const areas = d.areas.map((ref) => ({ href: `/research/#${ref.id}`, name: topicN
 const groups = (await getGroups()).filter((group) => d.groups.some((id) => id === group.id));
 
 const kind = kindLine(d.type, d.levels);
-const facts = [
+const facts: Fact[] = [
   { label: 'Status', value: STATUS_LABEL[d.status] },
   { label: 'Workload', value: workloadLine(d.workload) },
-  d.credits !== undefined ? { label: 'Credits', value: `${d.credits} CFU` } : undefined,
-].filter((fact): fact is { label: string; value: string } => Boolean(fact));
+  ...(d.credits !== undefined ? [{ label: 'Credits', value: `${d.credits} CFU` }] : []),
+  { label: 'Posted', value: formatDate(d.posted), datetime: isoDate(d.posted) },
+];
 ---
 
-<PageLayout title={d.title} eyebrow={kind} lede={d.summary} description={d.summary} type="article" group={d.groups[0]}>
-  <p slot="header" class="facts tint">
-    {facts.map((fact) => (
-      <span><span class="eyebrow">{fact.label}</span> {fact.value}</span>
-    ))}
-    <span>
-      <span class="eyebrow">Posted</span>
-      <time datetime={isoDate(d.posted)}>{formatDate(d.posted)}</time>
-    </span>
-  </p>
-
+<DetailLayout
+  title={d.title}
+  eyebrow={kind}
+  lede={d.summary}
+  description={d.summary}
+  type="article"
+  group={d.groups[0]}
+  lang={d.language}
+  facts={facts}
+  back={{ href: '/opportunities/', label: 'All opportunities' }}
+>
   {d.status !== 'open' && (
     <p slot="header" class="notice">
       {d.status === 'closed'
@@ -57,126 +58,70 @@ const facts = [
     </p>
   )}
 
-  <div class="layout">
-    <div class="main">
-      {hasBody ? (
-        <section class="section prose" lang={d.language} aria-label="Proposal">
-          <Content />
-        </section>
-      ) : (
-        <section class="section">
-          <p class="measure">{d.summary}</p>
-        </section>
-      )}
-      <p class="back"><a href="/opportunities/">← All opportunities</a></p>
-    </div>
+  {hasBody ? (
+    <section class="section prose" aria-label="Proposal">
+      <Content />
+    </section>
+  ) : (
+    <section class="section">
+      <p class="measure">{d.summary}</p>
+    </section>
+  )}
 
-    <aside class="aside">
-      <section>
-        <h2 class="eyebrow">Supervisors</h2>
-        <PeopleList people={supervisors} size={48} />
-      </section>
+  <Fragment slot="aside">
+    <section>
+      <h2 class="eyebrow">Supervisors</h2>
+      <PeopleList people={supervisors} size={48} />
+    </section>
 
+    <section>
+      <h2 class="eyebrow">What you will do</h2>
+      <ul class="tags">
+        {d.activities.map((activity) => <li>{activity}</li>)}
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="eyebrow">Research areas</h2>
+      <ul class="links">
+        {areas.map((area) => <li><a href={area.href}>{area.name}</a></li>)}
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="eyebrow">{groups.length === 1 ? 'Group' : 'Groups'}</h2>
+      <ul class="links">
+        {groups.map((group) => <li><a href={`/research/#${group.id}`}>{group.data.name}</a></li>)}
+      </ul>
+    </section>
+
+    {d.prerequisites.length > 0 && (
       <section>
-        <h2 class="eyebrow">What you will do</h2>
+        <h2 class="eyebrow">Suggested background</h2>
         <ul class="tags">
-          {d.activities.map((activity) => <li>{activity}</li>)}
+          {d.prerequisites.map((item) => <li>{item}</li>)}
         </ul>
       </section>
+    )}
 
+    {d.tools.length > 0 && (
       <section>
-        <h2 class="eyebrow">Research areas</h2>
-        <ul class="links">
-          {areas.map((area) => <li><a href={area.href}>{area.name}</a></li>)}
+        <h2 class="eyebrow">Tools</h2>
+        <ul class="tags">
+          {d.tools.map((tool) => <li>{tool}</li>)}
         </ul>
       </section>
-
-      <section>
-        <h2 class="eyebrow">{groups.length === 1 ? 'Group' : 'Groups'}</h2>
-        <ul class="links">
-          {groups.map((group) => <li><a href={`/research/#${group.id}`}>{group.data.name}</a></li>)}
-        </ul>
-      </section>
-
-      {d.prerequisites.length > 0 && (
-        <section>
-          <h2 class="eyebrow">Suggested background</h2>
-          <ul class="tags">
-            {d.prerequisites.map((item) => <li>{item}</li>)}
-          </ul>
-        </section>
-      )}
-
-      {d.tools.length > 0 && (
-        <section>
-          <h2 class="eyebrow">Tools</h2>
-          <ul class="tags">
-            {d.tools.map((tool) => <li>{tool}</li>)}
-          </ul>
-        </section>
-      )}
-    </aside>
-  </div>
-</PageLayout>
+    )}
+  </Fragment>
+</DetailLayout>
 
 <style>
-  /*
-   * The facts strip is this page's one tinted panel. It sits inside the opening, which
-   * carries data-group, so the tint and its hairline are the proposal's own group hue.
-   */
-  .facts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-sm) var(--space-xl);
-    padding: var(--space-sm) var(--space-md);
-    font-size: var(--text-sm);
-    color: var(--color-ink-2);
-  }
-
-  .facts > span {
-    display: grid;
-    gap: var(--space-2xs);
-  }
-
   .notice {
     max-width: var(--measure);
     padding-left: var(--space-md);
     border-left: 2px solid var(--color-rule-strong);
     color: var(--color-ink-2);
     font-size: var(--text-sm);
-  }
-
-  .layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
-    gap: var(--space-2xl);
-    padding-block: var(--space-xl);
-  }
-
-  .main .section {
-    padding-block: var(--space-xl);
-  }
-
-  .main .section:first-child {
-    padding-top: 0;
-  }
-
-  .back {
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    padding-top: var(--space-lg);
-    border-top: var(--rule);
-  }
-
-  .aside {
-    display: grid;
-    gap: var(--space-xl);
-    align-content: start;
-    padding-top: var(--space-sm);
-  }
-
-  .aside .eyebrow {
-    margin-bottom: var(--space-sm);
   }
 
   .links,
@@ -190,11 +135,5 @@ const facts = [
   .tags {
     font-size: var(--text-sm);
     color: var(--color-ink-2);
-  }
-
-  @media (max-width: 56rem) {
-    .layout {
-      grid-template-columns: 1fr;
-    }
   }
 </style>

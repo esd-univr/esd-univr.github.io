@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import { getEntries, getEntry, render } from 'astro:content';
 import LinkList from '../../components/LinkList.astro';
 import Portrait from '../../components/Portrait.astro';
-import PageLayout from '../../layouts/PageLayout.astro';
+import DetailLayout from '../../layouts/DetailLayout.astro';
 import LegacyRedirect from '../../layouts/LegacyRedirect.astro';
 import { getNews, type NewsItem } from '../../lib/content.ts';
 import { formatDate } from '../../lib/format.ts';
@@ -43,7 +43,19 @@ const eyebrow = d ? `${formatDate(d.date)}${d.category ? ` · ${d.category}` : '
 {legacy ? (
   <LegacyRedirect target={legacy} legacyPath={`/news/${legacy.legacyId}/`} />
 ) : (
-  <PageLayout title={d!.title} eyebrow={eyebrow} lede={d!.summary} type="article">
+  /*
+    No `group`: a news item can belong to two groups and never prints either, so a group
+    hue here would be the only carrier of information that is nowhere in the text.
+    See the colour budget in docs/design-system-integration.md.
+  */
+  <DetailLayout
+    title={d!.title}
+    eyebrow={eyebrow}
+    lede={d!.summary}
+    type="article"
+    lang={d!.lang}
+    back={{ href: '/news/', label: 'All news' }}
+  >
     {author && (
       <p slot="header" class="byline" lang="en">
         <Portrait name={author.data.name} photo={author.data.photo} size={32} variant="avatar" />
@@ -51,29 +63,22 @@ const eyebrow = d ? `${formatDate(d.date)}${d.category ? ` · ${d.category}` : '
       </p>
     )}
 
-    <div class="layout" lang={d!.lang}>
-      <div class="main">
-        {d!.image && (
-          <Image class="article__figure" src={d!.image} alt={d!.imageAlt ?? ''} widths={[640, 960, 1280]} sizes="(min-width: 60rem) 68rem, 100vw" />
-        )}
-        {Content && (
-          <section class="section prose article__body">
-            <Content />
-          </section>
-        )}
-      </div>
+    {d!.image && (
+      <Image class="article__figure" src={d!.image} alt={d!.imageAlt ?? ''} widths={[640, 960, 1280]} sizes="(min-width: 60rem) 68rem, 100vw" />
+    )}
+    {Content && (
+      <section class="section prose article__body">
+        <Content />
+      </section>
+    )}
 
-      <aside class="aside" lang="en">
-        {related.length > 0 && (
-          <section>
-            <h2 class="eyebrow">Related</h2>
-            <LinkList items={related} />
-          </section>
-        )}
-        <p class="article__back"><a href="/news/">← All news</a></p>
-      </aside>
-    </div>
-  </PageLayout>
+    {related.length > 0 && (
+      <section slot="aside">
+        <h2 class="eyebrow">Related</h2>
+        <LinkList items={related} />
+      </section>
+    )}
+  </DetailLayout>
 )}
 
 <style>
@@ -86,21 +91,6 @@ const eyebrow = d ? `${formatDate(d.date)}${d.category ? ` · ${d.category}` : '
     color: var(--color-ink-2);
   }
 
-  .layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
-    gap: var(--space-2xl);
-    padding-block: var(--space-xl);
-  }
-
-  .main .section {
-    padding-block: var(--space-xl);
-  }
-
-  .main .section:first-child {
-    padding-top: 0;
-  }
-
   .article__figure {
     width: min(100%, 72rem);
     height: auto;
@@ -108,29 +98,8 @@ const eyebrow = d ? `${formatDate(d.date)}${d.category ? ` · ${d.category}` : '
     margin-bottom: var(--space-xl);
   }
 
+  /* A news item reads a little wider than the 66ch prose measure, as the design guide has it. */
   .article__body {
     max-width: 72ch;
-  }
-
-  .aside {
-    display: grid;
-    gap: var(--space-xl);
-    align-content: start;
-    padding-top: var(--space-sm);
-  }
-
-  .aside .eyebrow {
-    margin-bottom: var(--space-sm);
-  }
-
-  .article__back {
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-  }
-
-  @media (max-width: 56rem) {
-    .layout {
-      grid-template-columns: 1fr;
-    }
   }
 </style>

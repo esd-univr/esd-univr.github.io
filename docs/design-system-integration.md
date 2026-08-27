@@ -53,12 +53,12 @@ repository. The resolution is already in the code; do not silently re-open one.
 | 6 | `readme.md` says `--text-4xl` "is reserved for the home hero", but `base.css` sets `.page-open h1` to `--text-3xl` and explains why (at `--text-4xl` capped at 18ch the site name broke into five lines). | **`base.css` wins.** Every page opening, including the home hero, is `--text-3xl` at 24ch. `--text-4xl` is currently unused. |
 | 7 | The kit's `ui_kits/website/README.md` and `readme.md` both state that this repository contained no `.astro` files at all at the 27 August re-read. | **Simply false.** It had 20 routes, 3 layouts and 12 components. |
 
-Item 7 has a lasting consequence worth remembering: the kit's **index** screens are genuine
-recreations of real Astro source, but its **detail** pages and `DetailLayout` were designed
-from the system without ever seeing `people/[slug].astro`, `projects/[slug].astro`,
-`news/[slug].astro` or `opportunities/[slug].astro`. Those four routes exist and already
-carry a metadata-sidebar layout. Reconcile against them; do not treat detail pages as
-greenfield.
+Item 7 had a lasting consequence: the kit's **index** screens are genuine recreations of real
+Astro source, but its **detail** pages and `DetailLayout` were designed from the system
+without ever seeing `people/[slug].astro`, `projects/[slug].astro`, `news/[slug].astro` or
+`opportunities/[slug].astro`. Those four routes existed and already carried a
+metadata-sidebar layout, so `src/layouts/DetailLayout.astro` was reconciled **against them**
+rather than ported from the kit. See "The detail-page family" below.
 
 ## Where this repository departs from the design system
 
@@ -203,6 +203,42 @@ may be featured` invariant still holds, and `docs/{projects,publications,opportu
 say plainly that no page reads it. If the selections should show up again, the obvious homes
 are the index pages — featured first on `/projects/`, for instance — but that is a decision,
 not a fix to apply silently.
+
+## The detail-page family
+
+`src/layouts/DetailLayout.astro` is the frame for all four single-entity pages. It was not
+ported from the kit: the four routes already shared a layout, byte for byte, copied into each
+of them — the same `.layout` grid, the same `.main` section rhythm, the same `.aside` stack
+and the same 56rem breakpoint, four times, plus the facts strip twice. The component is where
+that already-existing family now lives.
+
+**Taken from the design system**, which the repository did not have:
+
+- a **hairline left rule** separating the sidebar, instead of nothing;
+- stacking at **60rem** rather than 56rem, and when stacked the hairline moves to the top of
+  the sidebar at full contrast, because there it separates two stacked blocks;
+- `facts` as **data** — a page passes rows, it does not write the strip.
+
+**Not taken:** the kit columns the main content at `minmax(0, var(--measure))`. The real
+routes carry `PublicationList`, `ProjectList`, `NewsList` and `OpportunityList` in that
+column, and 66ch strangles them. The main column stays `minmax(0, 1fr)` and running text is
+capped by `.prose`, which is where "prose at `--measure`" actually belongs.
+
+**The person page was the one that had to move.** It built its own frame on `BaseLayout`,
+with the portrait set beside a `--text-4xl` name, and it was the last page whose `h1` did not
+line up with every other page's. Its reading order is unchanged — groups, name, role,
+affiliation — but the opening is now the shared one and **the portrait moved into the
+metadata column**, where the other three pages already keep their entity's people and media.
+
+One Astro detail worth knowing before editing the layout: **slotted content carries the
+page's style scope, not the layout's.** A rule like `.main .section` written in
+`DetailLayout` cannot see a `.section` passed in by a route. The layout therefore uses
+`:global()` for every selector that reaches into its slots, anchored to its own `.main` and
+`.aside`. Verified in the built pages: the first `.section` in the main column resolves to
+`padding-top: 0` and `padding-bottom: var(--space-xl)` on all three live detail routes.
+
+The opportunity detail route is real but currently unexercised — `src/content/opportunities/`
+is empty on purpose, so no page is built from it.
 
 ## The mark
 

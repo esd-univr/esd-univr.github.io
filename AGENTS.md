@@ -126,8 +126,10 @@ whose titles do not line up, which is the defect this contract exists to prevent
    opening takes `wide` too. `PageLayout`'s `width` prop does this for you.
 4. **A new page adds content, not a frame.** If two pages need the same block it belongs
    in `src/components/`, never copied into both.
-5. **Detail pages take their frame from the shared layout** and supply only their metadata
-   rows. A new entity type is a data mapping, not a new layout.
+5. **Detail pages take their frame from `DetailLayout`** and supply only their own content:
+   a `facts` array, the main column, an `aside` slot, and an optional `back` link. A person,
+   a project, a news item and a proposal are all the same page with different data. **A
+   fifth entity type is a data mapping, not a new layout** — and not a fifth layout either.
 
 **The test, and it is not optional:** `main h1` sits at the same left offset on every page of
 the same width class, and no page nests a `.container`. Check it before calling any layout
@@ -175,7 +177,8 @@ Three related rules that live in the same layer:
 | `src/data/` | `groups.yaml`, `research.yaml`, `publications.bib`, `publications.overrides.yaml`, `site.ts` |
 | `src/content.config.ts` | The schema of every content type — the definition of which fields exist |
 | `src/pages/` | Routes. No content lives here |
-| `src/layouts/`, `src/components/` | HTML shell and building blocks |
+| `src/layouts/` | `BaseLayout` (the shell) → `PageLayout` (one opening) → `DetailLayout` (opening + metadata sidebar), plus `LegacyRedirect` |
+| `src/components/` | Building blocks shared by more than one page |
 | `src/styles/` | `tokens.css` (design tokens) and `base.css` |
 | `src/lib/`, `src/loaders/` | Plain TypeScript helpers (BibTeX, publications, people, legacy URLs) |
 | `public/` | Files copied verbatim into the build (`robots.txt`, `documents/…`) |

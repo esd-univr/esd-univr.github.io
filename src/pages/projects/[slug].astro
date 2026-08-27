@@ -4,7 +4,7 @@ import LinkList from '../../components/LinkList.astro';
 import NewsList from '../../components/NewsList.astro';
 import PeopleList from '../../components/PeopleList.astro';
 import PublicationList from '../../components/PublicationList.astro';
-import PageLayout from '../../layouts/PageLayout.astro';
+import DetailLayout, { type Fact } from '../../layouts/DetailLayout.astro';
 import { getGroups, getNewsFor, getPeople, getProjects, getPublicationsForProject, type Project } from '../../lib/content.ts';
 import { formatYearRange } from '../../lib/format.ts';
 
@@ -31,107 +31,54 @@ const STATUS_LABEL = { active: 'Active', completed: 'Completed' } as const;
 const fundingLine = d.funding
   ? [d.funding.programme, d.funding.funder, d.funding.grant && `grant ${d.funding.grant}`].filter(Boolean).join(' · ')
   : '';
+const facts: Fact[] = [
+  { label: 'Period', value: formatYearRange(d.start, d.end) },
+  { label: 'Status', value: STATUS_LABEL[d.status] },
+  ...(fundingLine ? [{ label: 'Funding', value: fundingLine }] : []),
+];
 const links = [
   d.url && { label: 'Project website', href: d.url },
   ...groups.map((group) => ({ label: 'Group', href: `/research/#${group.id}`, text: group.data.name })),
 ].filter((x): x is { label: string; href: string; text?: string } => Boolean(x));
 ---
 
-<PageLayout title={d.name} eyebrow={d.acronym ? `Project · ${d.acronym}` : 'Project'} lede={d.summary} group={d.groups[0]}>
-  <p slot="header" class="facts tint">
-    <span><span class="eyebrow">Period</span> {formatYearRange(d.start, d.end)}</span>
-    <span><span class="eyebrow">Status</span> {STATUS_LABEL[d.status]}</span>
-    {fundingLine && <span><span class="eyebrow">Funding</span> {fundingLine}</span>}
-  </p>
+<DetailLayout
+  title={d.name}
+  eyebrow={d.acronym ? `Project · ${d.acronym}` : 'Project'}
+  lede={d.summary}
+  group={d.groups[0]}
+  facts={facts}
+  back={{ href: '/projects/', label: 'All projects' }}
+>
+  {hasBody && (
+    <section class="section prose">
+      <Content />
+    </section>
+  )}
+  {publications.length > 0 && (
+    <section class="section" aria-labelledby="project-publications">
+      <h2 id="project-publications">Publications</h2>
+      <PublicationList publications={publications} people={people} headingLevel={3} />
+    </section>
+  )}
+  {news.length > 0 && (
+    <section class="section" aria-labelledby="project-news">
+      <h2 id="project-news">News</h2>
+      <NewsList items={news} />
+    </section>
+  )}
 
-  <div class="layout">
-    <div class="main">
-      {hasBody && (
-        <section class="section prose">
-          <Content />
-        </section>
-      )}
-      {publications.length > 0 && (
-        <section class="section" aria-labelledby="project-publications">
-          <h2 id="project-publications">Publications</h2>
-          <PublicationList publications={publications} people={people} headingLevel={3} />
-        </section>
-      )}
-      {news.length > 0 && (
-        <section class="section" aria-labelledby="project-news">
-          <h2 id="project-news">News</h2>
-          <NewsList items={news} />
-        </section>
-      )}
-    </div>
-    <aside class="aside">
-      {team.length > 0 && (
-        <section>
-          <h2 class="eyebrow">People</h2>
-          <PeopleList people={team} size={48} />
-        </section>
-      )}
-      {links.length > 0 && (
-        <section>
-          <LinkList items={links} />
-        </section>
-      )}
-    </aside>
-  </div>
-</PageLayout>
-
-<style>
-  /*
-   * The facts strip is this page's one tinted panel. It sits inside the opening, which
-   * carries data-group, so the tint and its hairline are the project's own group hue.
-   */
-  .facts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-sm) var(--space-xl);
-    padding: var(--space-sm) var(--space-md);
-    font-size: var(--text-sm);
-    color: var(--color-ink-2);
-  }
-
-  .facts > span {
-    display: grid;
-    gap: var(--space-2xs);
-  }
-
-  .layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
-    gap: var(--space-2xl);
-    padding-block: var(--space-xl);
-  }
-
-  .main .section {
-    padding-block: var(--space-xl);
-  }
-
-  .main .section:first-child {
-    padding-top: 0;
-  }
-
-  .main h2 {
-    margin-bottom: var(--space-lg);
-  }
-
-  .aside {
-    display: grid;
-    gap: var(--space-xl);
-    align-content: start;
-    padding-top: var(--space-sm);
-  }
-
-  .aside .eyebrow {
-    margin-bottom: var(--space-sm);
-  }
-
-  @media (max-width: 56rem) {
-    .layout {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
+  <Fragment slot="aside">
+    {team.length > 0 && (
+      <section>
+        <h2 class="eyebrow">People</h2>
+        <PeopleList people={team} size={48} />
+      </section>
+    )}
+    {links.length > 0 && (
+      <section>
+        <LinkList items={links} />
+      </section>
+    )}
+  </Fragment>
+</DetailLayout>
