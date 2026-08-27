@@ -47,6 +47,7 @@ Find your task, read every guide listed for it, then act.
 | Add or update publications | `docs/publications.md` |
 | Add or update news | `docs/news.md`, `docs/content-safety.md` |
 | Edit mission, affiliation, address, branding or theme | `docs/site-settings.md` |
+| Change a colour, type size, spacing step, layout, component or stylesheet | `docs/design-system-integration.md`, `docs/site-settings.md` |
 | Deployment, GitHub Pages, custom domain, CI | `docs/deployment.md` |
 | Anything involving legacy ids or legacy data | `docs/migration-map.md`, `docs/content-safety.md` |
 | Anything touching photographs, documents or personal data | `docs/content-safety.md`, `SECURITY.md` |

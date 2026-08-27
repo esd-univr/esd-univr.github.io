@@ -281,6 +281,8 @@ the largest screen you have.
 
 ## See also
 
+- `docs/design-system-integration.md` — where these values come from, which of them depart
+  from the design system, and how to verify a change against every ground
 - `docs/deployment.md` — the site URL, GitHub Pages, custom domains
 - `docs/research.md` — the group names and summaries (not in `site.ts`)
 - `docs/content-safety.md` — what may be added under `public/`
