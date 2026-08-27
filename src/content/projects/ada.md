@@ -8,7 +8,7 @@ start: 2017-01-01
 end: 2019-12-31
 summary: "A multidisciplinary IoT and virtual-coaching project for supporting autonomy and healthy ageing in people with Down syndrome, combining unobtrusive smart objects, personalised data analytics and daily-life coaching."
 url: "https://www.di.univr.it/?ent=progetto&id=4974&lang=en"
-people: [graziano-pravadelli]
+people: [graziano-pravadelli, florenc-demrozi, cristian-turetta]
 funding:
   programme: Joint Project
   funder: University of Verona · Piccola Fraternità Onlus

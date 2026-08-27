@@ -17,7 +17,9 @@ contact details, funding amounts or other private data.
 | Public legacy site (`cisd.di.univr.it`) | legacy titles, biographies, project descriptions, dates, group attribution and old URLs |
 | Official University of Verona group, people and project pages (`di.univr.it`, `dimi.univr.it`) | current roles and affiliations, group descriptions, project metadata and funding provenance |
 | Current institutional pages at collaborators' universities | current external roles and affiliations |
+| Public researcher profiles and bibliographic indexes | research interests and public researcher links where institutional pages are sparse |
 | Public funder/project records | historical project codes and period reconciliation where the legacy listing was stale |
+| Research material supplied by group members | current doctoral research descriptions for Pietro Turco and Samuele Santacà |
 | Legacy group descriptions written by the groups themselves | research topics, group summaries |
 
 The full export, the complete 560-entry bibliography and everything not published live in a
@@ -38,6 +40,11 @@ private working area outside this repository and are not part of the public site
 | `/profile/21/` | `/people/sebastiano-gaiardelli/` | Sebastiano Gaiardelli |
 | `/profile/20/` | `/people/tiziano-villa/` | Tiziano Villa |
 | `/profile/29/` | `/people/davide-quaglia/` | Davide Quaglia |
+| `/profile/7/` | `/people/florenc-demrozi/` | Florenc Demrozi |
+| `/profile/10/` | `/people/cristian-turetta/` | Cristian Turetta |
+| `/profile/23/` | `/people/enrico-martini/` | Enrico Martini |
+| `/profile/39/` | `/people/christian-farina/` | Christian Farina |
+| `/profile/25/` | `/people/francesco-tosoni/` | Francesco Tosoni |
 | `/area/9/` | `/research/#esd` | Electronic Systems Design |
 | `/area/8/` | `/research/#parco` | PARCO Lab |
 | `/area/7/` | `/research/#iot4care` | Internet of Things 4 Care |
@@ -61,8 +68,11 @@ Three restored project records — OPERA 4.0, Bip-Bip and Smart-Pump — were pr
 legacy `/projects/` page, but their numeric `/project/<id>/` addresses have not been verified
 from a public source. No `legacyId` is guessed for them, so no compatibility URL is invented.
 
-Pietro Turco and Samuele Santacà were not in the legacy database; their records were created
-for this site and their exact titles still need confirmation.
+Pietro Turco and Samuele Santacà were not in the legacy database. Pietro's current PhD status
+is verified from the University record and his research description is reconciled with his
+2025 end-of-year report supplied for this migration. Samuele is published as **Incoming PhD
+Student** on the basis of the current status supplied by the group; his research description
+is based on the thesis abstract supplied for this site rather than on a legacy record.
 
 ## People relationship reconciliation
 
@@ -79,7 +89,8 @@ Collaborators section.
   site's default DIMI affiliation.
 - **Nicola Dall'Ora** — legacy profile 8 and the ESD area record establish his ESD history.
   Current Guglielmo Marconi University records place him in the Department of Engineering
-  Sciences. He is restored as an ESD collaborator, not as a current DIMI member.
+  Sciences and public researcher material records his continuing research collaboration with
+  Verona. He is restored as an ESD collaborator, not as a current DIMI member.
 - **Sebastiano Gaiardelli** — legacy profile 21 and the ESD area record establish his ESD
   history. Current Technical University of Munich records list him as a Postdoctoral
   Researcher at the Chair of Cyber-Physical Systems in Production Engineering. He is
@@ -94,6 +105,26 @@ Collaborators section.
   as Honorary Professor at the Department of Computer Science. He is therefore restored as
   an ungrouped CISD collaborator rather than being assigned to ESD, PARCO or IoT4Care by
   inference.
+- **Florenc Demrozi** — legacy profile 7 and the historical IoT4Care records establish his
+  role in the Verona research line and identify him as referent for several IoT4Care projects.
+  His current public record lists him as Full Professor at the University of Stavanger. He
+  is therefore published as an IoT4Care collaborator with his current Norwegian affiliation.
+- **Cristian Turetta** — legacy profile 10 documents his IoT4Care work and the current DIMI
+  IoT4Care roster lists him as a research appointee. He is published as a current IoT4Care
+  member with the English role label `Research Assistant`.
+- **Enrico Martini** — legacy profile 23 identifies his Verona research history; current DIMI
+  records list an active research appointment and PARCO membership. His completed PhD and
+  current work on human-motion modelling and human–robot interaction are reconciled against
+  his public CV. He is therefore a current PARCO member.
+- **Christian Farina** — legacy profile 39 is retained for URL continuity, but its old role is
+  not copied. Current public material records completion of his MSc in 2025 and active doctoral
+  research with IoT4Care on contactless mmWave sensing. He is published as a current IoT4Care
+  PhD Student.
+- **Francesco Tosoni** — legacy profile 25 called him a PhD Student. University records show
+  completion of his PhD in 2026 and current publications describe a postdoctoral position at
+  the University of Verona. He is published as an ESD collaborator and Postdoctoral Researcher.
+  No contract end date is stated because the exact date has not been verified from a public
+  institutional record.
 
 No legacy e-mail, telephone, office or CV data is republished in these records.
 
@@ -127,20 +158,21 @@ Funding amounts from the legacy site and public grant records are deliberately n
 
 ## Editorial decisions behind the published set
 
-- **People** — the roster distinguishes current members from collaborators. It is still a
-  curated selection rather than a copy of all 34 legacy profiles. Mario Libro is restored as
-  an ESD member; Nicola Dall'Ora, Sebastiano Gaiardelli, Tiziano Villa and Davide Quaglia are
-  restored as collaborators with their current affiliations. Absence of any other legacy
-  profile remains neither a statement that the person is "former" nor that they are alumni.
+- **People** — the roster distinguishes current members from collaborators and is curated
+  against current public roles rather than copying all 34 legacy profiles. The August 2026
+  enrichment pass publishes 18 people: current members across ESD, PARCO and IoT4Care plus
+  collaborators whose relationship to the group is intentionally preserved. A missing legacy
+  profile is still not automatically labelled "former" or "alumni".
 - **Research** — the old database modelled ESD, PARCO and IoT4Care as "research areas"
   alongside two groups (ForME, NeST) that are separate research groups of the department.
   Here ESD, PARCO and IoT4Care are *groups*, and research *topics* were written from the
   groups' own descriptions and their published work. ForME and NeST are not part of CISD.
-- **Projects** — the seven projects shown by the former CISD project index are now represented:
+- **Projects** — the seven projects shown by the former CISD project index are represented:
   DeFacto, STRATEGUS, OPERA 4.0, Bip-Bip, Smart-Pump, ADA and the IoT infrastructure for
-  monitoring motor fluctuations in Parkinson's disease. Historical people who are not in the
-  published People collection remain plain-text provenance in the project body rather than
-  being invented as references.
+  monitoring motor fluctuations in Parkinson's disease. When a historical contributor is
+  also published under People, a structured project reference is added only where the legacy
+  project record explicitly supports it. This is why Florenc Demrozi is linked to four
+  IoT4Care projects and Cristian Turetta to ADA.
 - **Publications** — a curated selection: work from 2020 onwards co-authored by someone
   listed under People, with three preprints removed that duplicate a published paper in the
   same selection. Entries the authors had hidden on the old site remain excluded. Fields the
@@ -148,12 +180,14 @@ Funding amounts from the legacy site and public grant records are deliberately n
   them. Project links are restored only where a public legacy record explicitly associates
   the publication with that project.
 - **News** — four recent items. The rest of the 31 legacy posts were not published.
-- **Photographs** — six published member profiles currently use portraits migrated from the
-  legacy site. Identification came from the legacy profile records themselves (profile id →
-  name → image file), not from recognising faces. Each migrated file had its metadata chunks
-  removed without pixel re-encoding. Newly restored people and collaborators deliberately use
-  the monogram fallback: a portrait that appeared on the old site is evidence of a past
-  publication decision, not consent for this site.
+- **Photographs** — the site owner has explicitly confirmed that the portraits published on
+  the former CISD site are group-owned material and may be reused on this replacement site.
+  This is the current publication approval for the migrated legacy portraits; it supersedes
+  the earlier migration precaution that treated the old publication decision as insufficient
+  on its own. Portraits are still copied locally, never hotlinked, and image metadata must be
+  stripped before a file enters `src/content/people/`.
+
+  Six portraits were already migrated and metadata-cleaned:
 
   | Person | Legacy file | Published as | Size |
   | --- | --- | --- | --- |
@@ -164,8 +198,14 @@ Funding amounts from the legacy site and public grant records are deliberately n
   | Nicola Bombieri | `media/profile_images/nicola_bombieri.jpg` | `people/nicola-bombieri.jpg` | 119×128 |
   | Graziano Pravadelli | `media/profile_images/GP_June_21.png` | `people/graziano-pravadelli.png` | 212×291 |
 
-  No other legacy portrait was copied as part of the people/collaborator restoration. No CV,
-  document or event photograph was migrated.
+  Additional authorised legacy source files have been identified for Mario Libro
+  (`media/profile_images/2025_fototessera_200.jpg`), Cristian Turetta
+  (`media/profile_images/me.jpg`) and Francesco Tosoni
+  (`media/profile_images/_MG_9951.jpg`). They are not hotlinked and are not represented by
+  substitute images: the migration tooling currently cannot retrieve their binary contents
+  from the legacy host. They remain monograms until the original files can be exported and
+  passed through the same metadata-hygiene checks. Other restored profiles follow the same
+  rule when an original portrait becomes available.
 - **Never migrated** — user accounts, password hashes, sessions, invite keys, admin logs;
   e-mail addresses, telephone, office and fax fields; CV files; deleted records.
 - **Not part of this site** — the independent `/wg10-5/` and `/essm-workshop/` static sites,

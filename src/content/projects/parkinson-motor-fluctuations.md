@@ -6,7 +6,7 @@ status: completed
 start: 2021-06-01
 end: 2022-05-31
 summary: "A Brain Research Foundation Verona project on an Internet of Things infrastructure for observing motor fluctuations in Parkinson’s disease, supporting the broader IoT4Care research line on wearable and data-driven movement monitoring."
-people: []
+people: [florenc-demrozi]
 funding:
   funder: Brain Research Foundation Verona O.N.L.U.S.
 featured: false
