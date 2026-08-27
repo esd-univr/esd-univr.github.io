@@ -6,7 +6,7 @@ status: completed
 start: 2018-10-01
 end: 2019-09-30
 summary: "A Veneto FSE research project on wearable sensing and machine-learning support for anticipating freezing of gait in Parkinson’s disease, with the goal of triggering assistance before or during a freezing episode."
-people: [graziano-pravadelli, enrico-fraccaroli]
+people: [graziano-pravadelli, enrico-fraccaroli, florenc-demrozi]
 funding:
   programme: POR FSE Veneto 2014–2020 · Innovatori in azienda — Assegni di ricerca 2018
   funder: Regione del Veneto

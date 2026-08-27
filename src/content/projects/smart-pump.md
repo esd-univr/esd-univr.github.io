@@ -6,7 +6,7 @@ status: completed
 start: 2020-07-01
 end: 2021-07-31
 summary: "A Veneto FSE project combining motor-symptom monitoring and intelligent assistance to support more personalised continuous drug administration for people with Parkinson’s disease and give clinicians a richer view of treatment response."
-people: [graziano-pravadelli]
+people: [graziano-pravadelli, florenc-demrozi]
 funding:
   programme: POR FSE Veneto 2014–2020
   funder: Regione del Veneto
