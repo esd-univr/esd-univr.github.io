@@ -16,7 +16,7 @@ const links = [
   <div class="layout">
     <section class="section">
       <h2 class="eyebrow">Address</h2>
-      <address class="address">
+      <address class="address tint">
         <span>{site.name} ({site.shortName})</span>
         <span>{org.department}</span>
         <span>{org.university}</span>
@@ -45,11 +45,13 @@ const links = [
     margin-bottom: var(--space-sm);
   }
 
+  /* The page's one tinted surface: the address is the thing people come here for. */
   .address {
     font-style: normal;
     font-size: var(--text-lg);
     display: grid;
     gap: var(--space-2xs);
+    padding: var(--space-md);
   }
 
   .note {

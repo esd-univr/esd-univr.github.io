@@ -38,7 +38,7 @@ Required: `name`, `groups`, `status`, `start`, `summary`.
 | `funding.programme` | text | e.g. `Horizon Europe`, `Marie Skłodowska-Curie Actions`. |
 | `funding.funder` | text | e.g. `European Commission`. |
 | `funding.grant` | text | Grant or agreement number, quoted. |
-| `featured` | boolean | `true` shows it on the home page. Default `false`. |
+| `featured` | boolean | Marks a project as selected. **Currently read by no page** — see the note below. Default `false`. |
 | `order` | integer | Sort key, lower first, applied within a status. Default `100`. |
 | `legacyId` | integer | Only on projects migrated from the old site. |
 
@@ -109,8 +109,11 @@ people: [michele-lora, enrico-fraccaroli]
 A wrong slug fails the build. Listing somebody here makes the project appear on their
 person page.
 
-**Promote to the home page.** Set `featured: true`. Keep the number of featured projects
-small — the home page shows a short selection, not the whole list.
+**Mark a project as selected.** Set `featured: true`. Keep the featured set small.
+
+**No page reads `featured` today.** The home page was reduced to the hero, three recent news
+items and the groups, and it was the only page that showed a selection of projects. The field
+is kept so the choice survives — see `docs/design-system-integration.md`.
 
 **Add funding information.** Fill the `funding` block. Every sub-field is optional, so a
 project with only a programme is fine. Quote the grant number so YAML keeps it a string:

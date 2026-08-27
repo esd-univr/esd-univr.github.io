@@ -7,9 +7,8 @@ src/data/publications.bib               the entries themselves (BibTeX)
 src/data/publications.overrides.yaml    per-entry extras, keyed by BibTeX key
 ```
 
-They feed `/publications/`, the "Selected publications" section of the home page, the
-publication list on every person and project page, and the machine-readable export at
-`/publications.bib`.
+They feed `/publications/`, the publication list on every person and project page, and the
+machine-readable export at `/publications.bib`.
 
 ## The curation rule
 
@@ -75,7 +74,7 @@ Everything the bibliography cannot express. The key is the exact BibTeX key:
 
 ```yaml
 DBLP:conf/date/RossiLF27:
-  featured: true                      # show in "Selected publications" on the home page
+  featured: true                      # marks the entry as selected (read by no page today)
   projects: [strategus]               # link the entry to project pages
   people: [mario-rossi]               # only when automatic author matching fails
   pdf: /documents/papers/rossi27.pdf  # a file under public/documents/ or an https URL
@@ -87,7 +86,10 @@ DBLP:conf/date/RossiLF27:
 Every field is optional. An unknown key fails the tests, which is what you want — it catches
 a typo in a citation key.
 
-**`featured`** — keep the featured set small; the home page shows a handful.
+**`featured`** — marks an entry as selected. **No page reads it today:** the home page was
+reduced to the hero, three recent news items and the groups, and it was the only page that
+showed a selection. The field is kept so the choice survives — see
+`docs/design-system-integration.md`.
 **`hidden`** — the entry stays in the file but appears nowhere, not even in the exported
 `.bib`. Used for entries whose authors asked for them not to be listed.
 **`pdf`** — only link a PDF the publisher's licence allows you to host. Put the file in
@@ -105,7 +107,7 @@ one alias fixes every entry at once.
 
 ## Common edits
 
-**Feature a paper on the home page.** Add `featured: true` under its key.
+**Mark a paper as selected.** Add `featured: true` under its key. No page reads it today.
 
 **Link papers to a project.** Add `projects: [<project-slug>]` under each key. The project
 page then lists them.

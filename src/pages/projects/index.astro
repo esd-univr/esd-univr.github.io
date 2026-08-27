@@ -10,21 +10,27 @@ const active = projects.filter((p) => p.data.status === 'active');
 const completed = projects.filter((p) => p.data.status === 'completed');
 ---
 
-<PageLayout title="Projects" eyebrow={site.shortName} description="Research projects of the CISD groups.">
-  {projects.length === 0 && <EmptyState message="Projects will be listed here." />}
+<PageLayout title="Projects" eyebrow={site.shortName} description="Research projects of the CISD groups." bleed>
+  {projects.length === 0 && (
+    <div class="band"><div class="section container"><EmptyState message="Projects will be listed here." /></div></div>
+  )}
 
   {active.length > 0 && (
-    <section class="section" aria-labelledby="projects-active">
-      <h2 id="projects-active" class="group-heading">Active</h2>
-      <ProjectList projects={active} />
-    </section>
+    <div class="band">
+      <section class="section container" aria-labelledby="projects-active">
+        <h2 id="projects-active" class="group-heading">Active</h2>
+        <ProjectList projects={active} />
+      </section>
+    </div>
   )}
 
   {completed.length > 0 && (
-    <section class="section" aria-labelledby="projects-completed">
-      <h2 id="projects-completed" class="group-heading">Completed</h2>
-      <ProjectList projects={completed} />
-    </section>
+    <div class="band band--sunken">
+      <section class="section container" aria-labelledby="projects-completed">
+        <h2 id="projects-completed" class="group-heading">Completed</h2>
+        <ProjectList projects={completed} />
+      </section>
+    </div>
   )}
 </PageLayout>
 

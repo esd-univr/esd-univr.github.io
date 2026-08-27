@@ -129,15 +129,38 @@ whose titles do not line up, which is the defect this contract exists to prevent
 5. **Detail pages take their frame from the shared layout** and supply only their metadata
    rows. A new entity type is a data mapping, not a new layout.
 
-**The test, and it is not optional:** `main h1` sits at the same left offset on every page.
-Check it before calling any layout work done.
+**The test, and it is not optional:** `main h1` sits at the same left offset on every page of
+the same width class, and no page nests a `.container`. Check it before calling any layout
+work done. (`container--wide` and `container--narrow` pages are *meant* to differ from
+default-width ones on a wide viewport, so compare like with like.)
 
-Two related rules that live in the same layer:
+**Bands are full-bleed, so they cannot live in a container.** A page that alternates bands
+passes `bleed` to `PageLayout`, which then does not wrap the content, and the page puts a
+`.container` *inside* each band. If the opening is `wide`, repeat `container--wide` inside
+the bands too.
+
+```astro
+<PageLayout title="Projects" bleed>
+  <div class="band">
+    <section class="section container">…</section>
+  </div>
+  <div class="band band--sunken">
+    <section class="section container">…</section>
+  </div>
+</PageLayout>
+```
+
+Three related rules that live in the same layer:
 
 - **Group colour is claimed, never passed.** A subtree sets `data-group="esd|parco|iot4care"`
   and everything inside that already paints with `--color-accent` follows. **Never add a
   colour prop to a component**, and never let colour carry meaning alone — the acronym or
-  the group name is always present beside a coloured element.
+  the group name is always present beside a coloured element. A page that belongs to exactly
+  one group passes `group` to `PageLayout`.
+- **A group hue belongs where the page is organised by group** — Research, People, the groups
+  block on the home page — so each block owns one hue. In a list that mixes groups row by row
+  (News, Publications, Projects) stay on the parent accent: per-row hues are decoration, and
+  where no group name is printed the colour would be the only carrier of the information.
 - **Density is not a user control.** `data-density="compact"` is set once on `<html>` by
   whoever builds the surface. Do not add a toggle for it.
 

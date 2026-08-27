@@ -38,7 +38,7 @@ const links = [
 ---
 
 <PageLayout title={d.name} eyebrow={d.acronym ? `Project · ${d.acronym}` : 'Project'} lede={d.summary} group={d.groups[0]}>
-  <p slot="header" class="facts">
+  <p slot="header" class="facts tint">
     <span><span class="eyebrow">Period</span> {formatYearRange(d.start, d.end)}</span>
     <span><span class="eyebrow">Status</span> {STATUS_LABEL[d.status]}</span>
     {fundingLine && <span><span class="eyebrow">Funding</span> {fundingLine}</span>}
@@ -81,10 +81,15 @@ const links = [
 </PageLayout>
 
 <style>
+  /*
+   * The facts strip is this page's one tinted panel. It sits inside the opening, which
+   * carries data-group, so the tint and its hairline are the project's own group hue.
+   */
   .facts {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-sm) var(--space-xl);
+    padding: var(--space-sm) var(--space-md);
     font-size: var(--text-sm);
     color: var(--color-ink-2);
   }

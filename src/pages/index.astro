@@ -1,33 +1,18 @@
 ---
 /**
- * Home page: CISD identity, the three groups, selected projects, selected
- * publications, people and recent news. Every section renders only when it has content.
+ * Home page: the CISD identity, the three most recent news items, and the three groups.
+ * Nothing else — Projects, People and Publications have their own pages, and as teasers
+ * here they were three lists nobody reads.
+ *
+ * Bands alternate paper / paper-2 so the page reads as plates rather than one white sheet.
  */
 import NewsList from '../components/NewsList.astro';
-import OpportunityList from '../components/OpportunityList.astro';
-import PeopleList from '../components/PeopleList.astro';
-import ProjectList from '../components/ProjectList.astro';
-import PublicationList from '../components/PublicationList.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import { site } from '../data/site.ts';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import {
-  getFeaturedOpportunities,
-  getFeaturedPublications,
-  getGroups,
-  getNews,
-  getPeople,
-  getProjects,
-} from '../lib/content.ts';
+import { getGroups, getNews } from '../lib/content.ts';
 
 const groups = await getGroups();
-const projects = await getProjects();
-const featured = projects.filter((p) => p.data.featured);
-const highlightedProjects = (featured.length > 0 ? featured : projects).slice(0, 4);
-const people = await getPeople();
-const publications = await getFeaturedPublications(5);
-// Only explicitly featured open proposals, at most three — the section is omitted otherwise.
-const opportunities = await getFeaturedOpportunities(3);
 const news = (await getNews()).slice(0, 3);
 ---
 
@@ -43,62 +28,33 @@ const news = (await getNews()).slice(0, 3);
     </nav>
   </section>
 
-  {groups.length > 0 && (
-    <section class="section container" aria-labelledby="home-groups">
-      <SectionHeading eyebrow="Groups" title={`The ${site.shortName} groups`} id="home-groups" moreHref="/research/" moreLabel="Research" />
-      <ol class="groups">
-        {groups.map((group) => (
-          <li class="group" data-group={group.id}>
-            <p class="group__short">{group.data.shortName}</p>
-            <div>
-              <h3 class="group__name"><a href={`/research/#${group.id}`}>{group.data.name}</a></h3>
-              <p class="group__summary">{group.data.summary}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
-    </section>
-  )}
-
-  {highlightedProjects.length > 0 && (
-    <section class="section container" aria-labelledby="home-projects">
-      <SectionHeading eyebrow="Projects" title="Selected projects" id="home-projects" moreHref="/projects/" moreLabel="All projects" />
-      <ProjectList projects={highlightedProjects} />
-    </section>
-  )}
-
-  {publications.length > 0 && (
-    <section class="section container" aria-labelledby="home-publications">
-      <SectionHeading eyebrow="Publications" title="Selected publications" id="home-publications" moreHref="/publications/" moreLabel="All publications" />
-      <PublicationList publications={publications} people={people} headingLevel={3} />
-    </section>
-  )}
-
-  {opportunities.length > 0 && (
-    <section class="section container" aria-labelledby="home-opportunities">
-      <SectionHeading
-        eyebrow="For students"
-        title="Student opportunities"
-        id="home-opportunities"
-        moreHref="/opportunities/"
-        moreLabel="All opportunities"
-      />
-      <OpportunityList opportunities={opportunities} />
-    </section>
-  )}
-
-  {people.length > 0 && (
-    <section class="section container container--wide" aria-labelledby="home-people">
-      <SectionHeading eyebrow="People" title="The groups' members" id="home-people" moreHref="/people/" moreLabel="All people" />
-      <PeopleList people={people} />
-    </section>
-  )}
-
+  {/* News leads: it is the only part of the page that changes week to week. */}
   {news.length > 0 && (
-    <section class="section container" aria-labelledby="home-news">
-      <SectionHeading eyebrow="News" title="Recent news" id="home-news" moreHref="/news/" moreLabel="All news" />
-      <NewsList items={news} />
-    </section>
+    <div class="band band--sunken">
+      <section class="section container" aria-labelledby="home-news">
+        <SectionHeading eyebrow="News" title="Recent news" id="home-news" moreHref="/news/" moreLabel="All news" />
+        <NewsList items={news} />
+      </section>
+    </div>
+  )}
+
+  {groups.length > 0 && (
+    <div class="band">
+      <section class="section container" aria-labelledby="home-groups">
+        <SectionHeading eyebrow="Groups" title={`The ${site.shortName} groups`} id="home-groups" moreHref="/research/" moreLabel="Research" />
+        <ol class="groups">
+          {groups.map((group) => (
+            <li class="group" data-group={group.id}>
+              <p class="group__short">{group.data.shortName}</p>
+              <div>
+                <h3 class="group__name"><a href={`/research/#${group.id}`}>{group.data.name}</a></h3>
+                <p class="group__summary">{group.data.summary}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+    </div>
   )}
 </BaseLayout>
 

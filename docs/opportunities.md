@@ -72,7 +72,7 @@ Required: `title`, `summary`, `type`, `levels`, `status`, `posted`, `groups`, `a
 | `prerequisites` | list | Short items: `Programming`, `Basic modelling knowledge`. |
 | `tools` | list | Technologies and platforms: `Python`, `Modelica`, `SystemC`. |
 | `language` | `en` \| `it` | Language of the title, summary and body. Default `en`. |
-| `featured` | boolean | `true` shows it on the home page. Only allowed while `status: open`. Default `false`. |
+| `featured` | boolean | Marks a proposal as selected. Only allowed while `status: open`. **Read by no page today.** Default `false`. |
 | `legacyId` | integer | Only on a proposal migrated from the old site. See [`legacyId`](#legacyid). |
 
 The authoritative list is the `opportunities` schema in `src/content.config.ts`, and the
@@ -263,7 +263,7 @@ The status field is the whole mechanism — nothing is deleted and no address ch
 | Available again | `status: open`, and update `posted:` to today |
 
 - **Open** proposals lead the page and are the only ones that appear on a supervisor's
-  People page or on the home page.
+  People page.
 - **Paused** proposals stay visible in their own section, with a note on the page saying
   they are not accepting new students.
 - **Closed** proposals move to a quiet *Past opportunities* section at the bottom and

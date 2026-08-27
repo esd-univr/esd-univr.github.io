@@ -18,7 +18,7 @@ Plain TypeScript, nothing generated. Edit a string and every page that uses it f
 | `name` | The full name, spelled out next to the acronym |
 | `title` | `<title>` of the home page and the Open Graph site name |
 | `description` | Default meta description of every page. **Keep it under 160 characters.** |
-| `mission` | The paragraph at the top of the home page |
+| `mission` | The paragraph beside the title in the home page hero |
 | `organisation.university` / `.universityUrl` | Named and linked in the footer and on `/contacts/` |
 | `organisation.department` / `.departmentUrl` | Same |
 | `organisation.address` | Lines of the postal address on `/contacts/` |
@@ -106,7 +106,7 @@ The width tokens draw the line between reading and structure:
 | --- | --- | --- |
 | `--measure` | `66ch` | Long prose. Every `.prose`, `.lede`, `.measure` block and every list summary is capped here, so no line of running text ever gets too long to read. |
 | `--container` | `94rem` | The default page width: masthead, footer, page headers, and every structured section — grids, rosters, project and publication lists. |
-| `--container-wide` | `108rem` | Sections that should feel almost full-width. Currently the People directory grid and the home page's people section. |
+| `--container-wide` | `108rem` | Sections that should feel almost full-width. Currently the People and Opportunities directories. |
 | `--container-narrow` | `56rem` | Long-form reading pages. Currently a news item. |
 | `--gutter` | `clamp(1rem, 4vw, 2.5rem)` | The margin kept on both sides at every width. |
 

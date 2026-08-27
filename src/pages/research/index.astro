@@ -21,9 +21,17 @@ const sections = await Promise.all(
   eyebrow={site.shortName}
   lede={`The ${site.shortName} groups and the topics they work on.`}
   description="Research groups and topics of CISD, University of Verona."
+  bleed
 >
+  {/*
+    One full-bleed band per group, tinted at 7% of that group's own hue: the page reads as
+    three plates instead of one white sheet, and the tint says whose. This is the system's
+    one exception to "a tinted surface appears once per page" — here the three plates are
+    the page's subject, not decoration.
+  */}
   {sections.map(({ group, topics }) => (
-    <section class="section group" id={group.id} data-group={group.id} aria-labelledby={`group-${group.id}`}>
+    <div class="band band--tint" data-group={group.id}>
+    <section class="section group container" id={group.id} aria-labelledby={`group-${group.id}`}>
       <div class="group__intro">
         <p class="eyebrow">{group.data.shortName}</p>
         <h2 id={`group-${group.id}`}>{group.data.name}</h2>
@@ -48,17 +56,15 @@ const sections = await Promise.all(
         </ol>
       )}
     </section>
+    </div>
   ))}
 </PageLayout>
 
 <style>
+  /* Each group sits on its own tinted band, so the boundary is the change of ground and
+     the section needs no rule of its own. */
   .group {
     padding-block: var(--space-2xl);
-    border-top: var(--rule);
-  }
-
-  .group:first-of-type {
-    border-top: 0;
   }
 
   .group__intro {
@@ -81,11 +87,18 @@ const sections = await Promise.all(
     color: var(--color-ink-2);
   }
 
+  /*
+   * auto-fill, not auto-fit: PARCO and IoT4Care have a single topic each, and auto-fit
+   * collapses the empty tracks so that one block stretches the whole band — its summary
+   * then ran to about 110 characters, well past --measure, and its 2px accent rule spanned
+   * the full width. auto-fill keeps every topic block the same width whatever the count,
+   * so the rules line up across all three plates.
+   */
   .topics {
     list-style: none;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
     gap: var(--space-xl);
   }
 
@@ -110,6 +123,7 @@ const sections = await Promise.all(
   }
 
   .topic__summary {
+    max-width: var(--measure);
     color: var(--color-ink-2);
   }
 

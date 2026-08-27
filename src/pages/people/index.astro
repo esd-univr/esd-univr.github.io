@@ -14,14 +14,20 @@ const sections = groupPeople(
 );
 ---
 
-<PageLayout title="People" eyebrow={site.shortName} description="Members of the CISD research groups." width="wide">
-  {people.length === 0 && <EmptyState message="Group members will be listed here." />}
+<PageLayout title="People" eyebrow={site.shortName} description="Members of the CISD research groups." width="wide" bleed>
+  {people.length === 0 && (
+    <div class="band"><div class="section container container--wide"><EmptyState message="Group members will be listed here." /></div></div>
+  )}
 
-  {sections.map((section) => (
-    <section class="section" data-group={section.id} aria-labelledby={`people-${section.id}`}>
-      <h2 id={`people-${section.id}`} class="group-heading">{section.label}</h2>
-      <PeopleList people={section.people} />
-    </section>
+  {/* The roster is partitioned by group, so each group gets both its hue and its own plate.
+      `container--wide` is repeated inside the bands because the opening is wide too. */}
+  {sections.map((section, index) => (
+    <div class:list={['band', index % 2 === 1 && 'band--sunken']} data-group={section.id}>
+      <section class="section container container--wide" aria-labelledby={`people-${section.id}`}>
+        <h2 id={`people-${section.id}`} class="group-heading">{section.label}</h2>
+        <PeopleList people={section.people} />
+      </section>
+    </div>
   ))}
 </PageLayout>
 

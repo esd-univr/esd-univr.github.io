@@ -90,6 +90,71 @@ reads as "success".
 `0.08em` letter-spacing, "IoT4Care" measures **92.2px** (5.8rem) and wrapped onto two lines.
 The type floor's rule is to give the column room, never to step the type down.
 
+## The colour budget
+
+The site used to be one sheet of `--color-paper` on every page. It is not any more, and the
+rules below are what keep it from becoming motley instead. They are worth reading before
+adding colour anywhere.
+
+**1. Tone does the heavy lifting, and tone is not colour.** Full-bleed `.band` /
+`.band--sunken` alternate the two paper tones, so a page reads as plates. This accounts for
+most of the effect and introduces no hue at all. The footer is the last band — it carries
+`--color-paper-2` so the page closes instead of fading out on the same white as its content.
+
+**2. Hue only at identity scale.** Mono labels at `--text-sm` or smaller, the 2px rule that
+opens a group or topic block, and interaction states. Never a heading, never running text,
+never a large fill.
+
+**3. One tinted surface per page.** `.band--tint` or `.tint`, and it needs padding from its
+consumer — `base.css` gives it the ground, the hairline and the radius, not the box. Research
+is the deliberate exception: its three tinted plates *are* the page's subject.
+
+**4. A group hue belongs where the page is organised by group.** This one is not in the design
+system, and without it the site turns motley:
+
+| Organised by group → hue per block | Mixes groups per row → parent accent |
+| --- | --- |
+| Research (one tinted plate per group) | News index and news detail |
+| People (one plate and one hue per group) | Publications |
+| The groups block on the home page | Projects index (organised by status) |
+| A project, proposal or person page | |
+
+There is an accessibility reason as well as a visual one. `NewsList` prints a date and a
+category, never a group, so a group hue on a news row would be the sole carrier of
+information that is nowhere in the text — which "colour never carries meaning alone" forbids.
+A news item can also belong to two groups (`2026-08-26-edge-cloud-verification.md` is
+`[parco, iot4care]`) and a subtree may only have one accent. Where the hue *is* applied, the
+group's name or acronym is always printed beside it.
+
+### Where each page stands
+
+| Page | Tone | Hue | Tinted surface |
+| --- | --- | --- | --- |
+| `/` | hero paper → news sunken → groups paper | per group row, 2px opening rule | — |
+| `/research/` | — | per group section; topics inherit it | 3 × `band--tint` |
+| `/people/` | alternating per group | per group section, heading included | — |
+| `/projects/` | Active paper → Completed sunken | parent accent | — |
+| `/news/` | alternating per year | parent accent | — |
+| `/publications/` | — | parent accent | — |
+| `/opportunities/` | alternating per status | "open" status word | `.tint` on the empty state |
+| `/contacts/` | — | — | `.tint` on the address |
+| project / proposal detail | — | the entity's group | `.tint` on the facts strip |
+| news / person detail | — | person: its group. News: parent accent | — |
+| `/privacy/`, `/404` | — | — | — |
+
+`/publications/` is left plain on purpose: its filter bar lives inside the opening, so a band
+would mean splitting the opening block, and a 15 000px list is already visually busy.
+
+### A consequence of the reduced home page
+
+The home page is the hero, three recent news items and the groups — nothing else. It was the
+**only** consumer of `featured` on projects, publications and opportunities, so that field now
+changes nothing anywhere on the site. It is kept in the schema, the `only an open opportunity
+may be featured` invariant still holds, and `docs/{projects,publications,opportunities}.md`
+say plainly that no page reads it. If the selections should show up again, the obvious homes
+are the index pages — featured first on `/projects/`, for instance — but that is a decision,
+not a fix to apply silently.
+
 ## The mark
 
 `public/images/brand/logo-cisd.png` — a five-arc "C" (green, blue, red, purple, gold) around

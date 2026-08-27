@@ -15,13 +15,18 @@ for (const item of news) {
 }
 ---
 
-<PageLayout title="News" eyebrow={site.shortName} description="News from the CISD research groups.">
-  {news.length === 0 && <EmptyState message="News items will be listed here." />}
-  {[...byYear.entries()].map(([year, items]) => (
-    <section class="section" aria-labelledby={`news-${year}`}>
-      <h2 id={`news-${year}`} class="year">{year}</h2>
-      <NewsList items={items} />
-    </section>
+<PageLayout title="News" eyebrow={site.shortName} description="News from the CISD research groups." bleed>
+  {news.length === 0 && (
+    <div class="band"><div class="section container"><EmptyState message="News items will be listed here." /></div></div>
+  )}
+  {/* One band per year, alternating tone: each year reads as its own plate. */}
+  {[...byYear.entries()].map(([year, items], index) => (
+    <div class:list={['band', index % 2 === 1 && 'band--sunken']}>
+      <section class="section container" aria-labelledby={`news-${year}`}>
+        <h2 id={`news-${year}`} class="year">{year}</h2>
+        <NewsList items={items} />
+      </section>
+    </div>
   ))}
 </PageLayout>
 

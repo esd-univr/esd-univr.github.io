@@ -27,9 +27,19 @@ interface Props {
    * printed — colour must never be the only carrier.
    */
   group?: string;
+  /**
+   * Do not wrap the content in a `.container`; the page supplies its own.
+   *
+   * A `.band` is full-bleed, so it cannot live inside a container — which means a page that
+   * alternates bands has to own the width itself, putting `.container` *inside* each band.
+   * Pass `bleed` and do exactly that. The opening still brings its own container, so the
+   * page contract holds either way, and a bleed page must repeat `container--wide` inside
+   * its bands when the opening is `wide`.
+   */
+  bleed?: boolean;
 }
 
-const { title, description, eyebrow, lede, type, image, width = 'default', group } = Astro.props;
+const { title, description, eyebrow, lede, type, image, width = 'default', group, bleed = false } = Astro.props;
 // The width travels with both blocks, so the title lines up with the content below it.
 const container = ['container', width !== 'default' && `container--${width}`];
 ---
@@ -41,9 +51,13 @@ const container = ['container', width !== 'default' && `container--${width}`];
     {lede && <p class="lede">{lede}</p>}
     <slot name="header" />
   </header>
-  <div class:list={container} data-group={group}>
+  {bleed ? (
     <slot />
-  </div>
+  ) : (
+    <div class:list={container} data-group={group}>
+      <slot />
+    </div>
+  )}
 </BaseLayout>
 
 <style>

@@ -39,7 +39,7 @@ const facts = [
 ---
 
 <PageLayout title={d.title} eyebrow={kind} lede={d.summary} description={d.summary} type="article" group={d.groups[0]}>
-  <p slot="header" class="facts">
+  <p slot="header" class="facts tint">
     {facts.map((fact) => (
       <span><span class="eyebrow">{fact.label}</span> {fact.value}</span>
     ))}
@@ -120,10 +120,15 @@ const facts = [
 </PageLayout>
 
 <style>
+  /*
+   * The facts strip is this page's one tinted panel. It sits inside the opening, which
+   * carries data-group, so the tint and its hairline are the proposal's own group hue.
+   */
   .facts {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-sm) var(--space-xl);
+    padding: var(--space-sm) var(--space-md);
     font-size: var(--text-sm);
     color: var(--color-ink-2);
   }
