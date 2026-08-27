@@ -6,7 +6,7 @@ import OpportunityList from '../../components/OpportunityList.astro';
 import Portrait from '../../components/Portrait.astro';
 import ProjectList from '../../components/ProjectList.astro';
 import PublicationList from '../../components/PublicationList.astro';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import DetailLayout from '../../layouts/DetailLayout.astro';
 import { site } from '../../data/site.ts';
 import {
   getGroups,
@@ -51,126 +51,83 @@ const links = [
 ].filter((x): x is { label: string; href: string; text?: string } => Boolean(x));
 ---
 
-<BaseLayout title={d.name} description={`${d.name}, ${d.role} — ${d.affiliation ?? `${site.shortName}, ${site.organisation.university}`}.`}>
-  <div class="container">
-    <header class="profile">
-      <Portrait name={d.name} photo={d.photo} size={160} />
-      <div class="profile__text">
-        <p class="eyebrow">{groups.map((group) => group.data.shortName).join(' · ')}</p>
-        <h1>{d.name}</h1>
-        <p class="profile__role">{d.role}</p>
-        {d.affiliation && <p class="profile__affiliation">{d.affiliation}</p>}
-      </div>
-    </header>
+{/*
+  This page used to build its own frame on BaseLayout, with the portrait set beside a
+  --text-4xl name. That made it the one page whose h1 did not line up with every other
+  page's. It is now part of the same family as the project, news and proposal pages: the
+  reading order is unchanged — groups, name, role, affiliation — and the portrait moves into
+  the metadata column, where the other three already keep their entity's people and media.
+*/}
+<DetailLayout
+  title={d.name}
+  description={`${d.name}, ${d.role} — ${d.affiliation ?? `${site.shortName}, ${site.organisation.university}`}.`}
+  eyebrow={groups.map((group) => group.data.shortName).join(' · ')}
+  lede={d.role}
+  group={d.groups[0]}
+  back={{ href: '/people/', label: 'All people' }}
+>
+  {d.affiliation && <p slot="header" class="affiliation">{d.affiliation}</p>}
 
-    <div class="layout">
-      <div class="main">
-        {d.interests.length > 0 && (
-          <section class="section">
-            <h2 class="eyebrow">Research interests</h2>
-            <p class="interests">{d.interests.join(' · ')}</p>
-          </section>
-        )}
-        {hasBio && (
-          <section class="section prose" aria-label="Biography">
-            <Content />
-          </section>
-        )}
-        {projects.length > 0 && (
-          <section class="section" aria-labelledby="person-projects">
-            <h2 id="person-projects">Projects</h2>
-            <ProjectList projects={projects} />
-          </section>
-        )}
-        {opportunities.length > 0 && (
-          <section class="section" aria-labelledby="person-opportunities">
-            <h2 id="person-opportunities">Open opportunities</h2>
-            <OpportunityList opportunities={opportunities} />
-          </section>
-        )}
-        {publications.length > 0 && (
-          <section class="section" aria-labelledby="person-publications">
-            <h2 id="person-publications">Publications</h2>
-            <PublicationList publications={publications} people={people} headingLevel={3} />
-          </section>
-        )}
-        {news.length > 0 && (
-          <section class="section" aria-labelledby="person-news">
-            <h2 id="person-news">News</h2>
-            <NewsList items={news} />
-          </section>
-        )}
-      </div>
-      <aside class="aside">
-        {links.length > 0 && (
-          <section>
-            <h2 class="eyebrow">Profiles</h2>
-            <LinkList items={links} />
-          </section>
-        )}
-        {groups.length > 0 && (
-          <section>
-            <h2 class="eyebrow">Group</h2>
-            <ul class="groups">
-              {groups.map((group) => (
-                <li><a href={`/research/#${group.id}`}>{group.data.name}</a></li>
-              ))}
-            </ul>
-          </section>
-        )}
-      </aside>
-    </div>
-  </div>
-</BaseLayout>
+  {d.interests.length > 0 && (
+    <section class="section">
+      <h2 class="eyebrow">Research interests</h2>
+      <p class="interests">{d.interests.join(' · ')}</p>
+    </section>
+  )}
+  {hasBio && (
+    <section class="section prose" aria-label="Biography">
+      <Content />
+    </section>
+  )}
+  {projects.length > 0 && (
+    <section class="section" aria-labelledby="person-projects">
+      <h2 id="person-projects">Projects</h2>
+      <ProjectList projects={projects} />
+    </section>
+  )}
+  {opportunities.length > 0 && (
+    <section class="section" aria-labelledby="person-opportunities">
+      <h2 id="person-opportunities">Open opportunities</h2>
+      <OpportunityList opportunities={opportunities} />
+    </section>
+  )}
+  {publications.length > 0 && (
+    <section class="section" aria-labelledby="person-publications">
+      <h2 id="person-publications">Publications</h2>
+      <PublicationList publications={publications} people={people} headingLevel={3} />
+    </section>
+  )}
+  {news.length > 0 && (
+    <section class="section" aria-labelledby="person-news">
+      <h2 id="person-news">News</h2>
+      <NewsList items={news} />
+    </section>
+  )}
+
+  <Fragment slot="aside">
+    <Portrait name={d.name} photo={d.photo} size={160} />
+    {links.length > 0 && (
+      <section>
+        <h2 class="eyebrow">Profiles</h2>
+        <LinkList items={links} />
+      </section>
+    )}
+    {groups.length > 0 && (
+      <section>
+        <h2 class="eyebrow">{groups.length === 1 ? 'Group' : 'Groups'}</h2>
+        <ul class="groups">
+          {groups.map((group) => (
+            <li><a href={`/research/#${group.id}`}>{group.data.name}</a></li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </Fragment>
+</DetailLayout>
 
 <style>
-  .profile {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: var(--space-lg) var(--space-xl);
-    padding-block: var(--space-2xl) var(--space-xl);
-    border-bottom: var(--rule);
-  }
-
-  .profile__text {
-    display: grid;
-    gap: var(--space-xs);
-  }
-
-  .profile h1 {
-    font-size: var(--text-4xl);
-  }
-
-  .profile__role {
-    font-size: var(--text-lg);
-  }
-
-  .profile__affiliation {
+  .affiliation {
     color: var(--color-ink-2);
-  }
-
-  .layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
-    gap: var(--space-2xl);
-    padding-block: var(--space-xl);
-  }
-
-  .main .section {
-    padding-block: var(--space-xl);
-  }
-
-  .main .section:first-child {
-    padding-top: 0;
-  }
-
-  .main h2 {
-    margin-bottom: var(--space-lg);
-  }
-
-  .main h2.eyebrow {
-    margin-bottom: var(--space-sm);
   }
 
   .interests {
@@ -178,27 +135,10 @@ const links = [
     font-size: var(--text-lg);
   }
 
-  .aside {
-    display: grid;
-    gap: var(--space-xl);
-    align-content: start;
-    padding-top: var(--space-sm);
-  }
-
-  .aside .eyebrow {
-    margin-bottom: var(--space-sm);
-  }
-
   .groups {
     list-style: none;
     padding: 0;
     display: grid;
     gap: var(--space-2xs);
-  }
-
-  @media (max-width: 56rem) {
-    .layout {
-      grid-template-columns: 1fr;
-    }
   }
 </style>

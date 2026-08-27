@@ -1,0 +1,91 @@
+---
+/** Directory of facilities and tools: kind and licence in the margin, name and one line. */
+import type { Asset } from '../lib/content.ts';
+
+interface Props {
+  assets: Asset[];
+}
+
+const { assets } = Astro.props;
+---
+
+<ol class="assets">
+  {assets.map((asset) => (
+    <li class="asset">
+      <p class="asset__margin">
+        <span class="asset__kind">{asset.data.kind}</span>
+        {asset.data.licence && <span class="meta">{asset.data.licence}</span>}
+      </p>
+      <div>
+        <h3 class="asset__name"><a href={`/assets/${asset.id}/`}>{asset.data.name}</a></h3>
+        <p class="asset__summary">{asset.data.summary}</p>
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .assets {
+    list-style: none;
+    padding: 0;
+    display: grid;
+  }
+
+  .asset {
+    display: grid;
+    grid-template-columns: minmax(8rem, 12rem) 1fr;
+    gap: var(--space-sm) var(--space-xl);
+    padding-block: var(--space-md);
+    border-top: var(--rule);
+  }
+
+  .asset:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .asset__margin {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  /* The kind is identity, so it takes the accent — and the word itself carries the meaning. */
+  .asset__kind {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .asset__name {
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-xs);
+  }
+
+  .asset__name a {
+    text-decoration: none;
+  }
+
+  .asset__name a:hover {
+    text-decoration: underline;
+  }
+
+  .asset__summary {
+    max-width: var(--measure);
+    color: var(--color-ink-2);
+  }
+
+  @media (max-width: 40rem) {
+    .asset {
+      grid-template-columns: 1fr;
+      gap: var(--space-xs);
+    }
+
+    .asset__margin {
+      display: flex;
+      gap: var(--space-md);
+      align-items: baseline;
+    }
+  }
+</style>

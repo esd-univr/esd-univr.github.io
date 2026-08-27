@@ -1,0 +1,58 @@
+---
+/**
+ * Assets & Tools — the laboratories the groups run and the software they maintain.
+ *
+ * The public path stays `/assets/`, which is the address the previous CISD site used, and
+ * the entries keep that page's order. Each row links to the entry's own page: the index
+ * never carries a full description.
+ */
+import AssetList from '../../components/AssetList.astro';
+import EmptyState from '../../components/EmptyState.astro';
+import PageLayout from '../../layouts/PageLayout.astro';
+import { getAssets } from '../../lib/content.ts';
+import { site } from '../../data/site.ts';
+
+const assets = await getAssets();
+const sections = [
+  { id: 'facilities', title: 'Laboratories and facilities', items: assets.filter((a) => a.data.category === 'facility') },
+  { id: 'software', title: 'Software we maintain', items: assets.filter((a) => a.data.category === 'software') },
+  { id: 'projects', title: 'Open-source ecosystems', items: assets.filter((a) => a.data.category === 'project') },
+].filter((section) => section.items.length > 0);
+---
+
+<PageLayout
+  title="Assets & Tools"
+  eyebrow={site.shortName}
+  lede="Laboratories and experimental facilities of the CISD groups, and the software they maintain and release."
+  description="Laboratories, facilities and software maintained by the CISD research groups, University of Verona."
+  bleed
+>
+  {assets.length === 0 && (
+    <div class="band"><div class="section container"><EmptyState message="Facilities and tools will be listed here." /></div></div>
+  )}
+
+  {sections.map((section, index) => (
+    <div class:list={['band', index % 2 === 1 && 'band--sunken']}>
+      <section class="section container" aria-labelledby={`assets-${section.id}`}>
+        <h2 id={`assets-${section.id}`} class="group-heading">{section.title}</h2>
+        <AssetList assets={section.items} />
+      </section>
+    </div>
+  ))}
+</PageLayout>
+
+<style>
+  .section {
+    padding-block: var(--space-xl);
+  }
+
+  .group-heading {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+    margin-bottom: var(--space-md);
+  }
+</style>

@@ -2,10 +2,15 @@
  * Design tokens — the only source of truth for the site's colours, type, spacing and
  * widths. Components never hard-code a colour or a width; they read a variable from here.
  *
- * Colour works in three layers:
+ * Values come from the CISD design system (see .claude/skills/cisd-design/): its
+ * tokens/{palette,theme,groups,typography,spacing,border,motion}.css, folded into this
+ * single file because that is how this repository has always declared its tokens.
+ *
+ * Colour works in four layers:
  *   1. the light palette   (--light-*)   the real hex values, defined once
  *   2. the dark palette    (--dark-*)    the real hex values, defined once
  *   3. the active theme    (--color-*)   an alias to one of the two palettes
+ *   4. the group hue       [data-group]  rebinds --color-accent inside one subtree
  *
  * Only layer 3 is switched; edit a colour in layer 1 or 2 and nothing else changes.
  * See docs/site-settings.md for the theme behaviour and how to repalette safely.
@@ -15,15 +20,32 @@
   --font-serif: 'IBM Plex Serif', Georgia, 'Times New Roman', serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Fluid type scale (min → max between 20rem and 80rem viewports). */
-  --text-xs: clamp(0.72rem, 0.7rem + 0.1vw, 0.78rem);
-  --text-sm: clamp(0.86rem, 0.83rem + 0.14vw, 0.94rem);
-  --text-base: clamp(1rem, 0.97rem + 0.18vw, 1.1rem);
-  --text-lg: clamp(1.18rem, 1.12rem + 0.3vw, 1.35rem);
-  --text-xl: clamp(1.4rem, 1.3rem + 0.55vw, 1.7rem);
-  --text-2xl: clamp(1.7rem, 1.5rem + 1vw, 2.25rem);
-  --text-3xl: clamp(2.1rem, 1.75rem + 1.75vw, 3rem);
+  /*
+   * Fluid type scale (min → max between 20rem and 80rem viewports).
+   *
+   * These sizes are an accessibility floor, not a taste decision. Running text never
+   * falls below 17px (--text-base floor 1.0625rem) and the smallest step in the system
+   * is 14px (--text-xs), reserved for mono metadata — eyebrows, years, resource links —
+   * and never used for prose. --text-sm is a real 16px, so even a "small" caption sits
+   * at comfortable body size. British Dyslexia Association style guide + Italian AID
+   * recommendations; IBM Plex Sans already keeps I / l / 1 distinguishable.
+   *
+   * If a layout feels tight, cut content or widen the container — never step type down.
+   */
+  --text-xs: clamp(0.875rem, 0.85rem + 0.12vw, 0.94rem);
+  --text-sm: clamp(1rem, 0.97rem + 0.15vw, 1.06rem);
+  --text-base: clamp(1.0625rem, 1.02rem + 0.2vw, 1.19rem);
+  --text-lg: clamp(1.25rem, 1.18rem + 0.35vw, 1.45rem);
+  --text-xl: clamp(1.45rem, 1.34rem + 0.55vw, 1.75rem);
+  --text-2xl: clamp(1.75rem, 1.55rem + 1vw, 2.3rem);
+  --text-3xl: clamp(2.15rem, 1.8rem + 1.75vw, 3.05rem);
   --text-4xl: clamp(2.6rem, 2rem + 3vw, 4.25rem);
+
+  /* Line heights, exposed so components stop hard-coding them. All at or above 1.5. */
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-body: 1.6;
+  --leading-prose: 1.7;
 
   /* Spacing scale. */
   --space-2xs: clamp(0.25rem, 0.23rem + 0.1vw, 0.31rem);
@@ -46,34 +68,111 @@
   --container-narrow: 56rem;
   --gutter: clamp(1rem, 4vw, 2.5rem);
 
+  /*
+   * One rule and one radius. There are no shadow tokens: depth is carried by hairline
+   * rules and by the second paper tone, never by elevation.
+   */
   --rule: 1px solid var(--color-rule);
   --radius: 2px;
 
-  /* ---- Palette: light — cool off-white paper, deep navy ink, indigo accents ---- */
+  /* One duration, one easing. No transforms, no bounce, no reveal-on-scroll. */
+  --duration: 120ms;
+  --ease: ease;
+  --transition-link: color var(--duration) var(--ease), text-decoration-color var(--duration) var(--ease);
+  --transition-control: color var(--duration) var(--ease), border-color var(--duration) var(--ease), background-color var(--duration) var(--ease);
+
+  /* ---- Palette: light — cool off-white paper, deep navy ink, brand-purple accents ---- */
   --light-paper: #f6f7fb;
   --light-paper-2: #eaecf5;
-  --light-selection: #dcd9f7;
+  --light-selection: #f2dcef;
   --light-ink: #141a2e;
   --light-ink-2: #3b4468;
   --light-ink-3: #5a6383;
   --light-rule: #d3d8e8;
   --light-rule-strong: #141a2e;
-  --light-accent: #4a3ec4;
-  --light-accent-strong: #372c9e;
-  --light-focus: #3b30b8;
+  --light-accent: #9d3e91;
+  --light-accent-strong: #7e2f74;
+  --light-focus: #8a3580;
 
-  /* ---- Palette: dark — deep navy ground, soft off-white ink, periwinkle accents ---- */
-  --dark-paper: #0a0f1e;
-  --dark-paper-2: #151b2f;
-  --dark-selection: #2c2f63;
-  --dark-ink: #e6e9f5;
-  --dark-ink-2: #b2b9d4;
-  --dark-ink-3: #888fae;
-  --dark-rule: #262e47;
-  --dark-rule-strong: #c3c9de;
-  --dark-accent: #a9a6f7;
-  --dark-accent-strong: #c6c4ff;
-  --dark-focus: #93a8ff;
+  /*
+   * Group hues, light. Taken from the logo's own arcs — purple, blue, green — so the
+   * three groups are coloured by the mark rather than by invention. ESD takes the
+   * purple, which is also the parent accent.
+   *
+   * The green is darkened from the mark's #4fb060: at full lightness it reaches only
+   * 2.3:1 as text. The design system's #2f7d43 clears 4.5:1 on --color-paper but not on
+   * --color-paper-2 (4.31:1) or a tinted band (4.26:1), and this site puts group hues on
+   * both. #2a783f is the same OKLCh hue (149.1°) and chroma (0.118) with lightness
+   * lowered 0.016, which clears 4.5:1 on every ground the site actually paints.
+   */
+  --light-esd: #9d3e91;
+  --light-esd-strong: #7e2f74;
+  --light-parco: #334b9b;
+  --light-parco-strong: #263a7d;
+  --light-iot4care: #2a783f;
+  --light-iot4care-strong: #1f5b30;
+
+  /*
+   * ---- Palette: dark — a lit navy ground, near-white ink, lifted-purple accents ----
+   *
+   * The design system's dark ground was #0a0f1e: OKLCh lightness 0.172 at chroma 0.032,
+   * which is a very dark near-neutral and read as black rather than as blue. This ground
+   * is L 0.300 at C 0.081 — lighter, and actually blue.
+   *
+   * The whole ramp had to move with it, not just the ground. Lightening paper alone would
+   * have cut the contrast of every foreground; sizing each foreground to the AA floor
+   * instead would have collapsed the hierarchy, with --dark-ink-2 and --dark-ink-3 landing
+   * 0.010 apart in lightness where they were 0.134 apart before. So the ramp is rebuilt
+   * bottom-up: --dark-ink-3 sits just above the 4.5:1 floor on the lightest ground and
+   * everything else keeps its original lightness offset above it. The gaps are preserved
+   * at 0.113 and 0.117.
+   *
+   * Ink on paper is 12.5:1, down from 15.8:1 and still comfortably past the 7:1 this
+   * repository requires — that headroom was unused. All 65 foreground/ground pairs clear
+   * their minimum, including the three tinted Research plates; the tightest is
+   * --dark-ink-3 on --dark-paper-2 at 4.90:1. See docs/design-system-integration.md.
+   */
+  --dark-paper: #1a2b56;
+  --dark-paper-2: #253865;
+  --dark-selection: #674662;
+  --dark-ink: #eff4ff;
+  --dark-ink-2: #becef0;
+  --dark-ink-3: #97aad1;
+  --dark-rule: #344878;
+  --dark-rule-strong: #d5dff3;
+  --dark-accent: #edb1e5;
+  --dark-accent-strong: #fed5f8;
+  --dark-focus: #f6bcee;
+
+  /* The same three brand hues, lifted to sit on the lighter ground without vibrating.
+     Each clears 4.5:1 on paper, paper-2 and every tinted band. */
+  --dark-esd: #edb1e5;
+  --dark-esd-strong: #fed5f8;
+  --dark-parco: #a3baff;
+  --dark-parco-strong: #c5d4ff;
+  --dark-iot4care: #89d998;
+  --dark-iot4care-strong: #aeeeb9;
+
+  /*
+   * The logo's own palette, sampled from the mark. These are BRAND-ONLY: the mark is
+   * never recoloured, and its red and gold never enter the interface — the system has no
+   * warm hues and no status colours. They are recorded so a poster, a slide or a printer
+   * that must sit beside the mark can match it exactly.
+   */
+  --brand-green: #4fb060;
+  --brand-blue: #334b9b;
+  --brand-red: #da3528;
+  --brand-purple: #9d3e91;
+  --brand-gold: #dfb952;
+  --brand-mark-ink: #3d3d3d;
+  /*
+   * The mark's own ground. logo-cisd.png has NO alpha channel — its background is baked
+   * in as opaque #ffffff — so the plate that carries it must match the file rather than
+   * the paper, or the mark renders as a white rectangle inside a paper-coloured border.
+   * Replace the plate with --light-paper if the group ever supplies a transparent or
+   * vector version of the mark. See the header rules in base.css.
+   */
+  --brand-mark-ground: #ffffff;
 
   /* ---- Active theme: light ---- */
   color-scheme: light;
@@ -88,6 +187,12 @@
   --color-accent: var(--light-accent);
   --color-accent-strong: var(--light-accent-strong);
   --color-focus: var(--light-focus);
+  --color-esd: var(--light-esd);
+  --color-esd-strong: var(--light-esd-strong);
+  --color-parco: var(--light-parco);
+  --color-parco-strong: var(--light-parco-strong);
+  --color-iot4care: var(--light-iot4care);
+  --color-iot4care-strong: var(--light-iot4care-strong);
 }
 
 /*
@@ -110,6 +215,12 @@
     --color-accent: var(--dark-accent);
     --color-accent-strong: var(--dark-accent-strong);
     --color-focus: var(--dark-focus);
+    --color-esd: var(--dark-esd);
+    --color-esd-strong: var(--dark-esd-strong);
+    --color-parco: var(--dark-parco);
+    --color-parco-strong: var(--dark-parco-strong);
+    --color-iot4care: var(--dark-iot4care);
+    --color-iot4care-strong: var(--dark-iot4care-strong);
   }
 }
 
@@ -126,4 +237,51 @@
   --color-accent: var(--dark-accent);
   --color-accent-strong: var(--dark-accent-strong);
   --color-focus: var(--dark-focus);
+  --color-esd: var(--dark-esd);
+  --color-esd-strong: var(--dark-esd-strong);
+  --color-parco: var(--dark-parco);
+  --color-parco-strong: var(--dark-parco-strong);
+  --color-iot4care: var(--dark-iot4care);
+  --color-iot4care-strong: var(--dark-iot4care-strong);
+}
+
+/*
+ * Layer 4 — group colour, and the only place the palette becomes "colourful". Each
+ * research group owns one hue; a subtree claims it by setting data-group:
+ *
+ *   <section data-group="iot4care"> … </section>
+ *
+ * Inside that subtree --color-accent IS the group hue, so every component that already
+ * paints with the accent — acronyms, index numbers, hover, current-item rules — picks it
+ * up with no new props and no per-component colour logic. Never add a colour prop to a
+ * component, and never let colour carry meaning alone: the acronym or the group name is
+ * always present beside a coloured element.
+ */
+[data-group='esd'] {
+  --color-accent: var(--color-esd);
+  --color-accent-strong: var(--color-esd-strong);
+}
+
+[data-group='parco'] {
+  --color-accent: var(--color-parco);
+  --color-accent-strong: var(--color-parco-strong);
+}
+
+[data-group='iot4care'] {
+  --color-accent: var(--color-iot4care);
+  --color-accent-strong: var(--color-iot4care-strong);
+}
+
+/*
+ * The accent's derived surfaces: a 7% tint for a panel or a band, 14% for its hover, and
+ * a hairline in the accent hue — strong enough to identify, quiet enough to stay a rule.
+ * Declared on :root and again on [data-group] so each subtree re-mixes them against its
+ * own accent; a custom property is substituted where it is declared, so an inherited
+ * --color-tint would otherwise keep the parent's hue.
+ */
+:root,
+[data-group] {
+  --color-tint: color-mix(in oklab, var(--color-accent) 7%, var(--color-paper));
+  --color-tint-strong: color-mix(in oklab, var(--color-accent) 14%, var(--color-paper));
+  --rule-accent: 1px solid color-mix(in oklab, var(--color-accent) 45%, var(--color-rule));
 }

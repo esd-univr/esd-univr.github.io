@@ -16,15 +16,17 @@ const links = [
   <div class="layout">
     <section class="section">
       <h2 class="eyebrow">Address</h2>
-      <address class="address">
+      <address class="address tint">
         <span>{site.name} ({site.shortName})</span>
         <span>{org.department}</span>
         <span>{org.university}</span>
         {org.address.map((line) => <span>{line}</span>)}
       </address>
       <p class="note">
-        Members and their public profiles are listed under <a href="/people/">People</a>; write to the
-        <a href={org.departmentUrl}>department</a> for anything else.
+        {/* Keep a word and the link that follows it on one line: Astro's JSX whitespace rules
+            drop a newline that sits between text and an element, and this read "thedepartment". */}
+        Members and their public profiles are listed under <a href="/people/">People</a>;
+        write to the <a href={org.departmentUrl}>department</a> for anything else.
       </p>
     </section>
     <section class="section">
@@ -45,11 +47,13 @@ const links = [
     margin-bottom: var(--space-sm);
   }
 
+  /* The page's one tinted surface: the address is the thing people come here for. */
   .address {
     font-style: normal;
     font-size: var(--text-lg);
     display: grid;
     gap: var(--space-2xs);
+    padding: var(--space-md);
   }
 
   .note {

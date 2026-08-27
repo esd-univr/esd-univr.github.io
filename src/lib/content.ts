@@ -14,6 +14,7 @@ export type Person = CollectionEntry<'people'>;
 export type Project = CollectionEntry<'projects'>;
 export type NewsItem = CollectionEntry<'news'>;
 export type Opportunity = CollectionEntry<'opportunities'>;
+export type Asset = CollectionEntry<'assets'>;
 export type PublicationEntry = CollectionEntry<'publications'>;
 
 const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
@@ -98,6 +99,14 @@ export async function getNewsFor(kind: 'people' | 'projects', id: string): Promi
 }
 
 /** Every opportunity: open first, then paused, then closed; newest first within each. */
+/**
+ * Facilities and software, in the order the previous site listed them. `category` groups the
+ * index; it never reorders, so a reader who knew the old page finds the same sequence.
+ */
+export async function getAssets(): Promise<Asset[]> {
+  return (await getCollection('assets')).sort(byOrder);
+}
+
 export async function getOpportunities(): Promise<Opportunity[]> {
   return (await getCollection('opportunities')).sort(compareOpportunities);
 }

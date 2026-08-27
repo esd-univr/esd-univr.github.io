@@ -115,7 +115,8 @@ SECURITY.md                what must never be committed
 
 Plain CSS with custom properties (`src/styles/tokens.css`), self-hosted IBM Plex fonts
 (bundled at build, no third-party requests), and an editorial layout built from lists and
-rules rather than cards. Deep navy and indigo, in a **light and a dark theme**: the site
+rules rather than cards. Deep navy ink with the mark's purple as the accent, one hue per
+research group, in a **light and a dark theme**: the site
 follows the operating system by default and the toggle in the masthead overrides it. Long
 prose stays at a readable measure while structured sections use the full width of a large
 screen. Navigation is plain links and works without JavaScript; the only scripts are the

@@ -8,7 +8,7 @@
  *   src/data/groups.yaml     the CISD groups
  *   src/data/research.yaml   research topics
  *   src/content/people/<slug>.md, projects/<slug>.md, news/<date>-<slug>.md
- *   src/content/opportunities/<slug>.md
+ *   src/content/opportunities/<slug>.md, assets/<slug>.md (+ their figures)
  *   src/data/publications.bib (+ publications.overrides.yaml)
  */
 import { defineCollection, reference } from 'astro:content';
@@ -33,6 +33,12 @@ const yaml = (path: string) => file(path, { parser: (text) => YAML.parse(text) }
 export const GROUP_IDS = ['esd', 'parco', 'iot4care'] as const;
 export type GroupId = (typeof GROUP_IDS)[number];
 const groupIds = z.array(z.enum(GROUP_IDS)).nonempty();
+/**
+ * The same vocabulary, but allowed to be empty. Used where the legacy source simply did not
+ * state which group owns a record: an empty list means "nobody has said yet", and it must
+ * never be filled in by inference — see the rule in AGENTS.md.
+ */
+const optionalGroupIds = z.array(z.enum(GROUP_IDS)).default([]);
 
 const groups = defineCollection({
   loader: yaml('src/data/groups.yaml'),
@@ -122,6 +128,71 @@ const projects = defineCollection({
       order: z.number().int().default(100),
     })
     .refine((p) => !p.end || p.end >= p.start, { message: 'end must not be before start', path: ['end'] }),
+});
+
+/**
+ * Facilities and software the groups maintain, migrated from the previous site's /assets/
+ * page. Long-form description belongs in the Markdown body, with its figures written inline
+ * there; the frontmatter carries only factual metadata.
+ */
+const assets = defineCollection({
+  loader: glob({ pattern: MARKDOWN, base: './src/content/assets' }),
+  schema: z.object({
+    name: z.string().min(1),
+    /** One line for the directory. Taken from the entry's own words, never written fresh. */
+    summary: z.string().min(1),
+    /**
+     * What kind of thing this is. The previous site categorised nothing, so these three
+     * values are the honest minimum: a place, a piece of software, or a project that is an
+     * ecosystem rather than a single tool. Do not force an entry into a category that
+     * misdescribes it — add a value instead.
+     */
+    category: z.enum(['facility', 'software', 'project']),
+    /** Free-text label in the row's margin, in the entry's own vocabulary: Laboratory,
+     *  Library, Framework, Ecosystem, Tools and APIs. */
+    kind: z.string().min(1),
+    /** May be empty: the previous site never said which group owns which asset. */
+    groups: optionalGroupIds,
+    order: z.number().int().default(100),
+    /** The asset's own public site. */
+    url: z.url().optional(),
+    /** Source repository, when the tool is released as code. */
+    repository: z.url().optional(),
+    /** Only when the group states one. Never guessed from the repository. */
+    licence: z.string().optional(),
+    /**
+     * Who to ask about it. Two shapes on purpose: `person` points at the roster, so the page
+     * links to them and publishes nothing they have not already approved; the plain fields
+     * carry a contact the roster does not cover — a project lead who is not a member, or a
+     * laboratory's own switchboard. At least one field must be set.
+     */
+    contact: z
+      .object({
+        person: reference('people').optional(),
+        name: z.string().min(1).optional(),
+        email: z.email().optional(),
+        phone: z.string().min(1).optional(),
+      })
+      .refine((c) => Boolean(c.person ?? c.name ?? c.email ?? c.phone), {
+        message: 'a contact must name a person, or carry a name, e-mail or telephone number',
+      })
+      .optional(),
+    /** Where a facility physically is. Software has no location. */
+    location: z
+      .object({
+        address: z.array(z.string().min(1)).nonempty(),
+        mapUrl: z.url().optional(),
+      })
+      .optional(),
+    /** The papers the entry itself points at, with the link text it used. */
+    publications: z
+      .array(z.object({ label: z.string().min(1), href: z.url() }))
+      .default([]),
+  })
+  .refine((a) => a.category === 'facility' || !a.location, {
+    message: 'only a facility has a location',
+    path: ['location'],
+  }),
 });
 
 const news = defineCollection({
@@ -225,4 +296,4 @@ const publications = defineCollection({
   }),
 });
 
-export const collections = { groups, research, people, projects, news, opportunities, publications };
+export const collections = { groups, research, people, projects, assets, news, opportunities, publications };

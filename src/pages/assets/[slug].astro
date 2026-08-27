@@ -1,0 +1,83 @@
+---
+/**
+ * One facility or tool. Same family as the person, project, news and proposal pages: the
+ * frame is DetailLayout and this route only maps its record onto it.
+ */
+import LinkList from '../../components/LinkList.astro';
+import DetailLayout, { type Fact } from '../../layouts/DetailLayout.astro';
+import { render } from 'astro:content';
+import { getAssets, getGroups, getPeople, type Asset } from '../../lib/content.ts';
+
+export async function getStaticPaths() {
+  const assets = await getAssets();
+  return assets.map((asset) => ({ params: { slug: asset.id }, props: { asset } }));
+}
+
+interface Props {
+  asset: Asset;
+}
+
+const { asset } = Astro.props;
+const d = asset.data;
+const { Content } = await render(asset);
+const groups = (await getGroups()).filter((group) => d.groups.some((id) => id === group.id));
+
+// A contact is either a member of the roster — in which case the page links to them and
+// publishes nothing they have not already approved — or a plain name the roster does not
+// cover. Never both rendered twice.
+const people = await getPeople();
+const contactPerson = d.contact?.person ? people.find((p) => p.id === d.contact!.person!.id) : undefined;
+
+const facts: Fact[] = [
+  ...(d.licence ? [{ label: 'Licence', value: d.licence }] : []),
+  ...(d.location ? [{ label: 'Address', value: d.location.address.join(', ') }] : []),
+  ...(d.contact?.phone ? [{ label: 'Telephone', value: d.contact.phone }] : []),
+];
+
+const links = [
+  d.url && { label: 'Website', href: d.url },
+  d.repository && { label: 'Repository', href: d.repository },
+  ...d.publications.map((publication) => ({ label: 'Publication', href: publication.href, text: publication.label })),
+  ...groups.map((group) => ({ label: 'Group', href: `/research/#${group.id}`, text: group.data.name })),
+].filter((x): x is { label: string; href: string; text?: string } => Boolean(x));
+---
+
+<DetailLayout
+  title={d.name}
+  eyebrow={d.kind}
+  lede={d.summary}
+  description={d.summary}
+  facts={facts}
+  back={{ href: '/assets/', label: 'All assets & tools' }}
+>
+  <section class="section prose">
+    <Content />
+  </section>
+
+  <Fragment slot="aside">
+    {links.length > 0 && (
+      <section>
+        <LinkList items={links} />
+      </section>
+    )}
+    {(contactPerson || d.contact?.name || d.contact?.email) && (
+      <section>
+        <h2 class="eyebrow">Contact</h2>
+        <ul class="contact">
+          {contactPerson && <li><a href={`/people/${contactPerson.id}/`}>{contactPerson.data.name}</a></li>}
+          {!contactPerson && d.contact?.name && <li>{d.contact.name}</li>}
+          {d.contact?.email && <li><a href={`mailto:${d.contact.email}`}>{d.contact.email}</a></li>}
+        </ul>
+      </section>
+    )}
+  </Fragment>
+</DetailLayout>
+
+<style>
+  .contact {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2xs);
+  }
+</style>

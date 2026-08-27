@@ -1,9 +1,27 @@
 ---
 /** Small definition-style list of labelled links (contacts, profiles, resources). */
+import Icon from './Icon.astro';
+
 interface Props {
   items: Array<{ label: string; href: string; text?: string }>;
 }
 const { items } = Astro.props;
+
+/**
+ * With no `text` the address is its own label, trimmed to what a reader can recognise:
+ * no scheme, no query string, no fragment. Printed in full, a directory URL such as
+ * `https://www.dimi.univr.it/?ent=persona&id=59&lang=en` broke mid-query-string across two
+ * lines in the sidebar — a machine address masquerading as link text.
+ */
+const display = (item: Props['items'][number]): string =>
+  item.text ?? item.href.replace(/^mailto:/, '').replace(/^https?:\/\//, '').replace(/[?#].*$/, '');
+
+/**
+ * A link that leaves the site, marked because these lists mix the two: an asset's sidebar
+ * puts its own group page directly beside its upstream repository. Every internal link in the
+ * site is root-relative, so an absolute http(s) address is by definition somewhere else.
+ */
+const isOutbound = (href: string): boolean => /^https?:\/\//.test(href);
 ---
 
 {items.length > 0 && (
@@ -11,7 +29,7 @@ const { items } = Astro.props;
     {items.map((item) => (
       <li>
         <span class="eyebrow">{item.label}</span>
-        <a href={item.href}>{item.text ?? item.href.replace(/^https?:\/\//, '').replace(/^mailto:/, '')}</a>
+        <a href={item.href}>{display(item)}{isOutbound(item.href) && <Icon name="open-in-new" />}</a>
       </li>
     ))}
   </ul>
@@ -32,5 +50,11 @@ const { items } = Astro.props;
 
   .link-list a {
     overflow-wrap: anywhere;
+  }
+
+  /* The marker trails the text on a margin rather than a space, so it can never be pushed
+     onto a line of its own by the wrapping above. */
+  .link-list a :global(.icon) {
+    margin-left: 0.3em;
   }
 </style>

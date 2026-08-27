@@ -31,6 +31,13 @@ export const site = {
    * Paths are relative to public/ (e.g. '/images/brand/cisd-logo.svg').
    */
   brand: {
+    /*
+     * Deliberately undefined: `public/images/brand/logo-cisd.png` exists but is a 1119x816
+     * raster, and at the masthead's 2.4rem it degrades to an illegible smudge. The mark is
+     * kept for contexts large enough to carry it (wrap it in `.mark-plate` — it has no alpha
+     * channel). Set this slot when a vector or a small-size transparent asset is supplied,
+     * and add that file's intrinsic width/height in Header.astro at the same time.
+     */
     logo: undefined as string | undefined,
     favicon: undefined as string | undefined,
     ogImage: undefined as string | undefined,

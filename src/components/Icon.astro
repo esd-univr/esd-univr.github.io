@@ -1,0 +1,55 @@
+---
+/**
+ * One icon, inline.
+ *
+ * The design system adopts Material Symbols Rounded and lists nine glyphs. Eight of them are
+ * *identity* icons for *compact* surfaces, and this site has neither — nothing sets
+ * `data-density='compact'`, and a group is always named beside its colour. The ninth,
+ * `arrow_forward`, is ruled out by the system's own instruction that `.more`'s arrow stays a
+ * text arrow. That leaves exactly one thing an icon says here that type and rules do not: this
+ * link leaves the site. One glyph does not justify a font — not a 960 kB `@fontsource` cut, and
+ * not a hand-subset file with a generator script and a drift test to keep it honest — so the
+ * outline ships as a path, the way the theme toggle in `Header.astro` already does.
+ *
+ * Shape derived from Google Material Symbols Rounded, `open_in_new`, at the instance the system
+ * fixes (FILL 0, wght 400, GRAD 0, opsz 24), in the `0 -960 960 960` viewBox Google's own SVG
+ * exports use. © Google LLC, licensed under the Apache License, Version 2.0
+ * (https://www.apache.org/licenses/LICENSE-2.0) — see `THIRD_PARTY_NOTICES.md`.
+ *
+ * It is a **flagged substitution**: not CISD's own icon set, because CISD has none. If one is
+ * adopted this file is the only place that names a shape.
+ *
+ * Always decorative — `aria-hidden`, because the label beside it already says where the link
+ * goes, and an icon is never the sole carrier of meaning.
+ */
+const ICONS = {
+  /** `open_in_new` — this link leaves the site. */
+  'open-in-new':
+    'M200 -120Q167 -120 144 -144Q120 -167 120 -200V-760Q120 -793 144 -816Q167 -840 200 -840H440Q457 -840 468 -828Q480 -817 480 -800Q480 -783 468 -772Q457 -760 440 -760H200V-200H760V-440Q760 -457 772 -468Q783 -480 800 -480Q817 -480 828 -468Q840 -457 840 -440V-200Q840 -167 816 -144Q793 -120 760 -120ZM760 -704L416 -360Q405 -349 388 -349Q371 -349 360 -360Q349 -371 349 -388Q349 -405 360 -416L704 -760H600Q583 -760 572 -772Q560 -783 560 -800Q560 -817 572 -828Q583 -840 600 -840H800Q817 -840 828 -828Q840 -817 840 -800V-600Q840 -583 828 -572Q817 -560 800 -560Q783 -560 772 -572Q760 -583 760 -600Z',
+} as const;
+
+interface Props {
+  name: keyof typeof ICONS;
+}
+
+const { name } = Astro.props;
+---
+
+<svg class="icon" viewBox="0 -960 960 960" aria-hidden="true" focusable="false">
+  <path d={ICONS[name]} />
+</svg>
+
+<style>
+  /*
+   * Scaled to the text it sits beside rather than to a fixed pixel size, and lifted onto its
+   * baseline. `inline-block` also keeps a link's underline from being drawn through it. The
+   * accent is the system's rule for icons: never ink.
+   */
+  .icon {
+    display: inline-block;
+    width: 1.05em;
+    height: 1.05em;
+    vertical-align: -0.14em;
+    fill: var(--color-accent);
+  }
+</style>

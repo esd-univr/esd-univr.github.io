@@ -1,4 +1,4 @@
-/* Global base styles: reset, typography, links, focus, utilities, Markdown prose. */
+/* Global base styles: reset, typography, links, focus, utilities, bands, Markdown prose. */
 @import './tokens.css';
 
 *,
@@ -11,10 +11,16 @@
   margin: 0;
 }
 
+/*
+ * scrollbar-gutter reserves the scrollbar's width whether or not the page scrolls.
+ * Without it a short page (Projects, News) loses the scrollbar, the viewport widens by
+ * ~15px, and the masthead navigation reflows onto the wordmark line as you navigate.
+ */
 html {
   font-family: var(--font-sans);
   font-size: 100%;
-  line-height: 1.55;
+  line-height: var(--leading-body);
+  scrollbar-gutter: stable;
   background: var(--color-paper);
   color: var(--color-ink);
   -webkit-text-size-adjust: 100%;
@@ -36,6 +42,11 @@ main {
   flex: 1 0 auto;
 }
 
+/* <main> is the skip-link target and carries tabindex="-1"; it must not draw a ring. */
+main:focus {
+  outline: none;
+}
+
 img,
 svg,
 video {
@@ -50,7 +61,7 @@ h3,
 h4 {
   font-family: var(--font-serif);
   font-weight: 500;
-  line-height: 1.15;
+  line-height: var(--leading-tight);
   letter-spacing: -0.01em;
   text-wrap: balance;
   overflow-wrap: anywhere;
@@ -84,7 +95,7 @@ a {
   text-decoration-thickness: 1px;
   text-decoration-color: var(--color-rule);
   text-underline-offset: 0.18em;
-  transition: color 120ms ease, text-decoration-color 120ms ease;
+  transition: var(--transition-link);
 }
 
 a:hover {
@@ -168,7 +179,7 @@ time {
 
 .lede {
   font-size: var(--text-lg);
-  line-height: 1.45;
+  line-height: var(--leading-snug);
   color: var(--color-ink-2);
   max-width: var(--measure);
 }
@@ -210,7 +221,35 @@ time {
   transform: none;
 }
 
-/* Section spacing rhythm shared by all pages. */
+/* --- The page opening ------------------------------------------------------
+ * Every page starts with exactly one opening block — a page header or the home hero —
+ * and nothing above it. One rule owns its spacing, so no page can drift and no page
+ * passes padding to its own opening. See the page contract in AGENTS.md.
+ */
+.page-open {
+  padding-block: var(--space-xl) var(--space-lg);
+}
+
+/*
+ * The opening title. At --text-4xl capped at 18ch the site name broke into five lines
+ * and the title itself became the wall of text the opening exists to avoid. Kept here
+ * rather than in a component so one rule governs every page opening.
+ */
+.page-open h1 {
+  font-size: var(--text-3xl);
+  max-width: 24ch;
+}
+
+/*
+ * Structural fallback: the opening block is the first child of <main> whatever class it
+ * carries, so the spacing holds even for a page that forgets .page-open.
+ */
+main > .container:first-child,
+main > .band:first-child > .container {
+  padding-block: var(--space-xl) var(--space-lg);
+}
+
+/* Section spacing rhythm shared by all pages: a rule, then generous padding. */
 .section {
   padding-block: var(--space-2xl);
   border-top: var(--rule);
@@ -220,7 +259,90 @@ time {
   border-top: 0;
 }
 
-/* Plain text link with an arrow, used for "All publications →". */
+/* --- Bands -----------------------------------------------------------------
+ * A page is not one sheet of white. Full-bleed bands alternate the two paper tones so
+ * each section reads as its own plate; the band carries the background and bleeds edge
+ * to edge, the .container inside it carries the width. Alternate strictly (paper,
+ * paper-2, paper, …) — the change of tone marks the boundary, so a section inside a band
+ * needs no top rule. .band--tint is for a single group-owned block, never twice on one
+ * page, and never a third neutral tone.
+ */
+.band {
+  width: 100%;
+}
+
+.band--sunken {
+  background: var(--color-paper-2);
+}
+
+.band--tint {
+  background: var(--color-tint);
+}
+
+.band > .section:first-of-type {
+  border-top: 0;
+}
+
+/*
+ * Accent-tinted panel: the one coloured surface in the system. 7% of the accent over
+ * paper — enough to group content, never enough to fight the ink. Pair with a
+ * [data-group] subtree and it takes that group's hue.
+ */
+.tint {
+  background: var(--color-tint);
+  border: var(--rule-accent);
+  border-radius: var(--radius);
+}
+
+/*
+ * Compact density: same type, same colour, half the vertical rhythm. Set once on <html>
+ * by whoever builds the surface — this is a build-time token, NOT a user control, and
+ * the site offers no toggle for it.
+ */
+[data-density='compact'] .section {
+  padding-block: var(--space-lg);
+}
+
+[data-density='compact'] .page-open,
+[data-density='compact'] main > .container:first-child,
+[data-density='compact'] main > .band:first-child > .container {
+  padding-block: var(--space-lg) var(--space-md);
+}
+
+[data-density='compact'] .lede {
+  font-size: var(--text-base);
+}
+
+/* --- The brand mark -------------------------------------------------------
+ * A supplied mark already reads "CISD", so the set-type wordmark beside it is a
+ * duplicate. Structural, so it holds whatever the header component renders.
+ */
+header a:has(img) > span:not(:last-of-type) {
+  display: none;
+}
+
+/*
+ * The mark's plate, opted into by wrapping the image in `.mark-plate`.
+ *
+ * `logo-cisd.png` is a raster with no alpha channel, so it carries an opaque white ground
+ * whatever we do, and its "ISD" letterforms are #3d3d3d, which falls to 1.8:1 on
+ * --dark-paper. The rule is that the mark is never recoloured, so it gets a plate rather
+ * than a filter or an inversion — in --brand-mark-ground rather than --light-paper, which
+ * would frame a #ffffff image in a visibly different tone, and in both themes, because the
+ * file has a ground whether we want one or not.
+ *
+ * This is NOT applied to the masthead: at 2.4rem the raster is illegible, so the masthead
+ * uses the set-type wordmark until a vector or small-size transparent asset exists. The
+ * plate is for contexts large enough to carry the mark. A transparent or vector version
+ * would remove the rule entirely.
+ */
+.mark-plate img {
+  background: var(--brand-mark-ground);
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius);
+}
+
+/* Plain text link with an arrow — the system's only call to action. */
 .more {
   display: inline-block;
   font-family: var(--font-mono);
@@ -242,7 +364,7 @@ time {
 .prose {
   max-width: var(--measure);
   font-size: var(--text-base);
-  line-height: 1.65;
+  line-height: var(--leading-prose);
 }
 
 .prose > * + * {
@@ -306,6 +428,46 @@ time {
   border-collapse: collapse;
   width: 100%;
   font-size: var(--text-sm);
+}
+
+/*
+ * Figures written inline in Markdown — see src/lib/markdown-figures.ts, which builds this
+ * markup, and docs/figures.md for the authoring syntax. Global rather than scoped because
+ * no component renders it.
+ *
+ * No forced aspect-ratio: the design system's reference Figure crops to 16/9, which is
+ * right for a photograph and wrong for an architecture diagram. Astro emits the intrinsic
+ * width and height, so the box is reserved without the page jumping and without cropping.
+ * The width is capped by the surrounding `.prose`, so a figure never outruns its column.
+ */
+/*
+ * No `margin: 0` here. The reset already zeroes it, and this rule has the same specificity
+ * as `.prose > * + *` while coming later in the file — so the shorthand won a cascade tie
+ * and every figure sat flush against the paragraph above it, with no rhythm at all.
+ */
+.figure {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.figure img {
+  width: 100%;
+  height: auto;
+  background: var(--color-paper-2);
+  border: var(--rule);
+  border-radius: var(--radius);
+}
+
+.figure figcaption {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--color-ink-3);
+}
+
+/* The credit trails the caption, set apart by a middot rather than by a second line. */
+.figure__credit::before {
+  content: ' · ';
 }
 
 .prose th,

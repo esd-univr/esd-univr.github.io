@@ -45,8 +45,11 @@ Find your task, read every guide listed for it, then act.
 | Add, edit, close or remove a student opportunity (thesis / project / internship proposal) | `docs/opportunities.md`, `docs/content-safety.md` |
 | Edit CISD groups or research topics | `docs/research.md` |
 | Add or update publications | `docs/publications.md` |
+| Add or update a laboratory, facility or tool | `docs/assets.md`, `docs/content-safety.md` |
+| Add an image or a figure to any content body | `docs/figures.md`, `docs/content-safety.md` |
 | Add or update news | `docs/news.md`, `docs/content-safety.md` |
 | Edit mission, affiliation, address, branding or theme | `docs/site-settings.md` |
+| Change a colour, type size, spacing step, layout, component, icon or stylesheet | `docs/design-system-integration.md`, `docs/site-settings.md` |
 | Deployment, GitHub Pages, custom domain, CI | `docs/deployment.md` |
 | Anything involving legacy ids or legacy data | `docs/migration-map.md`, `docs/content-safety.md` |
 | Anything touching photographs, documents or personal data | `docs/content-safety.md`, `SECURITY.md` |
@@ -109,6 +112,62 @@ probably not an editorial task — say so before changing anything.
 - **Never push to `main` directly** unless you were explicitly instructed to.
 - Do not commit unless you were asked to commit.
 
+## The page contract
+
+Every page is **one opening block plus its own content, and nothing else.** The opening is
+`PageLayout`'s header, or the home hero. Breaking any of the rules below produces pages
+whose titles do not line up, which is the defect this contract exists to prevent.
+
+1. **The opening carries its own `.container`.** Never nest a `.container` inside another
+   `.container` — it doubles the gutter and pushes the title further right than on every
+   other page. That was a real bug on the Projects / News fallback.
+2. **Never give the opening padding.** Its spacing is the single `.page-open` rule in
+   `src/styles/base.css`, and the title's size and measure are `.page-open h1`. If an
+   opening looks wrong, fix that rule — never a page.
+3. **The width travels with both blocks.** If the content uses `container--wide`, the
+   opening takes `wide` too. `PageLayout`'s `width` prop does this for you.
+4. **A new page adds content, not a frame.** If two pages need the same block it belongs
+   in `src/components/`, never copied into both.
+5. **Detail pages take their frame from `DetailLayout`** and supply only their own content:
+   a `facts` array, the main column, an `aside` slot, and an optional `back` link. A person,
+   a project, a news item and a proposal are all the same page with different data. **A
+   fifth entity type is a data mapping, not a new layout** — and not a fifth layout either.
+
+**The test, and it is not optional:** `main h1` sits at the same left offset on every page of
+the same width class, and no page nests a `.container`. Check it before calling any layout
+work done. (`container--wide` and `container--narrow` pages are *meant* to differ from
+default-width ones on a wide viewport, so compare like with like.)
+
+**Bands are full-bleed, so they cannot live in a container.** A page that alternates bands
+passes `bleed` to `PageLayout`, which then does not wrap the content, and the page puts a
+`.container` *inside* each band. If the opening is `wide`, repeat `container--wide` inside
+the bands too.
+
+```astro
+<PageLayout title="Projects" bleed>
+  <div class="band">
+    <section class="section container">…</section>
+  </div>
+  <div class="band band--sunken">
+    <section class="section container">…</section>
+  </div>
+</PageLayout>
+```
+
+Three related rules that live in the same layer:
+
+- **Group colour is claimed, never passed.** A subtree sets `data-group="esd|parco|iot4care"`
+  and everything inside that already paints with `--color-accent` follows. **Never add a
+  colour prop to a component**, and never let colour carry meaning alone — the acronym or
+  the group name is always present beside a coloured element. A page that belongs to exactly
+  one group passes `group` to `PageLayout`.
+- **A group hue belongs where the page is organised by group** — Research, People, the groups
+  block on the home page — so each block owns one hue. In a list that mixes groups row by row
+  (News, Publications, Projects) stay on the parent accent: per-row hues are decoration, and
+  where no group name is printed the colour would be the only carrier of the information.
+- **Density is not a user control.** `data-density="compact"` is set once on `<html>` by
+  whoever builds the surface. Do not add a toggle for it.
+
 ## Where things are
 
 | Path | What lives there |
@@ -117,16 +176,19 @@ probably not an editorial task — say so before changing anything.
 | `src/content/projects/` | One Markdown file per project |
 | `src/content/news/` | One Markdown file per news item, `YYYY-MM-DD-<slug>.md` |
 | `src/content/opportunities/` | One Markdown file per thesis / project / internship proposal |
+| `src/content/assets/` | One Markdown file per laboratory, facility or tool, plus its figures |
 | `src/data/` | `groups.yaml`, `research.yaml`, `publications.bib`, `publications.overrides.yaml`, `site.ts` |
 | `src/content.config.ts` | The schema of every content type — the definition of which fields exist |
 | `src/pages/` | Routes. No content lives here |
-| `src/layouts/`, `src/components/` | HTML shell and building blocks |
+| `src/layouts/` | `BaseLayout` (the shell) → `PageLayout` (one opening) → `DetailLayout` (opening + metadata sidebar), plus `LegacyRedirect` |
+| `src/components/` | Building blocks shared by more than one page |
 | `src/styles/` | `tokens.css` (design tokens) and `base.css` |
 | `src/lib/`, `src/loaders/` | Plain TypeScript helpers (BibTeX, publications, people, legacy URLs) |
 | `public/` | Files copied verbatim into the build (`robots.txt`, `documents/…`) |
 | `scripts/verify.mjs` | Repository and built-site verification, run by CI |
 | `tests/` | Unit tests and content invariants (`node --test`) |
 | `docs/` | The task guides listed above |
+| `THIRD_PARTY_NOTICES.md` | Provenance and licences of the third-party material this repository redistributes. Add an entry before adding an asset you did not make |
 
 `src/content.config.ts` is the source of truth for which fields a record may have. If a
 guide and the schema disagree, the schema wins — and fix the guide.
