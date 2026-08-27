@@ -1,51 +1,55 @@
 ---
 name: CHASE
 summary: >-
-  The Contract-based Heterogeneous Analysis and System Exploration (CHASE) framework is a
-  requirement engineering framework combining specification and modeling formalisms with
-  rigorous verification and synthesis procedures relying on A/G contracts.
+  A modular requirement-engineering framework for cyber-physical systems that turns
+  heterogeneous specifications into assume-guarantee contracts and connects requirement
+  capture, formalisation, validation, synthesis and system-level design exploration.
 category: software
 kind: Framework
 groups: []
 order: 4
-url: https://chase-cps.github.io/chase/
+url: https://chase-cps.github.io/
+repository: https://github.com/chase-cps/chase
 contact:
   person: michele-lora
 publications:
-  - label: Initial publication on IEEExplore
-    href: https://ieeexplore.ieee.org/abstract/document/8342122
+  - label: "CHASE: Contract-Based Requirement Engineering for Cyber-Physical System Design"
+    href: https://doi.org/10.23919/DATE.2018.8342122
 ---
 
-The Contract-based Heterogeneous Analysis and System Exploration (CHASE) framework is a
-requirement engineering framework combining specification and modeling formalisms with rigorous
-verification and synthesis procedures relying on A/G contracts.
+## From requirements to formal analysis
 
-CHASE also provides interfaces for the designers to implement novel design tools and
-methodologies.
+**CHASE** — Contract-based Heterogeneous Analysis and Systems Exploration — is a requirement-engineering framework for cyber-physical systems. Its purpose is to connect requirement capture and formalisation with rigorous validation and design exploration rather than treating these as disconnected activities.
+
+The framework is built around **assume-guarantee (A/G) contracts**. A contract describes the assumptions a component makes about its environment and the guarantees it provides when those assumptions hold. CHASE uses this representation to reason compositionally about requirements, components and complete systems.
 
 ![The CHASE representation core library, with the front-end and back-end tool layers around it](./chase-architecture.jpg)
-*The core library represents the contracts; front-end and back-end tools are built on its APIs.*
+*The representation core stores contracts and system models; front ends formalise requirements and back ends connect the model to analysis and synthesis tools.*
 
-Its main component is the representation core library, which provides a set of classes to
-represent requirements, components, and system models in terms of A/G contracts. Contracts are
-then mathematical models with rigorous composition rules that provide mechanisms to analyze
-system behaviors, validate design requirements, and develop system components in a modular and
-hierarchical way. The CHASE library supports the representation of A/G contracts expressed in
-propositional logic or Linear Temporal Logic (LTL) and implements the operations defined by the
-contract algebra. Thus, it allows exploiting the compositionality and rigor provided by A/G
-contracts and their algebra to automate verification and synthesis tasks. The library also
-supports the representation of Signal Temporal Logic and Metric Temporal Logic, enabling the use
-of the most appropriate formalism for the specification of the design requirements. Finally,
-CHASE supports the representation of arithmetic constraints on real numbers, dynamical systems
-in the state space, and probability distributions to specify stochastic components and
-probabilistic constraints.
+## Representation core
 
-A set of methods allow accessing the functionalities of the core library to manipulate the design
-representations. These methods are exported to designers by C++ and Python Application
-Programming Interfaces (APIs). Design methodologies can be implemented on top of CHASE by
-writing tools that exploit these APIs.
+The central CHASE library provides classes and data structures for requirements, components and system models expressed through contracts. It implements contract-algebra operations used to analyse **compatibility, consistency, refinement and composition**, allowing a design problem to be decomposed and checked without abandoning a mathematically defined interface model.
 
-Front-end and back-end tools can also be developed on top of the CHASE library. Front-end tools
-are used to aid the formalization of the requirements, usually expressed in semi-formal
-languages, by encoding them in the formal constructs of the core library. Back-end tools
-interface the internal representation provided by the core library to external solvers.
+The representation is deliberately heterogeneous. CHASE supports contracts expressed through propositional logic and **Linear Temporal Logic (LTL)**, and it also represents **Signal Temporal Logic (STL)** and **Metric Temporal Logic (MTL)**. Additional model classes cover arithmetic constraints over real values, state-space dynamical systems, graph-based architectural structures and probabilistic information.
+
+## Extensible tools and APIs
+
+CHASE is organised as a modular software infrastructure. The core library can be used independently, while additional modules provide domain-specific languages, logic-oriented tools and back ends to external engines. Public documentation lists integrations with tools such as **Slugs, GR1C, NuSMV and PySTL**.
+
+The core is primarily implemented in **C++**, with a Python interface built through pybind11. This lets researchers implement new design methodologies, requirement front ends and analysis back ends without changing the representation layer itself.
+
+## Requirement capture and validation
+
+The DATE 2018 CHASE paper describes an end-to-end flow in which requirement patterns help translate natural-language design intent into formal contracts. The contract back end can then assess whether requirements are correct, complete and mutually consistent through formal checking problems.
+
+This workflow has been evaluated on cyber-physical design examples including **aircraft power-distribution control** and arbitration of a **mixed-criticality automotive bus**, illustrating the use of the same contract infrastructure across different application domains.
+
+## Research lineage
+
+CHASE grew out of a University of Verona research line on contract-based system design and heterogeneous formal specification, developed through collaboration with researchers at UC Berkeley, the University of Southern California and IBM Research Haifa. It also provides part of the contract-based methodological foundation later used in research on cyber-physical production systems and DeFacto.
+
+## Official resources
+
+- [CHASE website and documentation](https://chase-cps.github.io/)
+- [CHASE source repository](https://github.com/chase-cps/chase)
+- [DATE 2018 paper](https://doi.org/10.23919/DATE.2018.8342122)
