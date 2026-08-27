@@ -46,7 +46,7 @@ repository. The resolution is already in the code; do not silently re-open one.
 | # | The disagreement | Resolution |
 | --- | --- | --- |
 | 1 | `HANDOFF.md` §2a gives an indigo accent and violet / blue / cyan group hues (`#6a2fbe`, `#1c56c8`, `#0d6f86`). `tokens/palette.css` and `readme.md` give the logo's purple `#9d3e91` and the mark's own arcs. | **The CSS wins.** The accent is `#9d3e91`; the group hues are the mark's arcs. |
-| 2 | `HANDOFF.md` says "Assets: None … the mark stays set type", and `readme.md` CAVEAT 3 says "No logo and no portraits". But `readme.md`'s ICONOGRAPHY section and the kit's `assets/README.md` document `logo-cisd.png` in detail, and `base.css` ships rules for it. | **The mark exists and ships**, at `public/images/brand/logo-cisd.png`, with `brand.logo` set. |
+| 2 | `HANDOFF.md` says "Assets: None … the mark stays set type", and `readme.md` CAVEAT 3 says "No logo and no portraits". But `readme.md`'s ICONOGRAPHY section and the kit's `assets/README.md` document `logo-cisd.png` in detail, and `base.css` ships rules for it. | **The file exists**, at `public/images/brand/logo-cisd.png`, but it is not used at masthead scale — see "The mark" below. `brand.logo` is `undefined`, so `HANDOFF.md` turns out to be right by accident: the masthead is set type. |
 | 3 | `readme.md`'s INDEX says the kit's `assets/` is "empty by design". | Wrong — it holds the mark. |
 | 4 | The kit's `assets/README.md` describes the mark as having a "transparent background". | **The file has no alpha channel** and an opaque `#ffffff` ground. See "The mark" below. |
 | 5 | `HANDOFF.md` §2b says this repository has four theme scopes, including `[data-theme='light']`. | It has **three**. There is no `[data-theme='light']` block, because the media query is scoped `:root:not([data-theme='light'])`. The repository's structure wins. |
@@ -62,8 +62,9 @@ greenfield.
 
 ## Where this repository departs from the design system
 
-Two values, both for the same reason: the system verified them in one context and this site
-paints them in more than one.
+Three departures. The first two share a cause — the system verified a colour in one context
+and this site paints it in more than one — and the third is a consequence of the type floor.
+The mark is a fourth, described in its own section below.
 
 ### `--light-iot4care`: `#2f7d43` → `#2a783f`
 
