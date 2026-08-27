@@ -1,0 +1,25 @@
+---
+/**
+ * One glyph from the self-hosted Material Symbols subset (`src/styles/icons.css`).
+ *
+ * Always decorative: an icon marks an affordance that the surrounding text already states,
+ * so it is `aria-hidden` and never the only carrier of meaning. The glyph is addressed by
+ * codepoint rather than by the upstream ligature name, so a font that fails to load leaves a
+ * blank instead of printing "open in new" into the page.
+ *
+ * Adding a glyph means adding it here **and** in `GLYPHS` in `scripts/build-icon-font.py`,
+ * then regenerating the font — the subset holds nothing else.
+ */
+const GLYPHS = {
+  /** This link leaves the site. */
+  'open-in-new': '\ue89e',
+} as const;
+
+interface Props {
+  name: keyof typeof GLYPHS;
+}
+
+const { name } = Astro.props;
+---
+
+<span class="icon" aria-hidden="true">{GLYPHS[name]}</span>

@@ -1,5 +1,7 @@
 ---
 /** Small definition-style list of labelled links (contacts, profiles, resources). */
+import Icon from './Icon.astro';
+
 interface Props {
   items: Array<{ label: string; href: string; text?: string }>;
 }
@@ -13,6 +15,13 @@ const { items } = Astro.props;
  */
 const display = (item: Props['items'][number]): string =>
   item.text ?? item.href.replace(/^mailto:/, '').replace(/^https?:\/\//, '').replace(/[?#].*$/, '');
+
+/**
+ * A link that leaves the site, marked because these lists mix the two: an asset's sidebar
+ * puts its own group page directly beside its upstream repository. Every internal link in the
+ * site is root-relative, so an absolute http(s) address is by definition somewhere else.
+ */
+const isOutbound = (href: string): boolean => /^https?:\/\//.test(href);
 ---
 
 {items.length > 0 && (
@@ -20,7 +29,7 @@ const display = (item: Props['items'][number]): string =>
     {items.map((item) => (
       <li>
         <span class="eyebrow">{item.label}</span>
-        <a href={item.href}>{display(item)}</a>
+        <a href={item.href}>{display(item)}{isOutbound(item.href) && <Icon name="open-in-new" />}</a>
       </li>
     ))}
   </ul>
@@ -41,5 +50,11 @@ const display = (item: Props['items'][number]): string =>
 
   .link-list a {
     overflow-wrap: anywhere;
+  }
+
+  /* The marker trails the text on a margin rather than a space, so it can never be pushed
+     onto a line of its own by the wrapping above. */
+  .link-list a :global(.icon) {
+    margin-left: 0.3em;
   }
 </style>

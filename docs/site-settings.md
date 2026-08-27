@@ -87,6 +87,7 @@ the only theme source of truth**; a hard-coded colour anywhere else is a bug.
 | Widths | `--measure`, `--container`, `--container-wide`, `--container-narrow`, `--gutter` |
 | Detail | `--rule`, `--radius` |
 | Motion | `--duration` (120ms), `--ease`, `--transition-link`, `--transition-control` |
+| Icon | `--font-icon` — declared in `src/styles/icons.css`, not `tokens.css`, because it ships a font file with it |
 
 The type and spacing scales use `clamp()` so they grow with the viewport; change the three
 numbers inside a `clamp()`, not the places that use it.

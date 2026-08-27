@@ -52,6 +52,7 @@ repository. The resolution is already in the code; do not silently re-open one.
 | 5 | `HANDOFF.md` §2b says this repository has four theme scopes, including `[data-theme='light']`. | It has **three**. There is no `[data-theme='light']` block, because the media query is scoped `:root:not([data-theme='light'])`. The repository's structure wins. |
 | 6 | `readme.md` says `--text-4xl` "is reserved for the home hero", but `base.css` sets `.page-open h1` to `--text-3xl` and explains why (at `--text-4xl` capped at 18ch the site name broke into five lines). | **`base.css` wins.** Every page opening, including the home hero, is `--text-3xl` at 24ch. `--text-4xl` is currently unused. |
 | 7 | The kit's `ui_kits/website/README.md` and `readme.md` both state that this repository contained no `.astro` files at all at the 27 August re-read. | **Simply false.** It had 20 routes, 3 layouts and 12 components. |
+| 8 | `readme.md` and `HANDOFF.md` §5 both list nine glyphs as "in use" and give rules for them. Nothing in the kit — not `base.css`, not `styles.css`, not the website kit — references `.icon` or `--font-icon` even once. | **The icon layer was declared and never placed.** "Glyphs in use" is a wish list, so it carries no weight against the rules that *are* exercised. See "Iconography" below. |
 
 Item 7 had a lasting consequence: the kit's **index** screens are genuine recreations of real
 Astro source, but its **detail** pages and `DetailLayout` were designed from the system
@@ -275,6 +276,56 @@ The mark's five colours are recorded as `--brand-green`, `--brand-blue`, `--bran
 `--brand-purple`, `--brand-gold` and `--brand-mark-ink`. These are **brand-only**: the red
 and the gold never enter the interface.
 
+## Iconography
+
+The system adopts **Material Symbols Rounded**, outlined, weight 400 — chosen because its
+stroke reads at the same visual weight as the 1px rules — and loads it from Google Fonts.
+Three things had to change on the way in.
+
+**Self-hosted, and subset by hand.** This repository may not reference a third-party font host
+(`AGENTS.md`; `npm run verify` fails the build on `fonts.googleapis.com`). `@fontsource` was
+the obvious substitute and is the wrong tool here: the smallest single-axis cut of a
+6597-glyph variable font is 960 kB, and the full one 5.3 MB. So
+`scripts/build-icon-font.py` pins the upstream file to the one instance the system fixes
+(FILL 0, wght 400, GRAD 0, opsz 24) and subsets it to the codepoints in use. The committed
+result is **720 bytes**, small enough that the build inlines it into the stylesheet.
+
+The script is a maintenance tool and deliberately not part of the build: its output is
+committed, so `npm ci && npm run build` needs neither Python nor the upstream package. Adding
+a glyph means editing `GLYPHS` in **both** `src/components/Icon.astro` and the script, then
+re-running it — `tests/icon-font.test.mjs` fails if the two lists drift apart.
+
+**One glyph, not nine, and not one of the nine.** The system's list — `hub`,
+`developer_board`, `memory`, `monitor_heart`, `science`, `groups`, `menu_book`, `campaign`,
+`arrow_forward` — is entirely *identity* icons for *compact* surfaces, and this site has
+neither: `data-density='compact'` is defined in `base.css` and set on no page, and where a
+group needs to be identifiable the acronym or the group name is already printed beside it
+(`AGENTS.md`, "Group colour is claimed, never passed"). `arrow_forward` is the one affordance
+glyph on the list, and the system separately requires `.more`'s arrow to stay a text `→`
+"not a glyph asset", so it cannot be used either.
+
+What the site does have is one affordance no type-and-rule treatment states: **a link that
+leaves the site**, in a list that mixes the two. An asset's sidebar puts its own group page
+directly beside its upstream repository; a person's puts the group page beside four external
+profiles. So the layer ships `open_in_new` (U+E89E), placed once, in `LinkList`, on any
+absolute `http(s)` href — every internal link in the site is root-relative. It is
+`aria-hidden`, because the label beside it already says where the link goes.
+
+**Two properties dropped from the system's `.icon`.** `font-feature-settings: 'liga'` and
+`font-variation-settings`, both dead after subsetting: the subset holds no ligatures, and
+pinning the instance removed the axes. Addressing the glyph by codepoint rather than by
+ligature name is also what makes a failed font load degrade to a blank rather than print the
+words "open in new" into the sidebar.
+
+Everything else about the system's icon rules is kept: outlined weight 400, `--color-accent`
+and never ink, never inside running prose, and never the sole carrier of meaning. The theme
+toggle keeps its inline SVG — the system documents it as one, and it is not a Material
+Symbol.
+
+**Still a flagged substitution.** Material Symbols is not CISD's own icon set, because CISD
+has none. If one is adopted, `src/styles/icons.css`, `src/components/Icon.astro` and the
+script's `GLYPHS` are the only three places that name a glyph.
+
 ## Two records that must never be ported
 
 The kit's `data.js` invents two records purely so their layouts could be reviewed, and marks
@@ -325,11 +376,13 @@ four colours repeated inline in `src/layouts/LegacyRedirect.astro`.
   proposed by the kit for the home page and the compact group cards. They are *proposals*
   and need the group's approval before they are published; the full wording in
   `src/data/site.ts` and `groups.yaml` is what ships until then.
-- **`src/content/assets/`** does not exist yet. The Assets & Tools entries (the ICE
-  Laboratory, HIFSuite, EDACurry, CHASE) come from the previous site,
-  `https://cisd.di.univr.it/assets/`. The collection needs a schema before any entry is
-  written, and `/assets/` must stay out of the navigation until the route exists, or
-  `npm run verify` fails on an unresolvable internal link.
+- **The Assets & Tools copy is in American spelling** (*centers*, *modeling*, *optimizing*,
+  *analyze*) against the house British style. All five entries were migrated verbatim from
+  `https://cisd.di.univr.it/assets/` rather than silently rewritten; normalising the spelling
+  is an editorial decision, not a migration one. See `docs/assets.md`.
+- **GLACIER has no published contact address.** The legacy page gave one, but it belongs to
+  somebody who is not on the roster, so only the name is published
+  (`docs/content-safety.md`).
 
 ## See also
 
