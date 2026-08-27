@@ -99,6 +99,13 @@ function checkHtml(dist, label) {
       if (!/<meta name="description" content="[^"]+"/.test(html)) fail(`${label}/${page}: missing meta description`);
       if (!/<main[\s>]/.test(html)) fail(`${label}/${page}: missing <main>`);
       if (!/class="skip-link"/.test(html)) fail(`${label}/${page}: missing skip link`);
+      if (
+        page.startsWith('news/') &&
+        page !== 'news/index.html' &&
+        /(?:^|[}\s])body\s*\{[^}]*max-width\s*:\s*40rem/i.test(html)
+      ) {
+        fail(`${label}/${page}: normal news page contains the legacy redirect body width rule`);
+      }
       let previous = 1;
       for (const m of html.matchAll(/<h([1-6])[\s>]/g)) {
         const level = Number(m[1]);
