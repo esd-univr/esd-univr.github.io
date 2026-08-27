@@ -1,10 +1,10 @@
 # Provenance of the published content
 
 The former CISD website (`cisd.di.univr.it`, a Django application) was replaced by this
-static site. Its public data was migrated in August 2026 and then **curated**: the first
-public version deliberately contains only content that has been approved for publication,
-not everything the old database held. This file records where the published records came
-from, which old addresses still work, and what was deliberately left out.
+static site. Its public data was migrated in August 2026 and then **curated**: the public
+site contains approved records rather than a blind copy of everything the old database held.
+This file records where the published records came from, which old addresses still work, and
+where a migrated record was reconciled with a more authoritative public source.
 
 It names public records only (people, project and news titles, public URLs). It contains no
 contact details, funding amounts or other private data.
@@ -14,7 +14,9 @@ contact details, funding amounts or other private data.
 | Source | Used for |
 | --- | --- |
 | Production database of the legacy site (PostgreSQL, exported 2026-08-26) | people, projects, news, publications |
-| Official University of Verona group pages (`di.univr.it`, `dimi.univr.it`) | current roles and the group descriptions |
+| Public legacy site (`cisd.di.univr.it`) | legacy titles, project descriptions, dates, group attribution and old URLs |
+| Official University of Verona group and project pages (`di.univr.it`, `dimi.univr.it`) | current roles, group descriptions, project metadata and funding provenance |
+| Public funder/project records | historical project codes and period reconciliation where the legacy listing was stale |
 | Legacy group descriptions written by the groups themselves | research topics, group summaries |
 
 The full export, the complete 560-entry bibliography and everything not published live in a
@@ -33,7 +35,9 @@ private working area outside this repository and are not part of the public site
 | `/area/9/` | `/research/#esd` | Electronic Systems Design |
 | `/area/8/` | `/research/#parco` | PARCO Lab |
 | `/area/7/` | `/research/#iot4care` | Internet of Things 4 Care |
+| `/project/1/` | `/projects/ada/` | ADA |
 | `/project/2/` | `/projects/defacto/` | DeFacto |
+| `/project/7/` | `/projects/parkinson-motor-fluctuations/` | IoT infrastructure for monitoring motor fluctuations in Parkinson's disease |
 | `/project/8/` | `/projects/strategus/` | STRATEGUS |
 | `/news/17/` | `/news/2023-02-16-msca-postdoctoral-fellowship-strategus/` | MSCA fellowship |
 | `/news/27/` | `/news/2024-01-15-paper-ieee-tcad-2023-analog-defect-injection-review/` | IEEE TCAD paper |
@@ -47,8 +51,40 @@ Every stub is a static page with a meta refresh, a canonical link and `noindex`;
 Pages cannot send HTTP redirects. `npm run verify` fails if a `legacyId` in the content has
 no stub, or if a stub points at a page that does not exist.
 
+Three restored project records — OPERA 4.0, Bip-Bip and Smart-Pump — were present on the
+legacy `/projects/` page, but their numeric `/project/<id>/` addresses have not been verified
+from a public source. No `legacyId` is guessed for them, so no compatibility URL is invented.
+
 Pietro Turco and Samuele Santacà were not in the legacy database; their records were created
 for this site and their exact titles still need confirmation.
+
+## Historical project reconciliation
+
+The legacy project index had several open-ended `To Today` values that were stale by 2026.
+Historical records keep the legacy identity, but a stale period is reconciled against a more
+specific public source rather than being presented as an active project.
+
+- **ADA** — the legacy detail page `/project/1/` explicitly gives 1 January 2017 to
+  31 December 2019 and is preserved as the migration source for the dates. The current
+  University project record gives a different administrative start (1 January 2018,
+  24 months); its permanent institutional page is retained as the project URL.
+- **Bip-Bip** — the legacy index said `From Jan. 1, 2019 - To Today`. A public project-activity
+  record gives October 2018 to September 2019. The Markdown date fields use the first and
+  last day of those stated months solely to fit the site's day-precision schema; the source
+  itself is only month-precise.
+- **Smart-Pump** — the legacy index said `From Jan. 1, 2020 - To Today`. Public project
+  records identify the FSE project code `1695-0013-1463-2019`, Graziano Pravadelli as
+  scientific lead and a July 2020 to July 2021 activity period. The date fields similarly
+  normalise that month-level period to its month boundaries.
+- **OPERA 4.0** — the legacy CISD site classified the project under Networked Systems and
+  Technologies (NeST). The official University ESD project history also lists OPERA 4.0;
+  the new site therefore associates the historical record with ESD while preserving the
+  former NeST classification explicitly in the project text. The institutional record gives
+  1 January 2021 and a duration of 24 months, represented as 2021–2022.
+- **Parkinson motor-fluctuation IoT infrastructure** — `/project/7/` provides exact dates,
+  1 June 2021 to 31 May 2022, so no reconciliation is needed.
+
+Funding amounts from the legacy site and public grant records are deliberately not migrated.
 
 ## Editorial decisions behind the published set
 
@@ -59,13 +95,17 @@ for this site and their exact titles still need confirmation.
   alongside two groups (ForME, NeST) that are separate research groups of the department.
   Here ESD, PARCO and IoT4Care are *groups*, and research *topics* were written from the
   groups' own descriptions and their published work. ForME and NeST are not part of CISD.
-- **Projects** — the two ESD projects approved for this version. The IoT4Care projects and
-  the NeST project from the old site are not published.
+- **Projects** — the seven projects shown by the former CISD project index are now represented:
+  DeFacto, STRATEGUS, OPERA 4.0, Bip-Bip, Smart-Pump, ADA and the IoT infrastructure for
+  monitoring motor fluctuations in Parkinson's disease. Historical people who are not in the
+  approved current roster remain plain-text provenance in the project body rather than being
+  added to `people:`.
 - **Publications** — a curated selection: work from 2020 onwards co-authored by someone
   listed under People, with three preprints removed that duplicate a published paper in the
   same selection. Entries the authors had hidden on the old site remain excluded. Fields the
   old database did not store (pages, volume, publisher) are absent; a DBLP refresh can add
-  them.
+  them. Project links are restored only where a public legacy record explicitly associates
+  the publication with that project.
 - **News** — four recent items. The rest of the 31 legacy posts were not published.
 - **Photographs** — the portrait each person had on the legacy site, for the six of the
   eight published people who had one. The identification comes from the legacy profile

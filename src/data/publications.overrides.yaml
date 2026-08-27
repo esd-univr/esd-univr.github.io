@@ -13,6 +13,7 @@ DBLP:conf/date/LoraGOS0F24:
   featured: true
 DBLP:conf/isola/BoldoBCMDPQT22:
   featured: true
+  projects: [opera-4-0]
 DBLP:conf/date/GaiardelliSPLF22:
   projects: [defacto]
 DBLP:conf/date/LeetOLKN23:
@@ -37,3 +38,5 @@ DBLP:journals/tii/GaiardelliLSF24:
   projects: [defacto]
 DBLP:journals/tii/SpelliniCPLF21:
   projects: [defacto]
+DBLP:conf/wf-iot/DemroziSTPP21:
+  projects: [ada]
