@@ -322,20 +322,20 @@ header a:has(img) > span:not(:last-of-type) {
 }
 
 /*
- * The mark is a raster drawn for a light ground: its "ISD" letterforms are #3d3d3d,
- * which falls to 1.8:1 on --dark-paper. The rule is that the mark is never recoloured,
- * so it gets a plate rather than a filter or an inversion.
+ * The mark's plate, opted into by wrapping the image in `.mark-plate`.
  *
- * The plate is --brand-mark-ground (#ffffff), not --light-paper: the supplied PNG has no
- * alpha channel, so it already carries an opaque white ground and a paper-coloured plate
- * would frame it in a visibly different tone. For the same reason the plate applies in
- * BOTH themes — the file has a ground whether we want one or not, and padding it in its
- * own colour turns a bare white rectangle into a deliberate one with the system radius.
+ * `logo-cisd.png` is a raster with no alpha channel, so it carries an opaque white ground
+ * whatever we do, and its "ISD" letterforms are #3d3d3d, which falls to 1.8:1 on
+ * --dark-paper. The rule is that the mark is never recoloured, so it gets a plate rather
+ * than a filter or an inversion — in --brand-mark-ground rather than --light-paper, which
+ * would frame a #ffffff image in a visibly different tone, and in both themes, because the
+ * file has a ground whether we want one or not.
  *
- * A transparent or vector version of the mark removes all of this: plate only in dark
- * theme, with --light-paper, exactly as the design system specifies.
+ * This is NOT applied to the masthead: at 2.4rem the raster is illegible, so the masthead
+ * uses the set-type wordmark until a vector or small-size transparent asset exists. The
+ * plate is for contexts large enough to carry the mark. A transparent or vector version
+ * would remove the rule entirely.
  */
-header a img,
 .mark-plate img {
   background: var(--brand-mark-ground);
   padding: 0.2rem 0.4rem;

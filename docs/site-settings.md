@@ -52,9 +52,17 @@ brand: {
 }
 ```
 
-All three are deliberately `undefined`: no official CISD or University of Verona brand file
-has been approved for this site yet. The header falls back to a text wordmark, and the
-Open Graph card falls back to a text-only summary.
+All three are deliberately `undefined`, and the header falls back to the set-type wordmark
+while the Open Graph card falls back to a text-only summary.
+
+`favicon` and `ogImage` are undefined because no approved file exists yet. `logo` is a
+different case: `public/images/brand/logo-cisd.png` **is** in the repository, but it is a
+1119×816 raster with no alpha channel, and at the masthead's 2.4rem it degrades to an
+illegible smudge. Enlarging or re-processing it is not the answer. The file is kept for
+contexts large enough to carry the mark — wrap it in `.mark-plate`, which gives it the white
+ground it needs in both themes — and the masthead stays set type until a vector or a
+small-size transparent asset is supplied. When one is, set `logo` and add that file's
+intrinsic width and height in `Header.astro` in the same commit.
 
 To enable one: put the file under `public/images/brand/`, set the slot to its path from the
 site root (`/images/brand/…`), and run `npm run ci`.

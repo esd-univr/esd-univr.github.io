@@ -214,15 +214,25 @@ filtered; only on `--color-paper` or `--color-paper-2`; never beside the set-typ
 which `base.css` hides whenever the anchor contains an image; height `2.4rem`, fluid, never
 fixed px.
 
-**One deviation.** The system specifies a `--light-paper` plate in dark theme only. The
-supplied file has no alpha channel — its `#ffffff` ground is baked in — so a
-`--light-paper` plate would frame a white image in a visibly different border. The plate
-therefore uses `--brand-mark-ground` (`#ffffff`) and applies in **both** themes, which turns
-an unavoidable white rectangle into a deliberate one with the system radius.
+**Two deviations, and the second one supersedes the first.**
 
-A transparent or vector version of the mark would remove all of this: plate in dark theme
-only, with `--light-paper`, exactly as specified. It is worth asking the group for one — the
-current file is a 1119×816 raster rendering at roughly 52×38px.
+The system specifies a `--light-paper` plate in dark theme only. The supplied file has no
+alpha channel — its `#ffffff` ground is baked in — so a `--light-paper` plate would frame a
+white image in a visibly different border. The plate therefore uses `--brand-mark-ground`
+(`#ffffff`) and applies in **both** themes.
+
+More importantly, **the masthead does not use the mark at all.** The system puts it at
+`2.4rem`, but the file is a 1119×816 raster: at roughly 52×38px the five arcs collapse into
+a smudge, and a raster downscaled 21× is soft on top of that. Enlarging or re-processing it
+is explicitly not the answer. So `brand.logo` is `undefined`, the masthead renders the
+set-type wordmark, and `.mark-plate` exists as an opt-in for contexts large enough to carry
+the mark legibly.
+
+This is treated as **non-blocking**. When a vector or a small-size transparent asset is
+supplied: set `brand.logo`, add the file's intrinsic dimensions in `Header.astro`, and — if
+it has real transparency — narrow the plate back to dark theme only with `--light-paper`,
+exactly as the system specifies. `base.css` already drops the set-type "CISD" whenever the
+masthead anchor contains an image, so the wordmark gets out of the way on its own.
 
 The mark's five colours are recorded as `--brand-green`, `--brand-blue`, `--brand-red`,
 `--brand-purple`, `--brand-gold` and `--brand-mark-ink`. These are **brand-only**: the red

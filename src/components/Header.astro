@@ -18,11 +18,12 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
   <div class="container masthead__inner">
     <a class="wordmark" href="/" aria-label={`${site.name} — home`}>
       {/*
-        Intrinsic dimensions of the supplied file, so the browser reserves the right box
-        and the mark never shifts on load; CSS sets the displayed height. When a logo is
-        present base.css drops the set-type "CISD" beside it — the mark already reads it.
+        Only renders once `brand.logo` names a mark that survives 2.4rem — see site.ts.
+        Add that file's intrinsic width and height here when it does, so the box is reserved
+        before it loads. When a logo is present base.css drops the set-type "CISD" beside
+        it, because the mark already reads it.
       */}
-      {site.brand.logo ? <img class="wordmark__logo" src={site.brand.logo} alt="" width="1119" height="816" /> : null}
+      {site.brand.logo ? <img class="wordmark__logo" src={site.brand.logo} alt="" /> : null}
       <span class="wordmark__short">{site.shortName}</span>
       <span class="wordmark__long">{site.name}<span class="wordmark__affiliation"> · {site.organisation.university}</span></span>
     </a>
@@ -71,9 +72,11 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
     gap: var(--space-xs);
   }
 
+  /* Baseline, so the serif wordmark and the affiliation line sit on one line together;
+     a mark, when there is one, centres itself against them instead. */
   .wordmark {
     display: inline-flex;
-    align-items: center;
+    align-items: baseline;
     gap: var(--space-sm);
     text-decoration: none;
   }
@@ -84,6 +87,7 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
 
   /* Fluid, tied to the type scale — never a fixed pixel height. */
   .wordmark__logo {
+    align-self: center;
     height: 2.4rem;
     width: auto;
   }
