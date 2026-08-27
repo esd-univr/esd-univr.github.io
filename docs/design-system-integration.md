@@ -313,7 +313,8 @@ Everything else about the system's icon rules is kept: outlined weight 400,
 `--color-accent` and never ink, never inside running prose, never the sole carrier of meaning.
 
 **Still a flagged substitution.** Material Symbols is not CISD's own icon set, because CISD
-has none; it is © Google under the SIL Open Font License 1.1. If a set is adopted,
+has none; the outline is © Google LLC under the Apache License 2.0, recorded in
+`THIRD_PARTY_NOTICES.md`. If a set is adopted,
 `src/components/Icon.astro` is the only file that names a shape. Adding a *second* icon is a
 decision, not a chore — it needs an affordance that type and rules cannot state, on a surface
 that is not running prose.

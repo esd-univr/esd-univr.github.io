@@ -188,6 +188,7 @@ Three related rules that live in the same layer:
 | `scripts/verify.mjs` | Repository and built-site verification, run by CI |
 | `tests/` | Unit tests and content invariants (`node --test`) |
 | `docs/` | The task guides listed above |
+| `THIRD_PARTY_NOTICES.md` | Provenance and licences of the third-party material this repository redistributes. Add an entry before adding an asset you did not make |
 
 `src/content.config.ts` is the source of truth for which fields a record may have. If a
 guide and the schema disagree, the schema wins — and fix the guide.
