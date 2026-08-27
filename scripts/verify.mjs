@@ -128,7 +128,8 @@ if (!existsSync(dist)) {
     'index.html', '404.html', 'robots.txt', '.nojekyll', 'sitemap-index.xml', 'publications.bib',
     'research/index.html', 'people/index.html', 'projects/index.html', 'publications/index.html',
     'news/index.html', 'contacts/index.html', 'news-list/index.html', 'areas/index.html',
-    'opportunities/index.html',
+    // /assets/ carries over from the previous site; the path is part of the migration.
+    'opportunities/index.html', 'assets/index.html',
   ];
   for (const f of required) if (!existsSync(path.join(dist, f))) fail(`dist/${f} is missing`);
 

@@ -14,7 +14,7 @@ import { parseBibtex } from '../src/lib/bibtex.ts';
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const CONTENT = path.join(ROOT, 'src/content');
 const DATA = path.join(ROOT, 'src/data');
-const COLLECTIONS = ['people', 'projects', 'news', 'opportunities'];
+const COLLECTIONS = ['people', 'projects', 'assets', 'news', 'opportunities'];
 const EMAIL = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/;
 // Italian landline/mobile shapes, with or without the +39 prefix; not inside DOIs or URLs.
 const PHONE = /(?<![\w./-])(?:\+\d{2}\s?)?\(?0\d{1,3}\)?[\s.-]?\d{6,8}(?![\w./-])/;
@@ -85,10 +85,21 @@ test('file names are lower-case slugs and news files start with their date', () 
   }
 });
 
+/*
+ * `assets` is the exception: the previous site's /assets/ page never said which group owns
+ * which facility or tool, and AGENTS.md forbids inferring group membership. An empty list
+ * there means "nobody has stated it yet", so only the vocabulary is checked. Every other
+ * collection must name at least one group.
+ */
+const GROUPS_MAY_BE_EMPTY = new Set(['assets']);
+
 test('every record belongs to at least one known group', () => {
   for (const c of COLLECTIONS) {
     for (const e of all[c]) {
-      assert.ok(Array.isArray(e.data.groups) && e.data.groups.length > 0, `${label(e)}: groups is required`);
+      assert.ok(Array.isArray(e.data.groups), `${label(e)}: groups is required`);
+      if (!GROUPS_MAY_BE_EMPTY.has(c)) {
+        assert.ok(e.data.groups.length > 0, `${label(e)}: groups must name at least one group`);
+      }
       for (const g of e.data.groups) assert.ok(groupIds.has(g), `${label(e)}: unknown group "${g}"`);
     }
   }
@@ -116,7 +127,17 @@ test('no e-mail addresses or telephone numbers outside the sanctioned email fiel
     assert.doesNotMatch(body, PHONE, `${name}: telephone number in the body`);
     for (const [key, value] of Object.entries(data)) {
       if (key === 'email') continue;
-      const text = JSON.stringify(value);
+      /*
+       * One narrow exemption: `assets.contact.phone` is a facility's own switchboard — the
+       * ICE Laboratory's, already public on the laboratory's site — and was explicitly
+       * approved for publication. It is not a person's number: no collection that describes
+       * a person has a `contact` field, so this cannot let a member's telephone through.
+       * E-mail addresses stay forbidden here, including in `contact`.
+       */
+      const value_ = key === 'contact' && value && typeof value === 'object'
+        ? Object.fromEntries(Object.entries(value).filter(([k]) => k !== 'phone'))
+        : value;
+      const text = JSON.stringify(value_);
       assert.doesNotMatch(text, EMAIL, `${name}: e-mail address in field ${key}`);
       assert.doesNotMatch(text, PHONE, `${name}: telephone number in field ${key}`);
     }
@@ -187,4 +208,46 @@ test('every publication has an author among the published people', () => {
     return !names.some((name) => authors.includes(name));
   });
   assert.deepEqual(unmatched.map((e) => e.key), [], 'publications without a published author (curation rule)');
+});
+
+/*
+ * Figures written inline in Markdown must carry alt text. This is a test rather than a build
+ * error on purpose: Astro's glob loader catches render errors and only logs them, so the
+ * rehype plugin throwing would leave the build green with the entry's whole body missing.
+ * See src/lib/markdown-figures.ts and docs/figures.md.
+ */
+test('every inline Markdown image has alt text', () => {
+  const IMAGE = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
+  const offenders = [];
+  const root = new URL('../src/content/', import.meta.url);
+  for (const collection of readdirSync(root, { withFileTypes: true }).filter((e) => e.isDirectory())) {
+    const dir = new URL(`${collection.name}/`, root);
+    for (const file of readdirSync(dir).filter((f) => f.endsWith('.md') && !f.startsWith('_'))) {
+      const body = readFileSync(new URL(file, dir), 'utf8');
+      for (const [, alt, src] of body.matchAll(IMAGE)) {
+        if (alt.trim() === '') offenders.push(`${collection.name}/${file}: ![](${src})`);
+      }
+    }
+  }
+  assert.deepEqual(
+    offenders,
+    [],
+    `these Markdown images have no alt text — describe the image inside the square brackets:\n  ${offenders.join('\n  ')}`,
+  );
+});
+
+test('every inline Markdown image resolves to a file next to its Markdown', () => {
+  const IMAGE = /!\[[^\]]*\]\((\.[^)\s]+)(?:\s+"[^"]*")?\)/g;
+  const missing = [];
+  const root = new URL('../src/content/', import.meta.url);
+  for (const collection of readdirSync(root, { withFileTypes: true }).filter((e) => e.isDirectory())) {
+    const dir = new URL(`${collection.name}/`, root);
+    for (const file of readdirSync(dir).filter((f) => f.endsWith('.md') && !f.startsWith('_'))) {
+      const body = readFileSync(new URL(file, dir), 'utf8');
+      for (const [, src] of body.matchAll(IMAGE)) {
+        if (!existsSync(new URL(src, dir))) missing.push(`${collection.name}/${file}: ${src}`);
+      }
+    }
+  }
+  assert.deepEqual(missing, [], `referenced image files do not exist:\n  ${missing.join('\n  ')}`);
 });

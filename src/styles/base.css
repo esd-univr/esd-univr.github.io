@@ -430,6 +430,42 @@ header a:has(img) > span:not(:last-of-type) {
   font-size: var(--text-sm);
 }
 
+/*
+ * Figures written inline in Markdown — see src/lib/markdown-figures.ts, which builds this
+ * markup, and docs/figures.md for the authoring syntax. Global rather than scoped because
+ * no component renders it.
+ *
+ * No forced aspect-ratio: the design system's reference Figure crops to 16/9, which is
+ * right for a photograph and wrong for an architecture diagram. Astro emits the intrinsic
+ * width and height, so the box is reserved without the page jumping and without cropping.
+ * The width is capped by the surrounding `.prose`, so a figure never outruns its column.
+ */
+.figure {
+  margin: 0;
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.figure img {
+  width: 100%;
+  height: auto;
+  background: var(--color-paper-2);
+  border: var(--rule);
+  border-radius: var(--radius);
+}
+
+.figure figcaption {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--color-ink-3);
+}
+
+/* The credit trails the caption, set apart by a middot rather than by a second line. */
+.figure__credit::before {
+  content: ' · ';
+}
+
 .prose th,
 .prose td {
   text-align: left;

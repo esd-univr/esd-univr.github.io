@@ -45,6 +45,8 @@ Find your task, read every guide listed for it, then act.
 | Add, edit, close or remove a student opportunity (thesis / project / internship proposal) | `docs/opportunities.md`, `docs/content-safety.md` |
 | Edit CISD groups or research topics | `docs/research.md` |
 | Add or update publications | `docs/publications.md` |
+| Add or update a laboratory, facility or tool | `docs/assets.md`, `docs/content-safety.md` |
+| Add an image or a figure to any content body | `docs/figures.md`, `docs/content-safety.md` |
 | Add or update news | `docs/news.md`, `docs/content-safety.md` |
 | Edit mission, affiliation, address, branding or theme | `docs/site-settings.md` |
 | Change a colour, type size, spacing step, layout, component or stylesheet | `docs/design-system-integration.md`, `docs/site-settings.md` |
@@ -174,6 +176,7 @@ Three related rules that live in the same layer:
 | `src/content/projects/` | One Markdown file per project |
 | `src/content/news/` | One Markdown file per news item, `YYYY-MM-DD-<slug>.md` |
 | `src/content/opportunities/` | One Markdown file per thesis / project / internship proposal |
+| `src/content/assets/` | One Markdown file per laboratory, facility or tool, plus its figures |
 | `src/data/` | `groups.yaml`, `research.yaml`, `publications.bib`, `publications.overrides.yaml`, `site.ts` |
 | `src/content.config.ts` | The schema of every content type — the definition of which fields exist |
 | `src/pages/` | Routes. No content lives here |
