@@ -23,8 +23,10 @@ const links = [
         {org.address.map((line) => <span>{line}</span>)}
       </address>
       <p class="note">
-        Members and their public profiles are listed under <a href="/people/">People</a>; write to the
-        <a href={org.departmentUrl}>department</a> for anything else.
+        {/* Keep a word and the link that follows it on one line: Astro's JSX whitespace rules
+            drop a newline that sits between text and an element, and this read "thedepartment". */}
+        Members and their public profiles are listed under <a href="/people/">People</a>;
+        write to the <a href={org.departmentUrl}>department</a> for anything else.
       </p>
     </section>
     <section class="section">

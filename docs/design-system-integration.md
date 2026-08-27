@@ -278,53 +278,45 @@ and the gold never enter the interface.
 
 ## Iconography
 
-The system adopts **Material Symbols Rounded**, outlined, weight 400 — chosen because its
-stroke reads at the same visual weight as the 1px rules — and loads it from Google Fonts.
-Three things had to change on the way in.
+The system adopts **Material Symbols Rounded** (outlined, weight 400, because its stroke reads
+at the same visual weight as the 1px rules) from Google Fonts, and lists nine glyphs. This
+repository ships **one icon, as an inline SVG path, and no font at all.** Three findings got it
+there.
 
-**Self-hosted, and subset by hand.** This repository may not reference a third-party font host
-(`AGENTS.md`; `npm run verify` fails the build on `fonts.googleapis.com`). `@fontsource` was
-the obvious substitute and is the wrong tool here: the smallest single-axis cut of a
-6597-glyph variable font is 960 kB, and the full one 5.3 MB. So
-`scripts/build-icon-font.py` pins the upstream file to the one instance the system fixes
-(FILL 0, wght 400, GRAD 0, opsz 24) and subsets it to the codepoints in use. The committed
-result is **720 bytes**, small enough that the build inlines it into the stylesheet.
+**Eight of the nine glyphs have nowhere to go.** `hub`, `developer_board`, `memory`,
+`monitor_heart`, `science`, `groups`, `menu_book` and `campaign` are *identity* icons for
+*compact* surfaces, and this site has neither: `data-density='compact'` is defined in
+`base.css` and set on no page, and where a group needs to be identifiable the acronym or the
+group name is already printed beside it (`AGENTS.md`, "Group colour is claimed, never
+passed"). The ninth, `arrow_forward`, is the one affordance on the list, and the system
+separately requires `.more`'s arrow to stay a text `→` "not a glyph asset".
 
-The script is a maintenance tool and deliberately not part of the build: its output is
-committed, so `npm ci && npm run build` needs neither Python nor the upstream package. Adding
-a glyph means editing `GLYPHS` in **both** `src/components/Icon.astro` and the script, then
-re-running it — `tests/icon-font.test.mjs` fails if the two lists drift apart.
+**One affordance is real.** A link that leaves the site, in a list that mixes the two: an
+asset's sidebar puts its own group page directly beside its upstream repository, and a
+person's puts the group page beside four external profiles. Nothing in the type-and-rule
+vocabulary says that. So `open_in_new` is placed once, in `LinkList`, on any absolute
+`http(s)` href — every internal link in the site is root-relative. It is `aria-hidden`,
+because the label beside it already says where the link goes.
 
-**One glyph, not nine, and not one of the nine.** The system's list — `hub`,
-`developer_board`, `memory`, `monitor_heart`, `science`, `groups`, `menu_book`, `campaign`,
-`arrow_forward` — is entirely *identity* icons for *compact* surfaces, and this site has
-neither: `data-density='compact'` is defined in `base.css` and set on no page, and where a
-group needs to be identifiable the acronym or the group name is already printed beside it
-(`AGENTS.md`, "Group colour is claimed, never passed"). `arrow_forward` is the one affordance
-glyph on the list, and the system separately requires `.more`'s arrow to stay a text `→`
-"not a glyph asset", so it cannot be used either.
+**One glyph does not justify a font.** `@fontsource` was measured first and rejected: the
+smallest single-axis cut of the 6597-glyph variable font is 960 kB, the full one 5.3 MB, and
+this repository may not reference a third-party font host either (`npm run verify` fails on
+`fonts.googleapis.com`). Hand-subsetting the font *worked* — pinned to the system's instance
+(FILL 0, wght 400, GRAD 0, opsz 24) it came to 720 bytes — but it needed a Python generator
+script, a committed binary, and a test to catch the component's glyph list drifting from the
+generator's. That is a maintenance surface out of all proportion to one icon, so it was
+removed again. The outline now lives in `src/components/Icon.astro` as a path, the way the
+theme toggle in `Header.astro` already does, in the `0 -960 960 960` viewBox Google's own SVG
+exports use.
 
-What the site does have is one affordance no type-and-rule treatment states: **a link that
-leaves the site**, in a list that mixes the two. An asset's sidebar puts its own group page
-directly beside its upstream repository; a person's puts the group page beside four external
-profiles. So the layer ships `open_in_new` (U+E89E), placed once, in `LinkList`, on any
-absolute `http(s)` href — every internal link in the site is root-relative. It is
-`aria-hidden`, because the label beside it already says where the link goes.
-
-**Two properties dropped from the system's `.icon`.** `font-feature-settings: 'liga'` and
-`font-variation-settings`, both dead after subsetting: the subset holds no ligatures, and
-pinning the instance removed the axes. Addressing the glyph by codepoint rather than by
-ligature name is also what makes a failed font load degrade to a blank rather than print the
-words "open in new" into the sidebar.
-
-Everything else about the system's icon rules is kept: outlined weight 400, `--color-accent`
-and never ink, never inside running prose, and never the sole carrier of meaning. The theme
-toggle keeps its inline SVG — the system documents it as one, and it is not a Material
-Symbol.
+Everything else about the system's icon rules is kept: outlined weight 400,
+`--color-accent` and never ink, never inside running prose, never the sole carrier of meaning.
 
 **Still a flagged substitution.** Material Symbols is not CISD's own icon set, because CISD
-has none. If one is adopted, `src/styles/icons.css`, `src/components/Icon.astro` and the
-script's `GLYPHS` are the only three places that name a glyph.
+has none; it is © Google under the SIL Open Font License 1.1. If a set is adopted,
+`src/components/Icon.astro` is the only file that names a shape. Adding a *second* icon is a
+decision, not a chore — it needs an affordance that type and rules cannot state, on a surface
+that is not running prose.
 
 ## Two records that must never be ported
 

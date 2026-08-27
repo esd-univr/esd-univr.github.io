@@ -182,11 +182,10 @@ Three related rules that live in the same layer:
 | `src/pages/` | Routes. No content lives here |
 | `src/layouts/` | `BaseLayout` (the shell) → `PageLayout` (one opening) → `DetailLayout` (opening + metadata sidebar), plus `LegacyRedirect` |
 | `src/components/` | Building blocks shared by more than one page |
-| `src/styles/` | `tokens.css` (design tokens), `base.css`, and `icons.css` with the committed icon-font subset in `fonts/` |
+| `src/styles/` | `tokens.css` (design tokens) and `base.css` |
 | `src/lib/`, `src/loaders/` | Plain TypeScript helpers (BibTeX, publications, people, legacy URLs) |
 | `public/` | Files copied verbatim into the build (`robots.txt`, `documents/…`) |
 | `scripts/verify.mjs` | Repository and built-site verification, run by CI |
-| `scripts/build-icon-font.py` | Regenerates the committed icon-font subset. A maintenance tool; the build never runs it |
 | `tests/` | Unit tests and content invariants (`node --test`) |
 | `docs/` | The task guides listed above |
 
