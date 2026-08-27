@@ -86,19 +86,19 @@ test('file names are lower-case slugs and news files start with their date', () 
 });
 
 /*
- * `assets` is the exception: the previous site's /assets/ page never said which group owns
- * which facility or tool, and AGENTS.md forbids inferring group membership. An empty list
- * there means "nobody has stated it yet", so only the vocabulary is checked. Every other
- * collection must name at least one group.
+ * `assets` may be ungrouped because the previous /assets/ page did not state ownership.
+ * A person marked `relationship: collaborator` may also be ungrouped: this records a real
+ * CISD collaboration without inventing membership in one of the three current groups.
+ * All other records, and all current members, must name at least one current group.
  */
-const GROUPS_MAY_BE_EMPTY = new Set(['assets']);
-
-test('every record belongs to at least one known group', () => {
+test('every record uses only known groups and members belong to one', () => {
   for (const c of COLLECTIONS) {
     for (const e of all[c]) {
       assert.ok(Array.isArray(e.data.groups), `${label(e)}: groups is required`);
-      if (!GROUPS_MAY_BE_EMPTY.has(c)) {
-        assert.ok(e.data.groups.length > 0, `${label(e)}: groups must name at least one group`);
+      const mayBeEmpty = c === 'assets' || (c === 'people' && e.data.relationship === 'collaborator');
+      if (!mayBeEmpty) assert.ok(e.data.groups.length > 0, `${label(e)}: groups must name at least one group`);
+      if (c === 'people' && e.data.relationship !== undefined) {
+        assert.ok(['member', 'collaborator'].includes(e.data.relationship), `${label(e)}: invalid relationship`);
       }
       for (const g of e.data.groups) assert.ok(groupIds.has(g), `${label(e)}: unknown group "${g}"`);
     }

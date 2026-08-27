@@ -14,8 +14,9 @@ contact details, funding amounts or other private data.
 | Source | Used for |
 | --- | --- |
 | Production database of the legacy site (PostgreSQL, exported 2026-08-26) | people, projects, news, publications |
-| Public legacy site (`cisd.di.univr.it`) | legacy titles, project descriptions, dates, group attribution and old URLs |
-| Official University of Verona group and project pages (`di.univr.it`, `dimi.univr.it`) | current roles, group descriptions, project metadata and funding provenance |
+| Public legacy site (`cisd.di.univr.it`) | legacy titles, biographies, project descriptions, dates, group attribution and old URLs |
+| Official University of Verona group, people and project pages (`di.univr.it`, `dimi.univr.it`) | current roles and affiliations, group descriptions, project metadata and funding provenance |
+| Current institutional pages at collaborators' universities | current external roles and affiliations |
 | Public funder/project records | historical project codes and period reconciliation where the legacy listing was stale |
 | Legacy group descriptions written by the groups themselves | research topics, group summaries |
 
@@ -32,6 +33,11 @@ private working area outside this repository and are not part of the public site
 | `/profile/44/` | `/people/francesco-biondani/` | Francesco Biondani |
 | `/profile/15/` | `/people/nicola-bombieri/` | Nicola Bombieri |
 | `/profile/22/` | `/people/graziano-pravadelli/` | Graziano Pravadelli |
+| `/profile/45/` | `/people/mario-libro/` | Mario Libro |
+| `/profile/8/` | `/people/nicola-dall-ora/` | Nicola Dall'Ora |
+| `/profile/21/` | `/people/sebastiano-gaiardelli/` | Sebastiano Gaiardelli |
+| `/profile/20/` | `/people/tiziano-villa/` | Tiziano Villa |
+| `/profile/29/` | `/people/davide-quaglia/` | Davide Quaglia |
 | `/area/9/` | `/research/#esd` | Electronic Systems Design |
 | `/area/8/` | `/research/#parco` | PARCO Lab |
 | `/area/7/` | `/research/#iot4care` | Internet of Things 4 Care |
@@ -57,6 +63,39 @@ from a public source. No `legacyId` is guessed for them, so no compatibility URL
 
 Pietro Turco and Samuele Santacà were not in the legacy database; their records were created
 for this site and their exact titles still need confirmation.
+
+## People relationship reconciliation
+
+The old site mixed current members, former members and external collaborators in one roster.
+The new site records the person's **current relationship to CISD** separately from their
+current institutional role. `relationship: member` is the default; restored external or
+cross-department collaborators use `relationship: collaborator` and appear in a separate
+Collaborators section.
+
+- **Mario Libro** — legacy profile 45 and the legacy ESD page identify him with ESD. The
+  current University of Verona record lists him as a doctoral student in Computer Science,
+  39th cycle, through 30 September 2026. He is therefore restored as a current ESD member,
+  with the Department of Computer Science stated explicitly because it differs from the
+  site's default DIMI affiliation.
+- **Nicola Dall'Ora** — legacy profile 8 and the ESD area record establish his ESD history.
+  Current Guglielmo Marconi University records place him in the Department of Engineering
+  Sciences. He is restored as an ESD collaborator, not as a current DIMI member.
+- **Sebastiano Gaiardelli** — legacy profile 21 and the ESD area record establish his ESD
+  history. Current Technical University of Munich records list him as a Postdoctoral
+  Researcher at the Chair of Cyber-Physical Systems in Production Engineering. He is
+  restored as an ESD collaborator.
+- **Davide Quaglia** — legacy profile 29 identifies him as Associate Professor at the
+  Department of Computer Science and the old CISD records associate his work with both ESD
+  and the former NeST area. The current University record still lists him as Associate
+  Professor at the Department of Computer Science. Because NeST is not a current CISD group,
+  the new record preserves the explicit ESD association and marks him as collaborator.
+- **Tiziano Villa** — legacy profile 20 was associated primarily with the former ForME area,
+  which is not part of the current CISD group set. The current University record lists him
+  as Honorary Professor at the Department of Computer Science. He is therefore restored as
+  an ungrouped CISD collaborator rather than being assigned to ESD, PARCO or IoT4Care by
+  inference.
+
+No legacy e-mail, telephone, office or CV data is republished in these records.
 
 ## Historical project reconciliation
 
@@ -88,9 +127,11 @@ Funding amounts from the legacy site and public grant records are deliberately n
 
 ## Editorial decisions behind the published set
 
-- **People** — a curated roster approved for the first version, not the 34 profiles the old
-  database held. The others were not migrated into this repository; they are neither
-  "former" nor "alumni", simply not published yet.
+- **People** — the roster distinguishes current members from collaborators. It is still a
+  curated selection rather than a copy of all 34 legacy profiles. Mario Libro is restored as
+  an ESD member; Nicola Dall'Ora, Sebastiano Gaiardelli, Tiziano Villa and Davide Quaglia are
+  restored as collaborators with their current affiliations. Absence of any other legacy
+  profile remains neither a statement that the person is "former" nor that they are alumni.
 - **Research** — the old database modelled ESD, PARCO and IoT4Care as "research areas"
   alongside two groups (ForME, NeST) that are separate research groups of the department.
   Here ESD, PARCO and IoT4Care are *groups*, and research *topics* were written from the
@@ -98,8 +139,8 @@ Funding amounts from the legacy site and public grant records are deliberately n
 - **Projects** — the seven projects shown by the former CISD project index are now represented:
   DeFacto, STRATEGUS, OPERA 4.0, Bip-Bip, Smart-Pump, ADA and the IoT infrastructure for
   monitoring motor fluctuations in Parkinson's disease. Historical people who are not in the
-  approved current roster remain plain-text provenance in the project body rather than being
-  added to `people:`.
+  published People collection remain plain-text provenance in the project body rather than
+  being invented as references.
 - **Publications** — a curated selection: work from 2020 onwards co-authored by someone
   listed under People, with three preprints removed that duplicate a published paper in the
   same selection. Entries the authors had hidden on the old site remain excluded. Fields the
@@ -107,14 +148,12 @@ Funding amounts from the legacy site and public grant records are deliberately n
   them. Project links are restored only where a public legacy record explicitly associates
   the publication with that project.
 - **News** — four recent items. The rest of the 31 legacy posts were not published.
-- **Photographs** — the portrait each person had on the legacy site, for the six of the
-  eight published people who had one. The identification comes from the legacy profile
-  records themselves (profile id → name → image file), not from recognising faces. Each
-  file is the legacy original with its metadata chunks removed and no pixel re-encoding, so
-  the published pixels are identical to the legacy ones. Pietro Turco and Samuele Santacà
-  have no legacy portrait and show the monogram fallback; the People page is designed to
-  work either way. Publication still depends on each person confirming that the photograph
-  may appear on this site.
+- **Photographs** — six published member profiles currently use portraits migrated from the
+  legacy site. Identification came from the legacy profile records themselves (profile id →
+  name → image file), not from recognising faces. Each migrated file had its metadata chunks
+  removed without pixel re-encoding. Newly restored people and collaborators deliberately use
+  the monogram fallback: a portrait that appeared on the old site is evidence of a past
+  publication decision, not consent for this site.
 
   | Person | Legacy file | Published as | Size |
   | --- | --- | --- | --- |
@@ -125,8 +164,8 @@ Funding amounts from the legacy site and public grant records are deliberately n
   | Nicola Bombieri | `media/profile_images/nicola_bombieri.jpg` | `people/nicola-bombieri.jpg` | 119×128 |
   | Graziano Pravadelli | `media/profile_images/GP_June_21.png` | `people/graziano-pravadelli.png` | 212×291 |
 
-  The other 24 portraits in the legacy media tree belong to people who are not published,
-  and were not copied. No CV, document or event photograph was migrated.
+  No other legacy portrait was copied as part of the people/collaborator restoration. No CV,
+  document or event photograph was migrated.
 - **Never migrated** — user accounts, password hashes, sessions, invite keys, admin logs;
   e-mail addresses, telephone, office and fax fields; CV files; deleted records.
 - **Not part of this site** — the independent `/wg10-5/` and `/essm-workshop/` static sites,
