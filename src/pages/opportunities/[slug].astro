@@ -38,7 +38,7 @@ const facts = [
 ].filter((fact): fact is { label: string; value: string } => Boolean(fact));
 ---
 
-<PageLayout title={d.title} eyebrow={kind} lede={d.summary} description={d.summary} type="article">
+<PageLayout title={d.title} eyebrow={kind} lede={d.summary} description={d.summary} type="article" group={d.groups[0]}>
   <p slot="header" class="facts">
     {facts.map((fact) => (
       <span><span class="eyebrow">{fact.label}</span> {fact.value}</span>

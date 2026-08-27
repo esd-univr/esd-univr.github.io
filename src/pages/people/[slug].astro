@@ -52,7 +52,7 @@ const links = [
 ---
 
 <BaseLayout title={d.name} description={`${d.name}, ${d.role} — ${d.affiliation ?? `${site.shortName}, ${site.organisation.university}`}.`}>
-  <div class="container">
+  <div class="container" data-group={d.groups[0]}>
     <header class="profile">
       <Portrait name={d.name} photo={d.photo} size={160} />
       <div class="profile__text">

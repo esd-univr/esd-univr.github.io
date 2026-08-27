@@ -18,21 +18,30 @@ interface Props {
   image?: string;
   /** Page width: `wide` for a directory or grid, `narrow` for long-form reading. */
   width?: 'default' | 'wide' | 'narrow';
+  /**
+   * Id of the group this page belongs to, when it belongs to exactly one — a project, a
+   * news item, a proposal. It becomes `data-group`, which rebinds `--color-accent` to that
+   * group's hue for the whole page, so acronyms, eyebrows and hover follow it. This is not
+   * a colour prop: the page declares whose it is and the tokens do the rest. For a record
+   * in more than one group, pass the first and make sure every group name is still
+   * printed — colour must never be the only carrier.
+   */
+  group?: string;
 }
 
-const { title, description, eyebrow, lede, type, image, width = 'default' } = Astro.props;
+const { title, description, eyebrow, lede, type, image, width = 'default', group } = Astro.props;
 // The width travels with both blocks, so the title lines up with the content below it.
 const container = ['container', width !== 'default' && `container--${width}`];
 ---
 
 <BaseLayout title={title} description={description ?? lede} type={type} image={image}>
-  <header class:list={['page-open', 'page-header', ...container]}>
+  <header class:list={['page-open', 'page-header', ...container]} data-group={group}>
     {eyebrow && <p class="eyebrow">{eyebrow}</p>}
     <h1>{title}</h1>
     {lede && <p class="lede">{lede}</p>}
     <slot name="header" />
   </header>
-  <div class:list={container}>
+  <div class:list={container} data-group={group}>
     <slot />
   </div>
 </BaseLayout>

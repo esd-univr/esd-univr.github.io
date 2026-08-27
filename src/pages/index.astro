@@ -48,7 +48,7 @@ const news = (await getNews()).slice(0, 3);
       <SectionHeading eyebrow="Groups" title={`The ${site.shortName} groups`} id="home-groups" moreHref="/research/" moreLabel="Research" />
       <ol class="groups">
         {groups.map((group) => (
-          <li class="group">
+          <li class="group" data-group={group.id}>
             <p class="group__short">{group.data.shortName}</p>
             <div>
               <h3 class="group__name"><a href={`/research/#${group.id}`}>{group.data.name}</a></h3>
@@ -172,7 +172,9 @@ const news = (await getNews()).slice(0, 3);
     grid-template-columns: 6.5rem 1fr;
     gap: var(--space-sm);
     padding-top: var(--space-md);
-    border-top: 1px solid var(--color-rule-strong);
+    /* The 2px rule opening a group block is one of the places colour is allowed: it is
+       identity, and the group's short name sits right beside it. */
+    border-top: 2px solid var(--color-accent);
   }
 
   .group__short {

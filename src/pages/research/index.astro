@@ -23,7 +23,7 @@ const sections = await Promise.all(
   description="Research groups and topics of CISD, University of Verona."
 >
   {sections.map(({ group, topics }) => (
-    <section class="section group" id={group.id} aria-labelledby={`group-${group.id}`}>
+    <section class="section group" id={group.id} data-group={group.id} aria-labelledby={`group-${group.id}`}>
       <div class="group__intro">
         <p class="eyebrow">{group.data.shortName}</p>
         <h2 id={`group-${group.id}`}>{group.data.name}</h2>
@@ -66,6 +66,11 @@ const sections = await Promise.all(
     margin-bottom: var(--space-xl);
   }
 
+  /* The group's short name in the group's own hue; the acronym itself carries the meaning. */
+  .group__intro .eyebrow {
+    color: var(--color-accent);
+  }
+
   .group__intro h2 {
     font-size: var(--text-3xl);
     margin-block: var(--space-2xs) var(--space-sm);
@@ -89,7 +94,9 @@ const sections = await Promise.all(
     grid-template-columns: 3rem 1fr;
     gap: var(--space-sm);
     padding-top: var(--space-md);
-    border-top: 1px solid var(--color-rule-strong);
+    /* Inside a [data-group] section --color-accent is that group's hue, so every topic
+       opens in it without the topic knowing which group it belongs to. */
+    border-top: 2px solid var(--color-accent);
   }
 
   .topic__index {
