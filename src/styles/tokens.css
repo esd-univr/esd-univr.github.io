@@ -112,27 +112,46 @@
   --light-iot4care: #2a783f;
   --light-iot4care-strong: #1f5b30;
 
-  /* ---- Palette: dark — deep navy ground, soft off-white ink, lifted-purple accents ---- */
-  --dark-paper: #0a0f1e;
-  --dark-paper-2: #151b2f;
-  --dark-selection: #4a2a46;
-  --dark-ink: #e6e9f5;
-  --dark-ink-2: #b2b9d4;
-  --dark-ink-3: #888fae;
-  --dark-rule: #262e47;
-  --dark-rule-strong: #c3c9de;
-  --dark-accent: #d79ccf;
-  --dark-accent-strong: #e8bfe1;
-  --dark-focus: #e0a6d6;
+  /*
+   * ---- Palette: dark — a lit navy ground, near-white ink, lifted-purple accents ----
+   *
+   * The design system's dark ground was #0a0f1e: OKLCh lightness 0.172 at chroma 0.032,
+   * which is a very dark near-neutral and read as black rather than as blue. This ground
+   * is L 0.300 at C 0.081 — lighter, and actually blue.
+   *
+   * The whole ramp had to move with it, not just the ground. Lightening paper alone would
+   * have cut the contrast of every foreground; sizing each foreground to the AA floor
+   * instead would have collapsed the hierarchy, with --dark-ink-2 and --dark-ink-3 landing
+   * 0.010 apart in lightness where they were 0.134 apart before. So the ramp is rebuilt
+   * bottom-up: --dark-ink-3 sits just above the 4.5:1 floor on the lightest ground and
+   * everything else keeps its original lightness offset above it. The gaps are preserved
+   * at 0.113 and 0.117.
+   *
+   * Ink on paper is 12.5:1, down from 15.8:1 and still comfortably past the 7:1 this
+   * repository requires — that headroom was unused. All 65 foreground/ground pairs clear
+   * their minimum, including the three tinted Research plates; the tightest is
+   * --dark-ink-3 on --dark-paper-2 at 4.90:1. See docs/design-system-integration.md.
+   */
+  --dark-paper: #1a2b56;
+  --dark-paper-2: #253865;
+  --dark-selection: #674662;
+  --dark-ink: #eff4ff;
+  --dark-ink-2: #becef0;
+  --dark-ink-3: #97aad1;
+  --dark-rule: #344878;
+  --dark-rule-strong: #d5dff3;
+  --dark-accent: #edb1e5;
+  --dark-accent-strong: #fed5f8;
+  --dark-focus: #f6bcee;
 
-  /* The same three brand hues, lifted in lightness so they sit on the navy ground
-     without vibrating. Each clears 4.5:1 on paper, paper-2 and every tinted band. */
-  --dark-esd: #d79ccf;
-  --dark-esd-strong: #e8bfe1;
-  --dark-parco: #8fa5e8;
-  --dark-parco-strong: #b3c2f2;
-  --dark-iot4care: #6cc47f;
-  --dark-iot4care-strong: #97d8a4;
+  /* The same three brand hues, lifted to sit on the lighter ground without vibrating.
+     Each clears 4.5:1 on paper, paper-2 and every tinted band. */
+  --dark-esd: #edb1e5;
+  --dark-esd-strong: #fed5f8;
+  --dark-parco: #a3baff;
+  --dark-parco-strong: #c5d4ff;
+  --dark-iot4care: #89d998;
+  --dark-iot4care-strong: #aeeeb9;
 
   /*
    * The logo's own palette, sampled from the mark. These are BRAND-ONLY: the mark is

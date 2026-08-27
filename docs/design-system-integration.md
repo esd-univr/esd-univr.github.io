@@ -84,6 +84,54 @@ clears 4.5:1 there (4.74:1) but fails on every other ground this site actually u
 vivid `#037a2c`, which was rejected: the system has no status colours and a saturated green
 reads as "success".
 
+### The whole dark ground: `#0a0f1e` → `#1a2b56`
+
+The design system's dark ground was OKLCh **L 0.172 at chroma 0.032** — a very dark
+near-neutral. It read as black rather than as blue, which is not what a cool palette is for.
+This repository ships **L 0.300 at chroma 0.081**: lighter, and actually blue.
+
+This is the largest departure in the integration, and it is a whole-ramp change, not a
+one-token tweak. Two things had to be got right:
+
+1. **Lightening the ground alone would cut every foreground's contrast.** So each
+   foreground moved with it.
+2. **Sizing each foreground to the AA floor instead would destroy the hierarchy.** That was
+   the first attempt and it failed: `--dark-ink-2` and `--dark-ink-3` landed **0.010** apart
+   in OKLCh lightness, where they had been **0.134** apart. Secondary and tertiary text
+   became indistinguishable — every ratio passed and the design was ruined.
+
+The ramp is therefore rebuilt **bottom-up with the original offsets preserved**:
+`--dark-ink-3` sits just above the 4.5:1 floor on the lightest ground, and every other
+foreground keeps the lightness offset above it that it had in the design system. The gaps
+come out at 0.113 and 0.117 against the original 0.134 and 0.146.
+
+| | design system | shipped |
+| --- | --- | --- |
+| `--dark-paper` | `#0a0f1e` (L 0.172, C 0.032) | `#1a2b56` (L 0.300, C 0.081) |
+| `--dark-paper-2` | `#151b2f` | `#253865` |
+| `--dark-ink` | `#e6e9f5` | `#eff4ff` |
+| `--dark-ink-2` | `#b2b9d4` | `#becef0` |
+| `--dark-ink-3` | `#888fae` | `#97aad1` |
+| `--dark-rule` | `#262e47` | `#344878` |
+| `--dark-rule-strong` | `#c3c9de` | `#d5dff3` |
+| `--dark-accent` / `-strong` | `#d79ccf` / `#e8bfe1` | `#edb1e5` / `#fed5f8` |
+| `--dark-focus` | `#e0a6d6` | `#f6bcee` |
+| `--dark-selection` | `#4a2a46` | `#674662` |
+| `--dark-parco` / `-strong` | `#8fa5e8` / `#b3c2f2` | `#a3baff` / `#c5d4ff` |
+| `--dark-iot4care` / `-strong` | `#6cc47f` / `#97d8a4` | `#89d998` / `#aeeeb9` |
+
+Ink on paper is **12.5:1**, down from 15.8:1 and still well past the 7:1 this repository
+requires — that headroom was never used. All **65** foreground/ground pairs clear their
+minimum across paper, paper-2 and the three tinted plates; the tightest is `--dark-ink-3` on
+`--dark-paper-2` at **4.90:1**.
+
+Two side effects, both wanted: the three tinted Research plates now separate from the ground
+instead of being almost invisible, and the mark's white plate is far less harsh against a
+lighter navy.
+
+**If you change the dark ground again, move the whole ramp and check the gaps, not just the
+ratios.** A palette where every pair passes AA can still be a flat, unreadable one.
+
 ### The home groups margin column: `5rem` → `6.5rem`
 
 `readme.md` specifies a 5rem margin column for group short names. At `--text-sm` with

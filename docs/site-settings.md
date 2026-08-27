@@ -143,20 +143,20 @@ component cannot be "light-only" by accident.
 
 | Active token | Light | Dark | Used for |
 | --- | --- | --- | --- |
-| `--color-paper` | `#f6f7fb` | `#0a0f1e` | Page background, `.band` |
-| `--color-paper-2` | `#eaecf5` | `#151b2f` | Surfaces: code, `pre`, portrait placeholder, toggle hover, `.band--sunken` |
-| `--color-selection` | `#f2dcef` | `#4a2a46` | `::selection` background |
-| `--color-ink` | `#141a2e` | `#e6e9f5` | Body text and headings |
-| `--color-ink-2` | `#3b4468` | `#b2b9d4` | Ledes, summaries, secondary prose |
-| `--color-ink-3` | `#5a6383` | `#888fae` | Eyebrows, meta, roles, captions |
-| `--color-rule` | `#d3d8e8` | `#262e47` | Hairline separators (`--rule`) |
-| `--color-rule-strong` | `#141a2e` | `#c3c9de` | Masthead and footer edges, blockquote bar, current nav item |
-| `--color-accent` | `#9d3e91` | `#d79ccf` | Link hover, group acronyms, toggle hover |
-| `--color-accent-strong` | `#7e2f74` | `#e8bfe1` | Selected text, the heavier accent |
-| `--color-focus` | `#8a3580` | `#e0a6d6` | Focus ring |
+| `--color-paper` | `#f6f7fb` | `#1a2b56` | Page background, `.band` |
+| `--color-paper-2` | `#eaecf5` | `#253865` | Surfaces: code, `pre`, portrait placeholder, toggle hover, `.band--sunken` |
+| `--color-selection` | `#f2dcef` | `#674662` | `::selection` background |
+| `--color-ink` | `#141a2e` | `#eff4ff` | Body text and headings |
+| `--color-ink-2` | `#3b4468` | `#becef0` | Ledes, summaries, secondary prose |
+| `--color-ink-3` | `#5a6383` | `#97aad1` | Eyebrows, meta, roles, captions |
+| `--color-rule` | `#d3d8e8` | `#344878` | Hairline separators (`--rule`) |
+| `--color-rule-strong` | `#141a2e` | `#d5dff3` | Masthead and footer edges, blockquote bar, current nav item |
+| `--color-accent` | `#9d3e91` | `#edb1e5` | Link hover, group acronyms, toggle hover |
+| `--color-accent-strong` | `#7e2f74` | `#fed5f8` | Selected text, the heavier accent |
+| `--color-focus` | `#8a3580` | `#f6bcee` | Focus ring |
 
 Light is a cool off-white ground with deep navy ink and brand-purple accents; dark is a
-deep navy ground with soft off-white ink and lifted-purple accents. There are no gradients,
+lit navy ground with near-white ink and lifted-purple accents. There are no gradients,
 and no colour is used decoratively — every one of these has a job.
 
 The accent is **the logo's purple arc**, sampled from the mark, so the interface and the
@@ -169,9 +169,9 @@ which is also the parent accent.
 
 | Group token | Light | Dark | Source |
 | --- | --- | --- | --- |
-| `--color-esd` / `-strong` | `#9d3e91` / `#7e2f74` | `#d79ccf` / `#e8bfe1` | The mark's purple arc |
-| `--color-parco` / `-strong` | `#334b9b` / `#263a7d` | `#8fa5e8` / `#b3c2f2` | The mark's blue arc, unchanged |
-| `--color-iot4care` / `-strong` | `#2a783f` / `#1f5b30` | `#6cc47f` / `#97d8a4` | The mark's green arc, darkened for contrast |
+| `--color-esd` / `-strong` | `#9d3e91` / `#7e2f74` | `#edb1e5` / `#fed5f8` | The mark's purple arc |
+| `--color-parco` / `-strong` | `#334b9b` / `#263a7d` | `#a3baff` / `#c5d4ff` | The mark's blue arc, unchanged |
+| `--color-iot4care` / `-strong` | `#2a783f` / `#1f5b30` | `#89d998` / `#aeeeb9` | The mark's green arc, darkened for contrast |
 
 A subtree claims its hue declaratively, and everything inside that already paints with the
 accent follows — **no component ever learns about groups**:
