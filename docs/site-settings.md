@@ -74,12 +74,31 @@ the only theme source of truth**; a hard-coded colour anywhere else is a bug.
 | Group | Tokens |
 | --- | --- |
 | Type | `--font-sans`, `--font-serif`, `--font-mono`, `--text-xs` … `--text-4xl` |
+| Leading | `--leading-tight` (1.15), `--leading-snug` (1.35), `--leading-body` (1.6), `--leading-prose` (1.7) |
 | Spacing | `--space-2xs` … `--space-3xl` |
 | Widths | `--measure`, `--container`, `--container-wide`, `--container-narrow`, `--gutter` |
 | Detail | `--rule`, `--radius` |
+| Motion | `--duration` (120ms), `--ease`, `--transition-link`, `--transition-control` |
 
 The type and spacing scales use `clamp()` so they grow with the viewport; change the three
 numbers inside a `clamp()`, not the places that use it.
+
+### The type scale is an accessibility floor
+
+The sizes are not a taste decision and must not be stepped down:
+
+- running text never falls below **17px** — `--text-base` has a `1.0625rem` floor;
+- the smallest step in the system is **14px** (`--text-xs`), reserved for mono metadata
+  (eyebrows, years, resource links) and never used for prose;
+- `--text-sm` is a real **16px**, so even a "small" caption sits at comfortable body size;
+- line height is at or above 1.5 everywhere — 1.6 globally, 1.7 in `.prose`;
+- text is left-aligned, never justified, and all-caps is limited to short mono labels.
+
+This follows the British Dyslexia Association style guide and the Italian AID
+recommendations for readers with dyslexia and other specific learning differences. IBM
+Plex Sans is kept because it distinguishes **I / l / 1**.
+
+**If a layout feels tight, cut content or widen the container. Never reduce a type size.**
 
 The width tokens draw the line between reading and structure:
 
@@ -110,34 +129,68 @@ a whole page:
 Widening a container never widens running text: the prose caps are independent, so a wide
 page gets more columns and more air, not longer lines.
 
-### Colour: two palettes, one active theme
+### Colour: two palettes, one active theme, three group hues
 
-Colour is declared in three layers, all in `tokens.css`:
+Colour is declared in four layers, all in `tokens.css`:
 
 1. `--light-*` — the light palette. Real hex values, defined once.
 2. `--dark-*` — the dark palette. Real hex values, defined once.
 3. `--color-*` — the active theme. An alias pointing at one of the two.
+4. `[data-group]` — rebinds `--color-accent` to one group's hue inside one subtree.
 
 Only layer 3 is switched. Components read layer 3 and never mention layer 1 or 2, so a
 component cannot be "light-only" by accident.
 
 | Active token | Light | Dark | Used for |
 | --- | --- | --- | --- |
-| `--color-paper` | `#f6f7fb` | `#0a0f1e` | Page background |
-| `--color-paper-2` | `#eaecf5` | `#151b2f` | Surfaces: code, `pre`, portrait placeholder, toggle hover |
-| `--color-selection` | `#dcd9f7` | `#2c2f63` | `::selection` background |
+| `--color-paper` | `#f6f7fb` | `#0a0f1e` | Page background, `.band` |
+| `--color-paper-2` | `#eaecf5` | `#151b2f` | Surfaces: code, `pre`, portrait placeholder, toggle hover, `.band--sunken` |
+| `--color-selection` | `#f2dcef` | `#4a2a46` | `::selection` background |
 | `--color-ink` | `#141a2e` | `#e6e9f5` | Body text and headings |
 | `--color-ink-2` | `#3b4468` | `#b2b9d4` | Ledes, summaries, secondary prose |
 | `--color-ink-3` | `#5a6383` | `#888fae` | Eyebrows, meta, roles, captions |
 | `--color-rule` | `#d3d8e8` | `#262e47` | Hairline separators (`--rule`) |
 | `--color-rule-strong` | `#141a2e` | `#c3c9de` | Masthead and footer edges, blockquote bar, current nav item |
-| `--color-accent` | `#4a3ec4` | `#a9a6f7` | Link hover, group acronyms, toggle hover |
-| `--color-accent-strong` | `#372c9e` | `#c6c4ff` | Selected text, the heavier accent |
-| `--color-focus` | `#3b30b8` | `#93a8ff` | Focus ring |
+| `--color-accent` | `#9d3e91` | `#d79ccf` | Link hover, group acronyms, toggle hover |
+| `--color-accent-strong` | `#7e2f74` | `#e8bfe1` | Selected text, the heavier accent |
+| `--color-focus` | `#8a3580` | `#e0a6d6` | Focus ring |
 
-Light is a cool off-white ground with deep navy ink and indigo accents; dark is a deep navy
-ground with soft off-white ink and periwinkle accents. There are no gradients, and no colour
-is used decoratively — every one of these has a job.
+Light is a cool off-white ground with deep navy ink and brand-purple accents; dark is a
+deep navy ground with soft off-white ink and lifted-purple accents. There are no gradients,
+and no colour is used decoratively — every one of these has a job.
+
+The accent is **the logo's purple arc**, sampled from the mark, so the interface and the
+mark share one hue.
+
+#### Group hues
+
+Each research group owns one hue, taken from the logo's own arcs. ESD takes the purple,
+which is also the parent accent.
+
+| Group token | Light | Dark | Source |
+| --- | --- | --- | --- |
+| `--color-esd` / `-strong` | `#9d3e91` / `#7e2f74` | `#d79ccf` / `#e8bfe1` | The mark's purple arc |
+| `--color-parco` / `-strong` | `#334b9b` / `#263a7d` | `#8fa5e8` / `#b3c2f2` | The mark's blue arc, unchanged |
+| `--color-iot4care` / `-strong` | `#2a783f` / `#1f5b30` | `#6cc47f` / `#97d8a4` | The mark's green arc, darkened for contrast |
+
+A subtree claims its hue declaratively, and everything inside that already paints with the
+accent follows — **no component ever learns about groups**:
+
+```html
+<section data-group="iot4care"> … </section>
+```
+
+Three surfaces are derived from whichever accent is in scope, and re-mixed per subtree:
+`--color-tint` (7% accent over paper, used by `.band--tint` and `.tint`),
+`--color-tint-strong` (14%, for hover) and `--rule-accent` (45% accent mixed into the rule
+colour). `.band--tint` and `.tint` are the **only** coloured backgrounds in the system.
+
+**Colour never carries meaning on its own.** The acronym or the group name is always
+present beside a coloured element.
+
+The mark's own five arcs are recorded as `--brand-green / -blue / -red / -purple / -gold`
+plus `--brand-mark-ink`. These are **brand-only**: red and gold never enter the interface,
+and the mark is never recoloured.
 
 ### How the theme is chosen
 
@@ -169,17 +222,25 @@ controls and other browser-drawn surfaces match.
    `--color-*` aliases and never put a colour in a component.
 2. **Change both palettes.** A token that exists in one and not the other is a hole; the
    dark theme is not optional.
-3. **Check the contrast before committing.** The current palette clears WCAG AA everywhere
-   and AAA for body text. Keep at least:
+3. **Check the contrast before committing, against every ground.** The current palette
+   clears WCAG AA everywhere and AAA for body text. Keep at least:
    - 7:1 for `--color-ink` on `--color-paper` and on `--color-paper-2`;
-   - 4.5:1 for `--color-ink-2`, `--color-ink-3`, `--color-accent` and
-     `--color-accent-strong` on the backgrounds they appear on — `--color-ink-3` is used for
-     small text, so it needs the full 4.5:1;
+   - 4.5:1 for `--color-ink-2`, `--color-ink-3`, `--color-accent`,
+     `--color-accent-strong` and **each of the three group hues** on the backgrounds they
+     appear on — `--color-ink-3` is used for small text, so it needs the full 4.5:1;
    - 3:1 for `--color-focus` against both `--color-paper` and `--color-paper-2`, and for
      `--color-rule-strong` against `--color-paper`.
 
+   "Every ground" now means four, not one: `--color-paper`, `--color-paper-2` (which is
+   `.band--sunken`) and the three `.band--tint` mixes. A hue can pass on paper and fail on
+   a sunken band — `--light-iot4care` did. The design system's `#2f7d43` clears 4.5:1 on
+   paper (4.74:1) but not on `--color-paper-2` (4.31:1) or a tint (4.26:1), so this
+   repository ships `#2a783f`: same OKLCh hue and chroma, lightness lowered 0.016, worst
+   ground 4.56:1. It is the one value where the site departs from the design system.
+
    `--color-rule` is deliberately low-contrast (about 1.4:1): the hairlines are decorative
-   separators and never the only way information is conveyed.
+   separators and never the only way information is conveyed. `--rule-accent` is the same —
+   about 2.3–2.7:1 in light theme — and is a rule, never text.
 4. **Look at both themes.** `npm run dev`, then use the toggle. Check a text-heavy page
    (`/research/`), a list-heavy one (`/publications/`), a page with portraits (`/people/`)
    and a legacy stub (`/profile/12/`).
