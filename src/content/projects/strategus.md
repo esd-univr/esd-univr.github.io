@@ -6,16 +6,37 @@ legacyId: 8
 status: active
 start: 2023-10-01
 end: 2026-09-30
-summary: "Understandable techniques and a software architecture that guide manufacturers in integrating new technologies into an existing production plant, built around a digital twin of the factory."
+summary: "A Horizon Europe MSCA Global Fellowship developing digital-twin, simulation and scheduling methods for safely integrating new technologies into existing manufacturing plants, in collaboration with the University of North Carolina at Chapel Hill."
 url: "https://strategus-he2022.github.io/"
-people: [enrico-fraccaroli]
+people: [enrico-fraccaroli, franco-fummi]
 funding:
-  programme: Marie Skłodowska-Curie Actions
+  programme: Horizon Europe · Marie Skłodowska-Curie Global Fellowship
   funder: European Commission
+  grant: "101109243"
 featured: true
 order: 10
 ---
 
-Production manufacturing has drastically changed in the last decade; year after year, it has become more complex and tightly integrated with new technologies. Applying new technologies can be safely and adequately done during the initial design phases of a new production plant. However, one of the critical challenges of this so-called “fourth industrial revolution” is that it must be applied to existing production plants, introducing much more complexity. The goal of **STRATEGUS** (**STRATE**gic **GU**ide to **S**mart manufacturing) is to provide understandable techniques and software architecture for guiding industrials toward properly integrating new technologies in their current production plant.
+## Objective
 
-STRATEGUS will build the so-called digital twin, a digital representation of the factory plant that functions as an interface to the sensor data and contains mathematical models of the equipment. The digital twin provides a structured view of sensor data, allowing one to perform timing analysis, make future predictions, and adjust the control strategy. Then, the central orchestrator will be the Strategist. This meta-scheduler has a twofold purpose: 1. estimating the timing behavior of the events inside the physical plant by harnessing the power of the digital twin, and 2. optimizing the activities on the line based on order arrival and reacting to unexpected events and accidents. STRATEGUS takes inspiration for describing the models inside the twin from the theory of multimode systems, where each piece of equipment is modeled as a set of differential or difference equations describing how they manipulate the products’ characteristics until it reaches the state of the finished product.
+**STRATEGUS** (**STRATE**gic **GU**ide to **S**mart manufacturing) studies how established production plants can adopt new technologies without requiring a clean-sheet redesign. Retrofitting an operating factory introduces dependencies between legacy equipment, new sensors and software, communication networks and production constraints; the project develops understandable methods and a software architecture for reasoning about these interactions before and during deployment.
+
+STRATEGUS is a Marie Skłodowska-Curie Global Fellowship under Horizon Europe, grant agreement **101109243**, running from 1 October 2023 to 30 September 2026. The European Commission records the University of Verona as coordinator and the University of North Carolina at Chapel Hill as the partner organisation for the global-fellowship phase.
+
+## Digital twin and simulation
+
+The project builds a **digital twin** of the production plant: a structured digital representation that connects sensor data with mathematical models of machines and processes. The twin provides a common basis for timing analysis, prediction, simulation and evaluation of control strategies, so that changes can be assessed against a model of the existing plant rather than introduced blindly on the physical line.
+
+Models are inspired by multimode-system theory, representing equipment through operating modes and mathematical descriptions of how each operation changes the state of the product and the production process. This supports heterogeneous systems whose behaviour changes with configuration, workload and operating conditions.
+
+## The Strategist
+
+A central research element is the **Strategist**, a meta-scheduler that uses information from the digital twin to estimate the timing of events in the physical plant and optimise production activities. Its role includes reacting to order arrivals, unexpected events and faults while respecting the constraints represented by the plant models.
+
+The broader collaboration links ESD expertise in modelling, simulation and mixed-signal/networked cyber-physical systems with research at UNC Chapel Hill on embedded and cyber-physical system design. Public presentations of STRATEGUS identify Enrico Fraccaroli, Franco Fummi and Samarjit Chakraborty as the principal researchers in this collaboration.
+
+## Official records
+
+- [STRATEGUS project website](https://strategus-he2022.github.io/)
+- [European Commission CORDIS — grant 101109243](https://cordis.europa.eu/project/id/101109243)
+- [Marie Skłodowska-Curie fellow profile and project description](https://www.enricofraccaroli.eu/)

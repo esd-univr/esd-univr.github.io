@@ -11,6 +11,7 @@ DBLP:conf/dac/MascoliniGPDMVC24:
   featured: true
 DBLP:conf/date/LoraGOS0F24:
   featured: true
+  projects: [defacto]
 DBLP:conf/isola/BoldoBCMDPQT22:
   featured: true
   projects: [opera-4-0]
