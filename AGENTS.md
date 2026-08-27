@@ -109,6 +109,37 @@ probably not an editorial task — say so before changing anything.
 - **Never push to `main` directly** unless you were explicitly instructed to.
 - Do not commit unless you were asked to commit.
 
+## The page contract
+
+Every page is **one opening block plus its own content, and nothing else.** The opening is
+`PageLayout`'s header, or the home hero. Breaking any of the rules below produces pages
+whose titles do not line up, which is the defect this contract exists to prevent.
+
+1. **The opening carries its own `.container`.** Never nest a `.container` inside another
+   `.container` — it doubles the gutter and pushes the title further right than on every
+   other page. That was a real bug on the Projects / News fallback.
+2. **Never give the opening padding.** Its spacing is the single `.page-open` rule in
+   `src/styles/base.css`, and the title's size and measure are `.page-open h1`. If an
+   opening looks wrong, fix that rule — never a page.
+3. **The width travels with both blocks.** If the content uses `container--wide`, the
+   opening takes `wide` too. `PageLayout`'s `width` prop does this for you.
+4. **A new page adds content, not a frame.** If two pages need the same block it belongs
+   in `src/components/`, never copied into both.
+5. **Detail pages take their frame from the shared layout** and supply only their metadata
+   rows. A new entity type is a data mapping, not a new layout.
+
+**The test, and it is not optional:** `main h1` sits at the same left offset on every page.
+Check it before calling any layout work done.
+
+Two related rules that live in the same layer:
+
+- **Group colour is claimed, never passed.** A subtree sets `data-group="esd|parco|iot4care"`
+  and everything inside that already paints with `--color-accent` follows. **Never add a
+  colour prop to a component**, and never let colour carry meaning alone — the acronym or
+  the group name is always present beside a coloured element.
+- **Density is not a user control.** `data-density="compact"` is set once on `<html>` by
+  whoever builds the surface. Do not add a toggle for it.
+
 ## Where things are
 
 | Path | What lives there |

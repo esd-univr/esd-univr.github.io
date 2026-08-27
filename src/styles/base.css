@@ -324,21 +324,20 @@ header a:has(img) > span:not(:last-of-type) {
 /*
  * The mark is a raster drawn for a light ground: its "ISD" letterforms are #3d3d3d,
  * which falls to 1.8:1 on --dark-paper. The rule is that the mark is never recoloured,
- * so in dark theme it gets a light plate instead of a filter or an inversion. Both the
- * media query and the explicit attribute are covered, so the no-JavaScript default works.
+ * so it gets a plate rather than a filter or an inversion.
+ *
+ * The plate is --brand-mark-ground (#ffffff), not --light-paper: the supplied PNG has no
+ * alpha channel, so it already carries an opaque white ground and a paper-coloured plate
+ * would frame it in a visibly different tone. For the same reason the plate applies in
+ * BOTH themes — the file has a ground whether we want one or not, and padding it in its
+ * own colour turns a bare white rectangle into a deliberate one with the system radius.
+ *
+ * A transparent or vector version of the mark removes all of this: plate only in dark
+ * theme, with --light-paper, exactly as the design system specifies.
  */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) header a img,
-  :root:not([data-theme='light']) .mark-plate img {
-    background: var(--light-paper);
-    padding: 0.2rem 0.4rem;
-    border-radius: var(--radius);
-  }
-}
-
-:root[data-theme='dark'] header a img,
-:root[data-theme='dark'] .mark-plate img {
-  background: var(--light-paper);
+header a img,
+.mark-plate img {
+  background: var(--brand-mark-ground);
   padding: 0.2rem 0.4rem;
   border-radius: var(--radius);
 }

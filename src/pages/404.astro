@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="Page not found" description="The requested page does not exist." noindex>
-  <div class="container notfound">
+  <div class="page-open container notfound">
     <p class="eyebrow">Error 404</p>
     <h1>Page not found</h1>
     <p class="lede">
@@ -22,14 +22,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <style>
+  /* Padding and the title's size come from `.page-open` — this page is only an opening. */
   .notfound {
-    padding-block: var(--space-3xl);
     display: grid;
     gap: var(--space-md);
-  }
-
-  .notfound h1 {
-    font-size: var(--text-4xl);
   }
 
   .links {

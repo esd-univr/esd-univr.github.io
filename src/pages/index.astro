@@ -32,7 +32,7 @@ const news = (await getNews()).slice(0, 3);
 ---
 
 <BaseLayout title={site.title} description={site.description}>
-  <section class="hero container">
+  <section class="hero page-open container">
     <p class="eyebrow">{site.organisation.department} · {site.organisation.university}</p>
     <h1 class="hero__title">{site.name}</h1>
     <p class="hero__lede">{site.mission}</p>
@@ -103,16 +103,15 @@ const news = (await getNews()).slice(0, 3);
 </BaseLayout>
 
 <style>
+  /* Padding comes from `.page-open` in base.css — the hero is this page's opening block. */
   .hero {
-    padding-block: var(--space-2xl) var(--space-xl);
     display: grid;
     gap: var(--space-md) var(--space-2xl);
   }
 
+  /* Size and measure come from `.page-open h1`; only the weight is the hero's own. */
   .hero__title {
-    font-size: var(--text-4xl);
     font-weight: 500;
-    max-width: 18ch;
   }
 
   .hero__lede {
@@ -131,7 +130,7 @@ const news = (await getNews()).slice(0, 3);
 
   @media (min-width: 56rem) {
     .hero {
-      grid-template-columns: minmax(18rem, 0.8fr) minmax(28rem, 1.2fr);
+      grid-template-columns: minmax(16rem, 0.9fr) minmax(26rem, 1.1fr);
       align-items: start;
     }
 
@@ -163,9 +162,14 @@ const news = (await getNews()).slice(0, 3);
     gap: var(--space-xl);
   }
 
+  /*
+   * The margin column holds the group's short name. 5rem was enough at the old type
+   * scale; at --text-sm plus 0.08em letter-spacing "IoT4Care" measures ~5.8rem and wrapped
+   * onto two lines, so the column gets the room instead of the label getting smaller type.
+   */
   .group {
     display: grid;
-    grid-template-columns: 5rem 1fr;
+    grid-template-columns: 6.5rem 1fr;
     gap: var(--space-sm);
     padding-top: var(--space-md);
     border-top: 1px solid var(--color-rule-strong);

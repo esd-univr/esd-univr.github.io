@@ -31,7 +31,7 @@ export const site = {
    * Paths are relative to public/ (e.g. '/images/brand/cisd-logo.svg').
    */
   brand: {
-    logo: undefined as string | undefined,
+    logo: '/images/brand/logo-cisd.png' as string | undefined,
     favicon: undefined as string | undefined,
     ogImage: undefined as string | undefined,
   },

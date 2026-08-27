@@ -17,7 +17,12 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
 <header class="masthead">
   <div class="container masthead__inner">
     <a class="wordmark" href="/" aria-label={`${site.name} — home`}>
-      {site.brand.logo ? <img class="wordmark__logo" src={site.brand.logo} alt="" width="120" height="40" /> : null}
+      {/*
+        Intrinsic dimensions of the supplied file, so the browser reserves the right box
+        and the mark never shifts on load; CSS sets the displayed height. When a logo is
+        present base.css drops the set-type "CISD" beside it — the mark already reads it.
+      */}
+      {site.brand.logo ? <img class="wordmark__logo" src={site.brand.logo} alt="" width="1119" height="816" /> : null}
       <span class="wordmark__short">{site.shortName}</span>
       <span class="wordmark__long">{site.name}<span class="wordmark__affiliation"> · {site.organisation.university}</span></span>
     </a>
@@ -51,20 +56,24 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
 <style>
   .masthead {
     border-bottom: 1px solid var(--color-rule-strong);
-    padding-block: var(--space-md);
+    padding-block: var(--space-sm) var(--space-xs);
   }
 
+  /*
+   * Two explicit rows, not one wrapping row: the mark and affiliation on top, navigation
+   * and the theme toggle below. As a single flex row the navigation reflowed onto the
+   * wordmark line whenever the available width changed by a few pixels — which happened
+   * on every navigation to a page short enough to lose its scrollbar. The grid makes that
+   * impossible, and `scrollbar-gutter: stable` in base.css removes the width change too.
+   */
   .masthead__inner {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--space-sm) var(--space-xl);
+    display: grid;
+    gap: var(--space-xs);
   }
 
   .wordmark {
     display: inline-flex;
-    align-items: baseline;
+    align-items: center;
     gap: var(--space-sm);
     text-decoration: none;
   }
@@ -73,9 +82,9 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
     color: inherit;
   }
 
+  /* Fluid, tied to the type scale — never a fixed pixel height. */
   .wordmark__logo {
-    align-self: center;
-    height: 2.25rem;
+    height: 2.4rem;
     width: auto;
   }
 
@@ -96,10 +105,12 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
     color: var(--color-ink-3);
   }
 
+  /* Row 2: navigation on the left, the theme toggle pushed to the right. */
   .masthead__end {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
     gap: var(--space-xs) var(--space-lg);
   }
 
@@ -117,7 +128,7 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
     border: var(--rule);
     border-radius: var(--radius);
     cursor: pointer;
-    transition: color 120ms ease, border-color 120ms ease, background-color 120ms ease;
+    transition: var(--transition-control);
   }
 
   :root[data-js] .theme-toggle {

@@ -146,6 +146,14 @@
   --brand-purple: #9d3e91;
   --brand-gold: #dfb952;
   --brand-mark-ink: #3d3d3d;
+  /*
+   * The mark's own ground. logo-cisd.png has NO alpha channel — its background is baked
+   * in as opaque #ffffff — so the plate that carries it must match the file rather than
+   * the paper, or the mark renders as a white rectangle inside a paper-coloured border.
+   * Replace the plate with --light-paper if the group ever supplies a transparent or
+   * vector version of the mark. See the header rules in base.css.
+   */
+  --brand-mark-ground: #ffffff;
 
   /* ---- Active theme: light ---- */
   color-scheme: light;
