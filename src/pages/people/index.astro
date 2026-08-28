@@ -16,9 +16,9 @@ const sections = groupPeople(
 );
 ---
 
-<PageLayout title="People" eyebrow={site.shortName} description="Members and collaborators of the CISD research groups." width="wide" bleed>
+<PageLayout title="People" eyebrow={site.shortName} description="Members and collaborators of the CISD research groups." bleed>
   {people.length === 0 && (
-    <div class="band"><div class="section container container--wide"><EmptyState message="Group members will be listed here." /></div></div>
+    <div class="band"><div class="section container"><EmptyState message="Group members will be listed here." /></div></div>
   )}
 
   {/* Current members are partitioned by group, so each group gets both its hue and its own
@@ -26,7 +26,7 @@ const sections = groupPeople(
       outside DIMI, and `groups` means who they collaborate with rather than membership. */}
   {sections.map((section, index) => (
     <div class:list={['band', index % 2 === 1 && 'band--sunken']} data-group={section.id}>
-      <section class="section container container--wide" aria-labelledby={`people-${section.id}`}>
+      <section class="section container" aria-labelledby={`people-${section.id}`}>
         <h2 id={`people-${section.id}`} class="group-heading">{section.label}</h2>
         <PeopleList people={section.people} />
       </section>
@@ -35,7 +35,7 @@ const sections = groupPeople(
 
   {collaborators.length > 0 && (
     <div class="band band--sunken">
-      <section id="collaborators" class="section container container--wide" aria-labelledby="people-collaborators">
+      <section id="collaborators" class="section container" aria-labelledby="people-collaborators">
         <h2 id="people-collaborators" class="group-heading group-heading--neutral">Collaborators</h2>
         <PeopleList people={collaborators} />
       </section>
