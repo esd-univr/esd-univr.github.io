@@ -9,7 +9,7 @@ interests:
   - Deterministic co-simulation
   - Lingua Franca
   - Functional Mock-up Interface
-photo:./pietro-turco.png
+photo: ./pietro-turco.png
 website: "https://www.dimi.univr.it/?ent=persona&id=60670&lang=en"
 ---
 
