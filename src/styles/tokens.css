@@ -16,7 +16,7 @@
  * See docs/site-settings.md for the theme behaviour and how to repalette safely.
  */
 :root {
-  --font-sans: 'IBM Plex Sans Variable', 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-serif: 'IBM Plex Serif', Georgia, 'Times New Roman', serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
@@ -28,7 +28,7 @@
    * is 14px (--text-xs), reserved for mono metadata — eyebrows, years, resource links —
    * and never used for prose. --text-sm is a real 16px, so even a "small" caption sits
    * at comfortable body size. British Dyslexia Association style guide + Italian AID
-   * recommendations; IBM Plex Sans already keeps I / l / 1 distinguishable.
+   * recommendations; the sans stack is kept comfortably open at these UI sizes.
    *
    * If a layout feels tight, cut content or widen the container — never step type down.
    */
