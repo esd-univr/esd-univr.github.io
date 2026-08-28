@@ -69,41 +69,42 @@ const research = defineCollection({
 const people = defineCollection({
   loader: glob({ pattern: MARKDOWN, base: './src/content/people' }),
   schema: ({ image }) =>
-    z.object({
-      name: z.string().min(1),
-      /** Free text shown next to the name, e.g. "Full Professor", "PhD Student". */
-      role: z.string().min(1),
-      /**
-       * Current CISD laboratory associations. May be empty when current CISD membership
-       * is established but no ESD/PARCO/IoT4Care assignment has been explicitly stated.
-       */
-      groups: optionalGroupIds,
-      /** Current relationship to CISD. Existing records default to member. */
-      relationship: z.enum(['member', 'collaborator']).default('member'),
-      /** Numeric id on the legacy site (/profile/<id>/); enables a compatibility page. */
-      legacyId: z.number().int().positive().optional(),
-      /** Sort key within a group or the collaborator section; ties break on family name. */
-      order: z.number().int().default(100),
-      /** Only when it differs from the department on the Contacts page. */
-      affiliation: z.string().optional(),
-      interests: z.array(z.string()).default([]),
-      /** Portrait, relative to the Markdown file (e.g. ./photo.jpg). */
-      photo: image().optional(),
-      /** Public institutional e-mail — only when its publication has been approved. */
-      email: z.email().optional(),
-      website: z.url().optional(),
-      orcid: z
-        .string()
-        .regex(/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/, 'ORCID iD must look like 0000-0002-1825-0097')
-        .optional(),
-      scholar: z.url().optional(),
-      dblp: z.url().optional(),
-      /** GitHub user name or profile URL. */
-      github: z.string().optional(),
-      linkedin: z.url().optional(),
-      /** Other spellings under which this person appears as an author (e.g. "F. Fummi"). */
-      aliases: z.array(z.string()).default([]),
-    }),
+    z
+      .object({
+        name: z.string().min(1),
+        /** Free text shown next to the name, e.g. "Full Professor", "PhD Student". */
+        role: z.string().min(1),
+        /**
+         * Current CISD laboratory associations. May be empty when current CISD membership
+         * is established but no ESD/PARCO/IoT4Care assignment has been explicitly stated.
+         */
+        groups: optionalGroupIds,
+        /** Current relationship to CISD. Existing records default to member. */
+        relationship: z.enum(['member', 'collaborator']).default('member'),
+        /** Numeric id on the legacy site (/profile/<id>/); enables a compatibility page. */
+        legacyId: z.number().int().positive().optional(),
+        /** Sort key within a group or the collaborator section; ties break on family name. */
+        order: z.number().int().default(100),
+        /** Only when it differs from the department on the Contacts page. */
+        affiliation: z.string().optional(),
+        interests: z.array(z.string()).default([]),
+        /** Portrait, relative to the Markdown file (e.g. ./photo.jpg). */
+        photo: image().optional(),
+        /** Public institutional e-mail — only when its publication has been approved. */
+        email: z.email().optional(),
+        website: z.url().optional(),
+        orcid: z
+          .string()
+          .regex(/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/, 'ORCID iD must look like 0000-0002-1825-0097')
+          .optional(),
+        scholar: z.url().optional(),
+        dblp: z.url().optional(),
+        /** GitHub user name or profile URL. */
+        github: z.string().optional(),
+        linkedin: z.url().optional(),
+        /** Other spellings under which this person appears as an author (e.g. "F. Fummi"). */
+        aliases: z.array(z.string()).default([]),
+      }),
 });
 
 const projects = defineCollection({
