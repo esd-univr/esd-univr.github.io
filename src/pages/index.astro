@@ -8,6 +8,8 @@
  */
 import NewsList from '../components/NewsList.astro';
 import SectionHeading from '../components/SectionHeading.astro';
+import cisdLogoDark from '../content/assets/logo_cisd.dark_theme.png';
+import cisdLogoLight from '../content/assets/logo_cisd.light_theme.png';
 import { site } from '../data/site.ts';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getGroups, getNews } from '../lib/content.ts';
@@ -19,8 +21,23 @@ const news = (await getNews()).slice(0, 3);
 <BaseLayout title={site.title} description={site.description}>
   <section class="hero page-open container">
     <p class="eyebrow">{site.organisation.department} · {site.organisation.university}</p>
-    <div class="hero__mark">
-      <img src="/images/brand/logo-cisd.png" width="1119" height="816" alt="CISD" />
+    <div class="hero__mark" role="img" aria-label="CISD">
+      <img
+        class="hero__logo hero__logo--light"
+        src={cisdLogoLight.src}
+        width={cisdLogoLight.width}
+        height={cisdLogoLight.height}
+        alt=""
+        aria-hidden="true"
+      />
+      <img
+        class="hero__logo hero__logo--dark"
+        src={cisdLogoDark.src}
+        width={cisdLogoDark.width}
+        height={cisdLogoDark.height}
+        alt=""
+        aria-hidden="true"
+      />
     </div>
     <div class="hero__content">
       <h1 class="hero__title">{site.name}</h1>
@@ -74,10 +91,32 @@ const news = (await getNews()).slice(0, 3);
     min-width: 0;
   }
 
-  .hero__mark img {
+  .hero__logo {
     width: 100%;
     max-width: none;
     height: auto;
+  }
+
+  .hero__logo--dark {
+    display: none;
+  }
+
+  :global(:root[data-theme='dark']) .hero__logo--light {
+    display: none;
+  }
+
+  :global(:root[data-theme='dark']) .hero__logo--dark {
+    display: block;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .hero__logo--light {
+      display: none;
+    }
+
+    :global(:root:not([data-theme='light'])) .hero__logo--dark {
+      display: block;
+    }
   }
 
   .hero__content {
