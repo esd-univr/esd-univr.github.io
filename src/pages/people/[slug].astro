@@ -51,9 +51,7 @@ const links = [
   d.linkedin && { label: 'LinkedIn', href: d.linkedin, text: 'Profile' },
 ].filter((x): x is { label: string; href: string; text?: string } => Boolean(x));
 const groupEyebrow = groups.map((group) => group.data.shortName).join(' · ');
-const eyebrow = [isCollaborator && 'Collaborator', groupEyebrow || (!isCollaborator && site.shortName)]
-  .filter(Boolean)
-  .join(' · ');
+const eyebrow = [isCollaborator && 'Collaborator', groupEyebrow].filter(Boolean).join(' · ');
 ---
 
 <DetailLayout

@@ -35,6 +35,7 @@ private working area outside this repository and are not part of the public site
 | `/profile/1/` | `/people/enrico-fraccaroli/` | Enrico Fraccaroli |
 | `/profile/44/` | `/people/francesco-biondani/` | Francesco Biondani |
 | `/profile/15/` | `/people/nicola-bombieri/` | Nicola Bombieri |
+| `/profile/36/` | `/people/stefano-aldegheri/` | Stefano Aldegheri |
 | `/profile/22/` | `/people/graziano-pravadelli/` | Graziano Pravadelli |
 | `/profile/45/` | `/people/mario-libro/` | Mario Libro |
 | `/profile/8/` | `/people/nicola-dall-ora/` | Nicola Dall'Ora |
@@ -81,9 +82,7 @@ The old site mixed current members, former members and external collaborators in
 The new site records the person's **current relationship to CISD** separately from their
 current institutional role. `relationship: member` is the default; restored external or
 cross-department collaborators use `relationship: collaborator` and appear in a separate
-Collaborators section. `groups:` records current laboratory associations only; a current
-CISD member may therefore remain ungrouped rather than being assigned to a laboratory by
-research-topic similarity.
+Collaborators section.
 
 - **Filippo Ziche** — added after the current roster review identified him as a PARCO member.
   The University of Verona PREPARE project lists him as a PhD student; current research
@@ -93,17 +92,21 @@ research-topic similarity.
   University records list him among the Intelligent Systems Engineering doctoral students
   and document his IMPROVENET Smart Manufacturing doctoral position. His research profile
   is limited to publicly documented human-motion prediction and human-centred interfaces.
-- **Daniele Nicoletti** — the current roster review identifies him as part of CISD but does
-  not place him in ESD, PARCO or IoT4Care. He is therefore a current ungrouped member rather
-  than being assigned to ESD because his verification research is scientifically close to
-  it. The University record lists him as a 39th-cycle Computer Science PhD student through
-  30 September 2026; public research records support the specification-mining and hybrid-
-  system verification description.
-- **Samuele Germiniani** — likewise retained as a current CISD member without a forced
-  laboratory association. Current institutional records place him at Guglielmo Marconi
+- **Daniele Nicoletti** — the current roster review places him under Graziano Pravadelli in
+  IoT4Care. The University record lists him as a 39th-cycle Computer Science PhD student
+  through 30 September 2026; public research records support the specification-mining and
+  hybrid-system verification description.
+- **Samuele Germiniani** — the current roster review likewise places him under Graziano
+  Pravadelli in IoT4Care. Current institutional records place him at Guglielmo Marconi
   University and record an active research appointment at DIMI through 31 December 2027.
   Public bibliographic records support the assertion-mining, runtime-verification and
   edge-cloud monitoring research description.
+- **Stefano Aldegheri** — legacy profile 36 and the legacy PARCO area identify him with
+  PARCO; the current DIMI PARCO page independently lists him as a current member and
+  Laboratory Technician. His current research profile covers embedded vision, heterogeneous
+  computing, edge video analytics and human-pose analysis. He is therefore restored as a
+  current PARCO member with the current institutional role rather than the stale legacy
+  Postdoctoral Researcher label.
 - **Mario Libro** — legacy profile 45 and the legacy ESD page identify him with ESD. The
   current University of Verona record lists him as a doctoral student in Computer Science,
   39th cycle, through 30 September 2026. He is therefore restored as a current ESD member,
@@ -182,10 +185,9 @@ Funding amounts from the legacy site and public grant records are deliberately n
 
 - **People** — the roster distinguishes current members from collaborators and is curated
   against current public roles rather than copying all 34 legacy profiles. The August 2026
-  roster publishes 22 people: current members across ESD, PARCO and IoT4Care, current CISD
-  members without a forced laboratory assignment, plus collaborators whose relationship to
-  the group is intentionally preserved. A missing legacy profile is still not automatically
-  labelled "former" or "alumni".
+  roster publishes 23 people: current members across ESD, PARCO and IoT4Care plus
+  collaborators whose relationship to the group is intentionally preserved. A missing legacy
+  profile is still not automatically labelled "former" or "alumni".
 - **Research** — the old database modelled ESD, PARCO and IoT4Care as "research areas"
   alongside two groups (ForME, NeST) that are separate research groups of the department.
   Here ESD, PARCO and IoT4Care are *groups*, and research *topics* were written from the
