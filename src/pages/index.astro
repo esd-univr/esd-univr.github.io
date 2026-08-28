@@ -19,13 +19,18 @@ const news = (await getNews()).slice(0, 3);
 <BaseLayout title={site.title} description={site.description}>
   <section class="hero page-open container">
     <p class="eyebrow">{site.organisation.department} · {site.organisation.university}</p>
-    <h1 class="hero__title">{site.name}</h1>
-    <p class="hero__lede">{site.mission}</p>
-    <nav class="hero__links" aria-label="Start here">
-      <a class="more" href="/research/">Research</a>
-      <a class="more" href="/publications/">Publications</a>
-      <a class="more" href="/people/">People</a>
-    </nav>
+    <div class="hero__mark mark-plate">
+      <img src="/images/brand/logo-cisd.png" width="1119" height="816" alt="CISD" />
+    </div>
+    <div class="hero__content">
+      <h1 class="hero__title">{site.name}</h1>
+      <p class="hero__lede">{site.mission}</p>
+      <nav class="hero__links" aria-label="Start here">
+        <a class="more" href="/research/">Research</a>
+        <a class="more" href="/publications/">Publications</a>
+        <a class="more" href="/people/">People</a>
+      </nav>
+    </div>
   </section>
 
   {/* News leads: it is the only part of the page that changes week to week. */}
@@ -62,7 +67,22 @@ const news = (await getNews()).slice(0, 3);
   /* Padding comes from `.page-open` in base.css — the hero is this page's opening block. */
   .hero {
     display: grid;
-    gap: var(--space-md) var(--space-2xl);
+    gap: var(--space-lg) var(--space-2xl);
+  }
+
+  .hero__mark {
+    max-width: 18rem;
+  }
+
+  .hero__mark img {
+    width: 100%;
+    height: auto;
+  }
+
+  .hero__content {
+    display: grid;
+    gap: var(--space-md);
+    align-content: start;
   }
 
   /* Size and measure come from `.page-open h1`; only the weight is the hero's own. */
@@ -94,19 +114,14 @@ const news = (await getNews()).slice(0, 3);
       grid-column: 1 / -1;
     }
 
-    .hero__title {
+    .hero__mark {
       grid-column: 1;
-      grid-row: 2 / span 2;
-    }
-
-    .hero__lede {
-      grid-column: 2;
       grid-row: 2;
     }
 
-    .hero__links {
+    .hero__content {
       grid-column: 2;
-      grid-row: 3;
+      grid-row: 2;
     }
   }
 

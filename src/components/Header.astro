@@ -1,5 +1,6 @@
 ---
 /** Site masthead and primary navigation. Works without JavaScript (plain links). */
+import esdLogo from '../content/assets/logo_esd.png';
 import { site } from '../data/site.ts';
 
 const NAV = [
@@ -17,17 +18,26 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
 
 <header class="masthead">
   <div class="container masthead__inner">
-    <a class="wordmark" href="/" aria-label={`${site.name} — home`}>
-      {/*
-        Only renders once `brand.logo` names a mark that survives 2.4rem — see site.ts.
-        Add that file's intrinsic width and height here when it does, so the box is reserved
-        before it loads. When a logo is present base.css drops the set-type "CISD" beside
-        it, because the mark already reads it.
-      */}
-      {site.brand.logo ? <img class="wordmark__logo" src={site.brand.logo} alt="" /> : null}
-      <span class="wordmark__short">{site.shortName}</span>
-      <span class="wordmark__long">{site.name}<span class="wordmark__affiliation"> · {site.organisation.university}</span></span>
-    </a>
+    <div class="masthead__brand">
+      <img
+        class="masthead__group-logo"
+        src={esdLogo.src}
+        width={esdLogo.width}
+        height={esdLogo.height}
+        alt="ESD"
+      />
+      <a class="wordmark" href="/" aria-label={`${site.name} — home`}>
+        {/*
+          Only renders once `brand.logo` names a mark that survives 2.4rem — see site.ts.
+          Add that file's intrinsic width and height here when it does, so the box is reserved
+          before it loads. When a logo is present base.css drops the set-type "CISD" beside
+          it, because the mark already reads it.
+        */}
+        {site.brand.logo ? <img class="wordmark__logo" src={site.brand.logo} alt="" /> : null}
+        <span class="wordmark__short">{site.shortName}</span>
+        <span class="wordmark__long">{site.name}<span class="wordmark__affiliation"> · {site.organisation.university}</span></span>
+      </a>
+    </div>
     <div class="masthead__end">
       <nav class="nav" aria-label="Main">
         <ul class="nav__list">
@@ -73,12 +83,27 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
     gap: var(--space-xs);
   }
 
+  .masthead__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    min-width: 0;
+  }
+
+  .masthead__group-logo {
+    flex: none;
+    width: auto;
+    height: 2.4rem;
+    object-fit: contain;
+  }
+
   /* Baseline, so the serif wordmark and the affiliation line sit on one line together;
      a mark, when there is one, centres itself against them instead. */
   .wordmark {
     display: inline-flex;
     align-items: baseline;
     gap: var(--space-sm);
+    min-width: 0;
     text-decoration: none;
   }
 
