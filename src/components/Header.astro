@@ -1,6 +1,7 @@
 ---
 /** Site masthead and primary navigation. Works without JavaScript (plain links). */
-import esdLogo from '../content/assets/logo_esd.png';
+import esdLogoDark from '../content/assets/logo_esd.dark_theme.png';
+import esdLogoLight from '../content/assets/logo_esd.light_theme.png';
 import { site } from '../data/site.ts';
 
 const NAV = [
@@ -19,13 +20,24 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
 <header class="masthead">
   <div class="container masthead__inner">
     <div class="masthead__brand">
-      <img
-        class="masthead__group-logo"
-        src={esdLogo.src}
-        width={esdLogo.width}
-        height={esdLogo.height}
-        alt="ESD"
-      />
+      <span class="masthead__group-mark" role="img" aria-label="ESD">
+        <img
+          class="masthead__group-logo masthead__group-logo--light"
+          src={esdLogoLight.src}
+          width={esdLogoLight.width}
+          height={esdLogoLight.height}
+          alt=""
+          aria-hidden="true"
+        />
+        <img
+          class="masthead__group-logo masthead__group-logo--dark"
+          src={esdLogoDark.src}
+          width={esdLogoDark.width}
+          height={esdLogoDark.height}
+          alt=""
+          aria-hidden="true"
+        />
+      </span>
       <a class="wordmark" href="/" aria-label={`${site.name} — home`}>
         {/*
           Only renders once `brand.logo` names a mark that survives 2.4rem — see site.ts.
@@ -90,11 +102,39 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
     min-width: 0;
   }
 
+  .masthead__group-mark {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+  }
+
   .masthead__group-logo {
     flex: none;
     width: auto;
     height: 2.4rem;
     object-fit: contain;
+  }
+
+  .masthead__group-logo--dark {
+    display: none;
+  }
+
+  :global(:root[data-theme='dark']) .masthead__group-logo--light {
+    display: none;
+  }
+
+  :global(:root[data-theme='dark']) .masthead__group-logo--dark {
+    display: block;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .masthead__group-logo--light {
+      display: none;
+    }
+
+    :global(:root:not([data-theme='light'])) .masthead__group-logo--dark {
+      display: block;
+    }
   }
 
   /* Baseline, so the serif wordmark and the affiliation line sit on one line together;
