@@ -10,7 +10,7 @@ interests:
   - Human-robot interaction
   - Edge AI
   - Markerless pose estimation
-photo: ./enrico-martini.png
+photo: ./enrico-martini.jpg
 website: "https://www.dimi.univr.it/?ent=persona&id=47640&lang=en"
 orcid: "0000-0002-4177-6599"
 ---
