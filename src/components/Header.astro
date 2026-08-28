@@ -1,7 +1,7 @@
 ---
 /** Site masthead and primary navigation. Works without JavaScript (plain links). */
-import esdLogoDark from '../content/assets/logo_esd.dark_theme.png';
-import esdLogoLight from '../content/assets/logo_esd.light_theme.png';
+import cisdLogoDark from '../content/assets/logo_cisd.dark_theme.png';
+import cisdLogoLight from '../content/assets/logo_cisd.light_theme.png';
 import { site } from '../data/site.ts';
 
 const NAV = [
@@ -20,22 +20,20 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
 <header class="masthead">
   <div class="container masthead__inner">
     <div class="masthead__brand">
-      <span class="masthead__group-mark" role="img" aria-label="ESD">
+      <span class="masthead__brand-mark" aria-hidden="true">
         <img
-          class="masthead__group-logo masthead__group-logo--light"
-          src={esdLogoLight.src}
-          width={esdLogoLight.width}
-          height={esdLogoLight.height}
+          class="masthead__brand-logo masthead__brand-logo--light"
+          src={cisdLogoLight.src}
+          width={cisdLogoLight.width}
+          height={cisdLogoLight.height}
           alt=""
-          aria-hidden="true"
         />
         <img
-          class="masthead__group-logo masthead__group-logo--dark"
-          src={esdLogoDark.src}
-          width={esdLogoDark.width}
-          height={esdLogoDark.height}
+          class="masthead__brand-logo masthead__brand-logo--dark"
+          src={cisdLogoDark.src}
+          width={cisdLogoDark.width}
+          height={cisdLogoDark.height}
           alt=""
-          aria-hidden="true"
         />
       </span>
       <a class="wordmark" href="/" aria-label={`${site.name} — home`}>
@@ -102,37 +100,37 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
     min-width: 0;
   }
 
-  .masthead__group-mark {
+  .masthead__brand-mark {
     display: inline-flex;
     align-items: center;
     flex: none;
   }
 
-  .masthead__group-logo {
+  .masthead__brand-logo {
     flex: none;
     width: auto;
     height: 2.4rem;
     object-fit: contain;
   }
 
-  .masthead__group-logo--dark {
+  .masthead__brand-logo--dark {
     display: none;
   }
 
-  :global(:root[data-theme='dark']) .masthead__group-logo--light {
+  :global(:root[data-theme='dark']) .masthead__brand-logo--light {
     display: none;
   }
 
-  :global(:root[data-theme='dark']) .masthead__group-logo--dark {
+  :global(:root[data-theme='dark']) .masthead__brand-logo--dark {
     display: block;
   }
 
   @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme='light'])) .masthead__group-logo--light {
+    :global(:root:not([data-theme='light'])) .masthead__brand-logo--light {
       display: none;
     }
 
-    :global(:root:not([data-theme='light'])) .masthead__group-logo--dark {
+    :global(:root:not([data-theme='light'])) .masthead__brand-logo--dark {
       display: block;
     }
   }
