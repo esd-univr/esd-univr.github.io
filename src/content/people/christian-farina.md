@@ -10,6 +10,7 @@ interests:
   - Contactless vital-sign monitoring
   - Bluetooth Low Energy
   - Healthcare IoT
+photo: ./christian-farina.png
 github: FarinaChristian
 ---
 

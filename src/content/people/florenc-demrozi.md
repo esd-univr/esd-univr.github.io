@@ -12,6 +12,7 @@ interests:
   - Active and Assisted Living
   - AI-enabled sensing
   - Wearable and wireless sensing
+photo: ./florenc-demrozi.jpg
 website: "https://florencdemrozi.github.io/"
 orcid: "0000-0002-5422-9826"
 dblp: "https://dblp.org/pid/197/3848.html"

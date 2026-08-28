@@ -12,6 +12,7 @@ interests:
   - Formal verification
   - Discrete-event systems
   - Cyber-physical and embedded systems
+photo: ./tiziano-villa.jpg
 website: "https://www.di.univr.it/?ent=persona&id=3849&lang=en"
 orcid: "0000-0002-9671-8804"
 dblp: "https://dblp.org/pid/52/5413.html"

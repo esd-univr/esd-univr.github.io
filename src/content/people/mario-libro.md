@@ -11,6 +11,7 @@ interests:
   - Industrial Internet of Things
   - Ontologies
   - Manufacturing interoperability
+photo: ./mario-libro.jpg
 website: "https://www.di.univr.it/?ent=persona&id=45521&lang=en"
 ---
 

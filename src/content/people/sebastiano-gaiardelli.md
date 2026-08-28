@@ -12,6 +12,7 @@ interests:
   - Model-Based Systems Engineering
   - Digital twins
   - Service-oriented manufacturing
+photo: ./sebastiano-gaiardelli.jpg
 website: "https://sbgaia.github.io/"
 orcid: "0000-0002-9451-1957"
 dblp: "https://dblp.org/pid/304/9289.html"

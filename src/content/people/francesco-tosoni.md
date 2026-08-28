@@ -12,6 +12,7 @@ interests:
   - Functional safety
   - Digital twins
   - Cyber-physical systems
+photo: ./francesco-tosoni.jpg
 orcid: "0000-0003-3331-2935"
 scholar: "https://scholar.google.com/citations?user=bHs86TIAAAAJ"
 dblp: "https://dblp.org/pid/317/5120-2.html"

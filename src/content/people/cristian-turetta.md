@@ -10,6 +10,7 @@ interests:
   - Contactless health monitoring
   - Internet of Things
   - Active and Assisted Living
+photo: ./cristian-turetta.jpg
 dblp: "https://dblp.org/pid/284/0936.html"
 github: CristianTuretta
 ---

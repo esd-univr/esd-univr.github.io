@@ -12,6 +12,7 @@ interests:
   - Cyber-physical systems
   - Design-space exploration and simulation
   - Computational ecology
+photo: ./davide-quaglia.png
 website: "https://www.di.univr.it/?ent=persona&id=2520&lang=en"
 dblp: "https://dblp.org/pid/80/4682.html"
 ---

@@ -12,6 +12,7 @@ interests:
   - Functional safety
   - Fault injection and simulation
   - Smart systems
+photo: ./nicola-dall-ora.jpg
 website: "https://nicoladallora.github.io/"
 orcid: "0000-0003-0656-9786"
 dblp: "https://dblp.org/pid/228/3936.html"
