@@ -29,16 +29,13 @@ You never edit a template, a component or a route to change who appears on the s
 ## Fields
 
 Required: `name`, `role`, `groups`. Everything else is optional, and the pages are designed
-to look right without it — omit a field rather than guessing its value. `groups` is always a
-list, but it may be empty when current CISD membership is established and no current
-ESD/PARCO/IoT4Care laboratory association has been explicitly stated.
+to look right without it — omit a field rather than guessing its value.
 
 | Field | Type | What it is |
 | --- | --- | --- |
 | `name` | text | Full display name, with accents. |
 | `role` | text | Free text shown next to the name: `Full Professor`, `PhD Student`, … |
-| `groups` | list | Zero or more of `esd`, `parco`, `iot4care` (the ids in `src/data/groups.yaml`). Empty means no current laboratory association is being claimed. |
-| `relationship` | text | `member` (default) or `collaborator`. Independent of `groups`: a current member may be ungrouped. |
+| `groups` | list | One or more of `esd`, `parco`, `iot4care` (the ids in `src/data/groups.yaml`). |
 | `order` | integer | Sort key inside a group, lower first. Default `100`; ties break on family name. |
 | `photo` | path | Portrait next to the Markdown file — see [Portraits](#portraits). |
 | `interests` | list | Short research-interest labels shown on the person page. |
@@ -93,20 +90,6 @@ groups: [esd]
 ---
 ```
 
-If a human source establishes that Mario is a current CISD member but does **not** establish
-an ESD, PARCO or IoT4Care association, write that uncertainty explicitly instead of guessing:
-
-```markdown
----
-name: Mario Rossi
-role: PhD Student
-groups: []
-relationship: member
----
-```
-
-He will appear in the neutral **CISD** section of `/people/`.
-
 No `legacyId`, no `photo`, no body. That is a complete, valid record.
 
 Then run `npm run ci`.
@@ -117,18 +100,15 @@ Then run `npm run ci`.
 the name, so write it the way it should read: `Assistant Professor`, `Postdoctoral
 Researcher`, `Visiting PhD Student`. Nothing else needs touching.
 
-**Change group membership.** Edit `groups:`. The list decides which laboratory section of
-`/people/` the person appears in; a person in two groups appears in both:
+**Change group membership.** Edit `groups:`. The list decides which section of `/people/`
+the person appears in; a person in two groups appears in both:
 
 ```yaml
 groups: [esd, iot4care]
 ```
 
 Only the ids in `src/data/groups.yaml` are accepted. Membership is a decision a human
-makes — never infer it from a department affiliation or from research similarity. When
-current CISD membership is established but no current laboratory assignment is stated, use
-`groups: []` and keep `relationship: member`; the person appears once in the neutral **CISD**
-section. An empty list is not a placeholder to fill later by guesswork.
+makes — never infer it from a department affiliation.
 
 **Change the order within a group.** Edit `order:`. Lower numbers come first; the roster
 currently uses 10, 20, 30 … so there is room to insert somebody. People with the same
