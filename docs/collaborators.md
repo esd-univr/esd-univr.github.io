@@ -8,11 +8,11 @@ Set:
 relationship: collaborator
 ```
 
-`relationship` accepts `member` or `collaborator` and defaults to `member`, so existing records need no change. Current members appear under their CISD group on `/people/`; collaborators appear once in the separate **Collaborators** section.
+`relationship` accepts `member` or `collaborator` and defaults to `member`, so existing records need no change. Current members with a stated laboratory appear under that CISD group on `/people/`; current members without a stated laboratory appear in the neutral **CISD** section; collaborators appear once in the separate **Collaborators** section.
 
 ## Group association
 
-For a member, `groups:` must name at least one current CISD group (`esd`, `parco`, `iot4care`).
+For any person, `groups:` records only explicitly stated current CISD laboratory associations (`esd`, `parco`, `iot4care`). It may be empty when the person's current CISD relationship is established but assigning ESD, PARCO or IoT4Care would require inference.
 
 A collaborator may have:
 
@@ -26,7 +26,7 @@ when a public source explicitly establishes the collaboration with ESD, or:
 groups: []
 ```
 
-when the person is a CISD collaborator but no current CISD group association should be claimed. Do not map former groups such as ForME or NeST onto a current group merely to make the field non-empty.
+when the person is a CISD collaborator but no current CISD group association should be claimed. A current member may likewise use `groups: []` when their membership is established but no current laboratory assignment has been stated. Do not map former groups such as ForME or NeST, or research similarity, onto a current group merely to make the field non-empty.
 
 On a collaborator detail page, current group associations are labelled **Collaborates with** rather than **Group**. The role and `affiliation:` describe the person's current external or departmental position; do not preserve a stale legacy role when a current institutional source exists.
 
@@ -40,4 +40,4 @@ The rules in `docs/people.md` and `docs/content-safety.md` apply unchanged. In p
 
 ## Validate
 
-Run `npm run ci`. The content tests enforce that members have at least one current CISD group while collaborators may be ungrouped.
+Run `npm run ci`. The content tests enforce that every stated group is a current CISD group, while people may remain ungrouped rather than receiving an inferred laboratory association.
