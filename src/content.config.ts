@@ -74,7 +74,10 @@ const people = defineCollection({
         name: z.string().min(1),
         /** Free text shown next to the name, e.g. "Full Professor", "PhD Student". */
         role: z.string().min(1),
-        /** Members belong to one or more current CISD groups; collaborators may be ungrouped. */
+        /**
+         * Current CISD laboratory associations. May be empty when current CISD membership
+         * is established but no ESD/PARCO/IoT4Care assignment has been explicitly stated.
+         */
         groups: optionalGroupIds,
         /** Current relationship to CISD. Existing records default to member. */
         relationship: z.enum(['member', 'collaborator']).default('member'),
@@ -101,10 +104,6 @@ const people = defineCollection({
         linkedin: z.url().optional(),
         /** Other spellings under which this person appears as an author (e.g. "F. Fummi"). */
         aliases: z.array(z.string()).default([]),
-      })
-      .refine((p) => p.relationship === 'collaborator' || p.groups.length > 0, {
-        message: 'members must belong to at least one current CISD group',
-        path: ['groups'],
       }),
 });
 

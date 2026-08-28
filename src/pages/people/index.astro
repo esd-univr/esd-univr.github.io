@@ -14,16 +14,18 @@ const sections = groupPeople(
   members,
   groups.map((group) => ({ id: group.id, label: group.data.name })),
 );
+const ungroupedMembers = members.filter((person) => person.data.groups.length === 0).sort(comparePeople);
+const sectionsBeforeCollaborators = sections.length + (ungroupedMembers.length > 0 ? 1 : 0);
 ---
 
-<PageLayout title="People" eyebrow={site.shortName} description="Members and collaborators of the CISD research groups." bleed>
+<PageLayout title="People" eyebrow={site.shortName} description="Members and collaborators of CISD." bleed>
   {people.length === 0 && (
-    <div class="band"><div class="section container"><EmptyState message="Group members will be listed here." /></div></div>
+    <div class="band"><div class="section container"><EmptyState message="CISD members will be listed here." /></div></div>
   )}
 
-  {/* Current members are partitioned by group, so each group gets both its hue and its own
-      plate. Collaborators are deliberately separate: their current affiliation may be
-      outside DIMI, and `groups` means who they collaborate with rather than membership. */}
+  {/* A stated laboratory association gets its group hue. Current CISD members whose
+      laboratory has not been explicitly stated remain members without being forced into a
+      group by research similarity. Collaborators stay separate from both. */}
   {sections.map((section, index) => (
     <div class:list={['band', index % 2 === 1 && 'band--sunken']} data-group={section.id}>
       <section class="section container" aria-labelledby={`people-${section.id}`}>
@@ -33,8 +35,17 @@ const sections = groupPeople(
     </div>
   ))}
 
+  {ungroupedMembers.length > 0 && (
+    <div class:list={['band', sections.length % 2 === 1 && 'band--sunken']}>
+      <section id="cisd-members" class="section container" aria-labelledby="people-cisd-members">
+        <h2 id="people-cisd-members" class="group-heading group-heading--neutral">CISD</h2>
+        <PeopleList people={ungroupedMembers} />
+      </section>
+    </div>
+  )}
+
   {collaborators.length > 0 && (
-    <div class="band band--sunken">
+    <div class:list={['band', sectionsBeforeCollaborators % 2 === 1 && 'band--sunken']}>
       <section id="collaborators" class="section container" aria-labelledby="people-collaborators">
         <h2 id="people-collaborators" class="group-heading group-heading--neutral">Collaborators</h2>
         <PeopleList people={collaborators} />

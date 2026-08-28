@@ -87,15 +87,16 @@ test('file names are lower-case slugs and news files start with their date', () 
 
 /*
  * `assets` may be ungrouped because the previous /assets/ page did not state ownership.
- * A person marked `relationship: collaborator` may also be ungrouped: this records a real
- * CISD collaboration without inventing membership in one of the three current groups.
- * All other records, and all current members, must name at least one current group.
+ * A person may also be ungrouped when their current CISD relationship is established but
+ * no current ESD/PARCO/IoT4Care association has been explicitly stated. All other records
+ * must name at least one current group; an empty people group list is never permission to
+ * infer one from research similarity.
  */
-test('every record uses only known groups and members belong to one', () => {
+test('every record uses only known groups; people and assets may be ungrouped', () => {
   for (const c of COLLECTIONS) {
     for (const e of all[c]) {
       assert.ok(Array.isArray(e.data.groups), `${label(e)}: groups is required`);
-      const mayBeEmpty = c === 'assets' || (c === 'people' && e.data.relationship === 'collaborator');
+      const mayBeEmpty = c === 'assets' || c === 'people';
       if (!mayBeEmpty) assert.ok(e.data.groups.length > 0, `${label(e)}: groups must name at least one group`);
       if (c === 'people' && e.data.relationship !== undefined) {
         assert.ok(['member', 'collaborator'].includes(e.data.relationship), `${label(e)}: invalid relationship`);
@@ -214,7 +215,7 @@ test('every publication has an author among the published people', () => {
  * Figures written inline in Markdown must carry alt text. This is a test rather than a build
  * error on purpose: Astro's glob loader catches render errors and only logs them, so the
  * rehype plugin throwing would leave the build green with the entry's whole body missing.
- * See src/lib/markdown-figures.ts and docs/figures.md.
+ * See src/lib/markdown-figures.ts and docs/figures.md for authoring syntax.
  */
 test('every inline Markdown image has alt text', () => {
   const IMAGE = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
