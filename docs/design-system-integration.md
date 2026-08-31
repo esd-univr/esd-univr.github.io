@@ -46,7 +46,7 @@ repository. The resolution is already in the code; do not silently re-open one.
 | # | The disagreement | Resolution |
 | --- | --- | --- |
 | 1 | `HANDOFF.md` §2a gives an indigo accent and violet / blue / cyan group hues (`#6a2fbe`, `#1c56c8`, `#0d6f86`). `tokens/palette.css` and `readme.md` give the logo's purple `#9d3e91` and the mark's own arcs. | **The CSS wins.** The accent is `#9d3e91`; the group hues are the mark's arcs. |
-| 2 | `HANDOFF.md` says "Assets: None … the mark stays set type", and `readme.md` CAVEAT 3 says "No logo and no portraits". But `readme.md`'s ICONOGRAPHY section and the kit's `assets/README.md` document `logo-cisd.png` in detail, and `base.css` ships rules for it. | **The file exists**, at `public/images/brand/logo-cisd.png`, but it is not used at masthead scale — see "The mark" below. `brand.logo` is `undefined`, so `HANDOFF.md` turns out to be right by accident: the masthead is set type. |
+| 2 | `HANDOFF.md` says "Assets: None … the mark stays set type", and `readme.md` CAVEAT 3 says "No logo and no portraits". But `readme.md`'s ICONOGRAPHY section and the kit's `assets/README.md` document `logo-cisd.png` in detail, and `base.css` ships rules for it. | **The file exists**, and a light/dark pair with real transparency has since replaced it — see "The mark" below. `HANDOFF.md` was right about the file first supplied and wrong about the outcome: the masthead now carries the mark, and it is the set-type acronym that is gone. |
 | 3 | `readme.md`'s INDEX says the kit's `assets/` is "empty by design". | Wrong — it holds the mark. |
 | 4 | The kit's `assets/README.md` describes the mark as having a "transparent background". | **The file has no alpha channel** and an opaque `#ffffff` ground. See "The mark" below. |
 | 5 | `HANDOFF.md` §2b says this repository has four theme scopes, including `[data-theme='light']`. | It has **three**. There is no `[data-theme='light']` block, because the media query is scoped `:root:not([data-theme='light'])`. The repository's structure wins. |
@@ -243,34 +243,38 @@ is empty on purpose, so no page is built from it.
 
 ## The mark
 
-`public/images/brand/logo-cisd.png` — a five-arc "C" (green, blue, red, purple, gold) around
-a circuit-etched sphere, with **ISD** in dark grey `#3d3d3d`. The arc's purple is where the
-interface accent comes from; PARCO takes the blue arc and IoT4Care the green.
+A five-arc "C" (green, blue, red, purple, gold) around a circuit-etched sphere, with **ISD**
+set beside it. The arc's purple is where the interface accent comes from; PARCO takes the blue
+arc and IoT4Care the green.
 
-Rules carried over from the system: never recoloured, rotated, cropped, redrawn, inverted or
-filtered; only on `--color-paper` or `--color-paper-2`; never beside the set-type wordmark,
-which `base.css` hides whenever the anchor contains an image; height `2.4rem`, fluid, never
-fixed px.
+**The mark now ships as a light/dark pair with real transparency** —
+`src/content/assets/logo_cisd.light_theme.png` and `…dark_theme.png`, imported by
+`src/components/Header.astro` and `src/pages/index.astro`. That supersedes what this section
+used to record, and it closes both of the deviations that were open:
 
-**Two deviations, and the second one supersedes the first.**
+- The system specifies a `--light-paper` plate in dark theme only, and the file first supplied
+  had no alpha channel, so the plate had to be `--brand-mark-ground` in *both* themes. The
+  pair has genuine alpha and a variant per theme, so **no plate is needed at all**.
+  `.mark-plate` and `--brand-mark-ground` survive in `base.css` and `tokens.css` but are now
+  referenced by nothing; so are `public/images/brand/logo-cisd.png` and
+  `src/content/assets/logo_cisd.png`, the two copies of the original raster.
+- The masthead used to render the set-type wordmark, because the original 1119×816 raster
+  collapsed into a smudge at `2.4rem`. The pair is legible at that height, so **the masthead
+  carries the mark.**
 
-The system specifies a `--light-paper` plate in dark theme only. The supplied file has no
-alpha channel — its `#ffffff` ground is baked in — so a `--light-paper` plate would frame a
-white image in a visibly different border. The plate therefore uses `--brand-mark-ground`
-(`#ffffff`) and applies in **both** themes.
+Rules carried over from the system, and still in force: never recoloured, rotated, cropped,
+redrawn, inverted or filtered; only on `--color-paper` or `--color-paper-2`; never beside the
+set-type acronym; height `2.4rem`, fluid, never fixed px.
 
-More importantly, **the masthead does not use the mark at all.** The system puts it at
-`2.4rem`, but the file is a 1119×816 raster: at roughly 52×38px the five arcs collapse into
-a smudge, and a raster downscaled 21× is soft on top of that. Enlarging or re-processing it
-is explicitly not the answer. So `brand.logo` is `undefined`, the masthead renders the
-set-type wordmark, and `.mark-plate` exists as an opt-in for contexts large enough to carry
-the mark legibly.
+**Never beside the set-type acronym** is now structural rather than a CSS trick. `base.css`
+used to hide any span that was not last inside an anchor containing an image; that rule was
+written for a mark passed through `brand.logo`, it could not see a mark rendered as a sibling
+of the anchor, and once the mark moved *into* the anchor it would have hidden the mark itself.
+It is gone, and `Header.astro` simply does not render the acronym.
 
-This is treated as **non-blocking**. When a vector or a small-size transparent asset is
-supplied: set `brand.logo`, add the file's intrinsic dimensions in `Header.astro`, and — if
-it has real transparency — narrow the plate back to dark theme only with `--light-paper`,
-exactly as the system specifies. `base.css` already drops the set-type "CISD" whenever the
-masthead anchor contains an image, so the wordmark gets out of the way on its own.
+The mark sits inside the home link, not next to it, for two reasons: a masthead mark is what
+people click to get home, and below 40rem the expanded name is hidden, which would otherwise
+leave the link with nothing in it.
 
 The mark's five colours are recorded as `--brand-green`, `--brand-blue`, `--brand-red`,
 `--brand-purple`, `--brand-gold` and `--brand-mark-ink`. These are **brand-only**: the red

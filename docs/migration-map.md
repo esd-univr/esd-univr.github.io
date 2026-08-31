@@ -223,6 +223,10 @@ Funding amounts from the legacy site and public grant records are deliberately n
   | Nicola Bombieri | `media/profile_images/nicola_bombieri.jpg` | `people/nicola-bombieri.jpg` | 119×128 |
   | Graziano Pravadelli | `media/profile_images/GP_June_21.png` | `people/graziano-pravadelli.png` | 212×291 |
 
+  One of those six is no longer what the site publishes: Enrico Fraccaroli's 100×120 legacy
+  thumbnail was replaced by a 1055×1147 portrait he supplied directly, and the legacy file was
+  deleted. The row above records what was migrated, not what is on the page today.
+
   Additional authorised legacy source files have been identified for Mario Libro
   (`media/profile_images/2025_fototessera_200.jpg`), Cristian Turetta
   (`media/profile_images/me.jpg`) and Francesco Tosoni

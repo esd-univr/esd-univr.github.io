@@ -313,14 +313,6 @@ main > .band:first-child > .container {
   font-size: var(--text-base);
 }
 
-/* --- The brand mark -------------------------------------------------------
- * A supplied mark already reads "CISD", so the set-type wordmark beside it is a
- * duplicate. Structural, so it holds whatever the header component renders.
- */
-header a:has(img) > span:not(:last-of-type) {
-  display: none;
-}
-
 /*
  * The mark's plate, opted into by wrapping the image in `.mark-plate`.
  *

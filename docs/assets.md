@@ -26,6 +26,13 @@ Two things to know if you compare the two pages:
 - **Alt text and captions are new.** The legacy page had neither, and alt text is required, so
   they were written from what the images show. They describe the image and claim nothing else.
 
+**MentOS did not come from that page.** It was added afterwards, on request, from the project's
+own sources: `github.com/mentos-team/MentOS` and `mentos-team.github.io`. Its body quotes the
+project's stated goal and lists the subsystems the project itself lists. `licence: MIT` is not
+read off the code: the project declares it in `LICENSE.md` and on its site, and its author is
+on the roster. Its other contributors are credited upstream and are not restated here, because
+that list changes.
+
 ## Fields
 
 | Field | Type | Notes |
@@ -33,7 +40,7 @@ Two things to know if you compare the two pages:
 | `name` | text | **Required.** As the entry calls itself. |
 | `summary` | text | **Required.** One line for the directory, taken from the entry's own words. |
 | `category` | `facility` \| `software` \| `project` | **Required.** Groups the index. |
-| `kind` | text | **Required.** The margin label, in the entry's own vocabulary: `Laboratory`, `Library`, `Framework`, `Ecosystem`, `Tools and APIs`. |
+| `kind` | text | **Required.** The margin label, in the entry's own vocabulary: `Laboratory`, `Library`, `Framework`, `Ecosystem`, `Tools and APIs`, `Operating system`. |
 | `groups` | list | **May be empty** — see below. |
 | `order` | integer | Position in the index. Default `100`. |
 | `url` | URL | The entry's own site. |
@@ -55,7 +62,9 @@ them, add a value** — do not mislabel it.
 
 ### `groups` may be empty, and must never be guessed
 
-The legacy page never said which group owns which asset, so all five ship with `groups: []`.
+The legacy page never said which group owns which asset, so all five migrated entries ship
+with `groups: []`. MentOS is the exception: it is `[esd]` because its author, who is on the
+roster, said so — which is exactly the bar. Nothing else about an entry may set this field.
 An empty list means *nobody has stated it yet*. AGENTS.md forbids inferring group membership,
 and `npm test` exempts this collection — and only this collection — from the "at least one
 group" rule for exactly that reason. Fill it in when a human tells you.
@@ -92,7 +101,8 @@ and the body. Everything else is optional.
 `docs/figures.md`. Remember `npm run strip-metadata`.
 
 **Reorder the index.** Change `order`. The five migrated entries are 1–5 in the order the
-previous site listed them, so a reader who knew that page finds the same sequence.
+previous site listed them, so a reader who knew that page finds the same sequence; anything
+added since follows from 6.
 
 **Retire an entry.** Delete the file and its images. There is no `legacyId` to preserve: the
 old page was a single page with no per-entry addresses, so nothing links to an individual

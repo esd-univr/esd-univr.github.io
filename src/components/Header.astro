@@ -19,7 +19,13 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
 
 <header class="masthead">
   <div class="container masthead__inner">
-    <div class="masthead__brand">
+    {/*
+      The mark already reads "CISD", so the masthead does not set the acronym in type beside
+      it — that was the same word twice. It sits *inside* the link rather than next to it for
+      two reasons: a masthead mark is what people click to get home, and below 40rem the
+      expanded name is hidden, which would otherwise leave the link with nothing in it.
+    */}
+    <a class="wordmark" href="/" aria-label={`${site.name} — home`}>
       <span class="masthead__brand-mark" aria-hidden="true">
         <img
           class="masthead__brand-logo masthead__brand-logo--light"
@@ -36,18 +42,8 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
           alt=""
         />
       </span>
-      <a class="wordmark" href="/" aria-label={`${site.name} — home`}>
-        {/*
-          Only renders once `brand.logo` names a mark that survives 2.4rem — see site.ts.
-          Add that file's intrinsic width and height here when it does, so the box is reserved
-          before it loads. When a logo is present base.css drops the set-type "CISD" beside
-          it, because the mark already reads it.
-        */}
-        {site.brand.logo ? <img class="wordmark__logo" src={site.brand.logo} alt="" /> : null}
-        <span class="wordmark__short">{site.shortName}</span>
-        <span class="wordmark__long">{site.name}<span class="wordmark__affiliation"> · {site.organisation.university}</span></span>
-      </a>
-    </div>
+      <span class="wordmark__long">{site.name}<span class="wordmark__affiliation"> · {site.organisation.university}</span></span>
+    </a>
     <div class="masthead__end">
       <nav class="nav" aria-label="Main">
         <ul class="nav__list">
@@ -93,13 +89,6 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
     gap: var(--space-xs);
   }
 
-  .masthead__brand {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    min-width: 0;
-  }
-
   .masthead__brand-mark {
     display: inline-flex;
     align-items: center;
@@ -135,33 +124,18 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
     }
   }
 
-  /* Baseline, so the serif wordmark and the affiliation line sit on one line together;
-     a mark, when there is one, centres itself against them instead. */
+  /* Centred, not baseline-aligned: the acronym that used to share a baseline with the
+     affiliation line is gone, and what is left is a mark beside one line of text. */
   .wordmark {
     display: inline-flex;
-    align-items: baseline;
-    gap: var(--space-sm);
+    align-items: center;
+    gap: var(--space-md);
     min-width: 0;
     text-decoration: none;
   }
 
   .wordmark:hover {
     color: inherit;
-  }
-
-  /* Fluid, tied to the type scale — never a fixed pixel height. */
-  .wordmark__logo {
-    align-self: center;
-    height: 2.4rem;
-    width: auto;
-  }
-
-  .wordmark__short {
-    font-family: var(--font-serif);
-    font-size: var(--text-2xl);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1;
   }
 
   .wordmark__long {
