@@ -10,7 +10,7 @@ interests:
   - Cyber-physical systems
   - Digital twins
   - Smart manufacturing
-photo: ./enrico-fraccaroli.jpg
+photo: ./enrico-fraccaroli.png
 website: "https://www.dimi.univr.it/?ent=persona&id=22371&lang=en"
 orcid: "0000-0002-9739-6501"
 dblp: "https://dblp.org/pid/170/0275.html"
