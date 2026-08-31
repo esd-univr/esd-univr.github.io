@@ -29,12 +29,11 @@ export const site = {
   /** Brand assets served from public/. */
   brand: {
     /*
-     * Deliberately undefined: `public/images/brand/logo-cisd.png` exists but is a 1119x816
-     * raster, and at the masthead's 2.4rem it degrades to an illegible smudge. The mark is
-     * kept for contexts large enough to carry it. Set this slot when a suitable small-size
-     * asset is supplied, and add that file's intrinsic width/height in Header.astro too.
+     * No `logo` slot. The mark is not a configurable path any more: it is a light/dark pair
+     * of transparent PNGs imported directly by `Header.astro` and `pages/index.astro`, so
+     * Astro fingerprints them and emits their intrinsic dimensions. Replacing the mark means
+     * replacing those two files, not editing this object.
      */
-    logo: undefined as string | undefined,
     favicon: '/favicon.ico',
     ogImage: undefined as string | undefined,
   },

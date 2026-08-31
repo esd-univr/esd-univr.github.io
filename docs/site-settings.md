@@ -24,7 +24,7 @@ Plain TypeScript, nothing generated. Edit a string and every page that uses it f
 | `organisation.address` | Lines of the postal address on `/contacts/` |
 | `organisation.mapUrl` | A *link* to a map. Never an embedded map — the site loads nothing from third parties |
 | `links.github` | Footer link |
-| `brand.logo` / `.favicon` / `.ogImage` | Optional brand assets, see below |
+| `brand.favicon` / `.ogImage` | Optional brand assets, see below. The mark is **not** here — see below |
 | `locale` | `en`. The site is in English; individual news items can be Italian |
 
 ### Common edits
@@ -46,26 +46,27 @@ This one does need a component edit; it is the only case in this guide that does
 
 ```ts
 brand: {
-  logo: undefined,     // e.g. '/images/brand/cisd-logo.svg'
-  favicon: undefined,  // e.g. '/images/brand/favicon.svg'
+  favicon: '/favicon.ico',
   ogImage: undefined,  // e.g. '/images/brand/og-cisd.png'
 }
 ```
 
-All three are deliberately `undefined`, and the header falls back to the set-type wordmark
-while the Open Graph card falls back to a text-only summary.
+`ogImage` is undefined because no approved file exists yet, so the Open Graph card falls back
+to a text-only summary.
 
-`favicon` and `ogImage` are undefined because no approved file exists yet. `logo` is a
-different case: `public/images/brand/logo-cisd.png` **is** in the repository, but it is a
-1119×816 raster with no alpha channel, and at the masthead's 2.4rem it degrades to an
-illegible smudge. Enlarging or re-processing it is not the answer. The file is kept for
-contexts large enough to carry the mark — wrap it in `.mark-plate`, which gives it the white
-ground it needs in both themes — and the masthead stays set type until a vector or a
-small-size transparent asset is supplied. When one is, set `logo` and add that file's
-intrinsic width and height in `Header.astro` in the same commit.
+**The mark is not a setting.** It is a light/dark pair of transparent PNGs —
+`src/content/assets/logo_cisd.light_theme.png` and `…dark_theme.png` — imported directly by
+`src/components/Header.astro` and `src/pages/index.astro`, which is what lets Astro
+fingerprint them and emit their intrinsic width and height. Replacing the mark means
+replacing those two files, not editing `site.ts`.
 
-To enable one: put the file under `public/images/brand/`, set the slot to its path from the
-site root (`/images/brand/…`), and run `npm run ci`.
+The masthead prints the mark and the expanded name, and **not** the acronym: the mark already
+reads "CISD", so setting it in type beside it was the same word twice. Below 40rem the
+expanded name is hidden and the mark stands alone — which is why the mark lives inside the
+home link rather than beside it.
+
+To enable `ogImage`: put the file under `public/images/brand/`, set the slot to its path from
+the site root (`/images/brand/…`), and run `npm run ci`.
 
 **Do not add a University of Verona logo, a department logo or a group logo without
 permission to use it.** Trademarked brand assets are not "just images".
