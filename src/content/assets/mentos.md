@@ -5,7 +5,7 @@ summary: >-
   master-level course slides.
 category: software
 kind: Operating system
-groups: []
+groups: [esd]
 order: 6
 url: https://mentos-team.github.io/
 repository: https://github.com/mentos-team/MentOS
@@ -41,7 +41,7 @@ MentOS is published together with public bachelor- and master-level course slide
 
 ## Who runs it
 
-Enrico Fraccaroli is the project's manager and one of its developers, and the project names Tiziano Villa and Graziano Pravadelli as academic advisors. Its other contributors are credited in the repository, which is where that list stays current; this page does not restate it, and does not read it as a statement about CISD membership.
+MentOS is Enrico Fraccaroli's project: he created it and he maintains it, and the project lists him as its manager and one of its developers. Tiziano Villa and Graziano Pravadelli are named as its academic advisors. Its other contributors are credited in the repository, which is where that list stays current.
 
 ## Project records
 

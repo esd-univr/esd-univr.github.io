@@ -28,10 +28,10 @@ Two things to know if you compare the two pages:
 
 **MentOS did not come from that page.** It was added afterwards, on request, from the project's
 own sources: `github.com/mentos-team/MentOS` and `mentos-team.github.io`. Its body quotes the
-project's stated goal and lists the subsystems the project itself lists; its `licence: MIT` is
-the licence the project declares in `LICENSE.md` and on its site, not one read off the code.
-Its contributors are credited upstream and are deliberately not restated here, because that
-list changes and because it is not a statement about CISD membership.
+project's stated goal and lists the subsystems the project itself lists. `licence: MIT` is not
+read off the code: the project declares it in `LICENSE.md` and on its site, and its author is
+on the roster. Its other contributors are credited upstream and are not restated here, because
+that list changes.
 
 ## Fields
 
@@ -63,7 +63,8 @@ them, add a value** — do not mislabel it.
 ### `groups` may be empty, and must never be guessed
 
 The legacy page never said which group owns which asset, so all five migrated entries ship
-with `groups: []`, and so does MentOS — nobody has stated its ownership either.
+with `groups: []`. MentOS is the exception: it is `[esd]` because its author, who is on the
+roster, said so — which is exactly the bar. Nothing else about an entry may set this field.
 An empty list means *nobody has stated it yet*. AGENTS.md forbids inferring group membership,
 and `npm test` exempts this collection — and only this collection — from the "at least one
 group" rule for exactly that reason. Fill it in when a human tells you.
