@@ -3,6 +3,7 @@ name: Samuele Santacà
 role: Incoming PhD Student
 groups: [esd]
 order: 60
+photo: samuele-santaca.jpg
 interests:
   - Data-driven cyber-physical systems
   - Transformer models
