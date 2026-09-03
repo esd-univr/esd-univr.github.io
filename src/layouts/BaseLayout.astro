@@ -94,6 +94,29 @@ const { title, description, type, image, noindex } = Astro.props;
           fading = setTimeout(() => root.classList.remove('theme-transition'), ms('--duration-theme', 500));
         };
 
+        /*
+         * The easter egg: the bang lands just after the frame, at a volume you have to be
+         * listening for. 1.3 seconds, which keeps it under the 3-second line where WCAG 1.4.2
+         * would require a stop control for audio that starts on its own.
+         *
+         * Built on first use, never at load, so a visitor who never switches theme never
+         * fetches it. `play()` can be refused — some browsers want a fresher user gesture
+         * than a click 180ms ago — and a refusal is fine: this is decoration, so it fails
+         * silently rather than logging at people.
+         */
+        const BANG_VOLUME = 0.08;
+        const BANG_DELAY = 180;
+        let bang;
+        const playBang = () => {
+          try {
+            bang ??= new Audio('/audio/flash-out.mp3');
+            bang.volume = BANG_VOLUME;
+            bang.currentTime = 0;
+            const played = bang.play();
+            if (played) played.catch(() => {});
+          } catch {}
+        };
+
         /* Dark → light only — the direction that hurts. */
         let flashing;
         const flashOut = () => {
@@ -104,6 +127,7 @@ const { title, description, type, image, noindex } = Astro.props;
           frame.hidden = true;
           void frame.offsetHeight;
           frame.hidden = false;
+          setTimeout(playBang, BANG_DELAY);
           clearTimeout(flashing);
           flashing = setTimeout(() => {
             frame.hidden = true;

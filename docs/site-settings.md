@@ -247,6 +247,14 @@ and moves nothing; `hidden` is what shows and hides it, and the fade is a
 less motion still gets the frame. It fires in one direction only, because that is the
 direction that hurts.
 
+**And it makes a noise**, 180 ms later: `public/audio/flash-out.mp3`, 1.3 seconds at 8 %
+volume. Three constraints shape it. It is under three seconds, because past that WCAG 1.4.2
+requires a stop control for audio that starts without being asked. The `Audio` object is
+built on first use, so a visitor who never switches theme never fetches it. And a refused
+`play()` is swallowed — some browsers want a fresher user gesture than a click 180 ms ago,
+and an easter egg has no business logging at anybody. `tests/flash-sound.test.mjs` holds the
+path, the length, the volume and the absence of metadata.
+
 ### Changing the palette safely
 
 1. **Edit `--light-*` and `--dark-*` in `tokens.css`. Nothing else.** Never touch the
