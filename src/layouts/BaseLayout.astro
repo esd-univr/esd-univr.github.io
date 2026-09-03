@@ -67,8 +67,20 @@ const { title, description, type, image, noindex } = Astro.props;
         const stored = read();
         if (stored) root.dataset.theme = stored;
 
-        /** Durations live in tokens.css; read them rather than restating them here. */
-        const ms = (name) => parseFloat(getComputedStyle(root).getPropertyValue(name)) || 0;
+        /*
+         * Durations live in tokens.css; read them rather than restating them here.
+         *
+         * Mind the unit. `--duration-flash` is authored as `1600ms`, but the CSS minifier
+         * ships it as `1.6s`, so a bare parseFloat returns 1.6 — and a 1.6ms timer hides the
+         * frame on the next tick, which is exactly the bug this comment exists to prevent.
+         * A CSS <time> is either `s` or `ms`; both have to be honoured.
+         */
+        const ms = (name, fallback) => {
+          const raw = getComputedStyle(root).getPropertyValue(name).trim();
+          const value = parseFloat(raw);
+          if (!Number.isFinite(value)) return fallback;
+          return raw.endsWith('ms') ? value : value * 1000;
+        };
 
         /*
          * Arm the eased repaint for the length of one swap. It is not left on: a permanent
@@ -79,7 +91,7 @@ const { title, description, type, image, noindex } = Astro.props;
         const armFade = () => {
           root.classList.add('theme-transition');
           clearTimeout(fading);
-          fading = setTimeout(() => root.classList.remove('theme-transition'), ms('--duration-theme'));
+          fading = setTimeout(() => root.classList.remove('theme-transition'), ms('--duration-theme', 500));
         };
 
         /* Dark → light only — the direction that hurts. */
@@ -95,7 +107,7 @@ const { title, description, type, image, noindex } = Astro.props;
           clearTimeout(flashing);
           flashing = setTimeout(() => {
             frame.hidden = true;
-          }, ms('--duration-flash'));
+          }, ms('--duration-flash', 1600));
         };
 
         /** Label the toggle with the action it performs, not the state it is in. */
