@@ -130,11 +130,18 @@ const { title, description, type, image, noindex } = Astro.props;
           } catch {}
         };
 
-        /* Dark → light only — the direction that hurts. */
+        /*
+         * Dark → light only — the direction that hurts. The frame goes up first as a warning,
+         * and the bang, the frame leaving and the palette turning all land together on one
+         * timer, so nothing can drift apart. `apply` is the theme change itself, handed in by
+         * the click handler and held until then.
+         */
         let flashing;
-        const flashOut = () => {
+        let pending;
+        const flashOut = (apply) => {
           const frame = document.querySelector('[data-theme-flash]');
-          if (!frame) return;
+          // No frame, no theatre — but never swallow the switch itself.
+          if (!frame) return apply();
           // Hide, force a layout read, show: without the read in between the browser never
           // sees `display: none`, and the animation does not restart on a second switch.
           frame.hidden = true;
@@ -142,11 +149,15 @@ const { title, description, type, image, noindex } = Astro.props;
           frame.hidden = false;
           armBang();
           clearTimeout(flashing);
-          // The bang is the frame leaving, not the frame arriving: one timer, so the two can
-          // never drift apart.
-          flashing = setTimeout(() => {
+          pending = () => {
             frame.hidden = true;
             playBang();
+            apply();
+          };
+          flashing = setTimeout(() => {
+            const run = pending;
+            pending = undefined;
+            run();
           }, ms('--duration-flash', 1600));
         };
 
@@ -160,22 +171,39 @@ const { title, description, type, image, noindex } = Astro.props;
         document.addEventListener('click', (event) => {
           const button = event.target.closest('[data-theme-toggle]');
           if (!button) return;
+
+          // A second click while the frame is still up skips to the end. The button has to
+          // answer every press; it must not sit dead for a second and a half.
+          if (pending) {
+            clearTimeout(flashing);
+            const run = pending;
+            pending = undefined;
+            run();
+            return;
+          }
+
           const next = (root.dataset.theme ?? system()) === 'dark' ? 'light' : 'dark';
-          armFade();
-          if (next === 'light') flashOut();
-          try {
-            // Choosing your own system preference clears the override again.
-            if (next === system()) {
-              localStorage.removeItem(KEY);
-              delete root.dataset.theme;
-            } else {
-              localStorage.setItem(KEY, next);
+          const apply = () => {
+            armFade();
+            try {
+              // Choosing your own system preference clears the override again.
+              if (next === system()) {
+                localStorage.removeItem(KEY);
+                delete root.dataset.theme;
+              } else {
+                localStorage.setItem(KEY, next);
+                root.dataset.theme = next;
+              }
+            } catch {
               root.dataset.theme = next;
             }
-          } catch {
-            root.dataset.theme = next;
-          }
-          label(button);
+            label(button);
+          };
+
+          // Going light waits for the bang, so the flash and the light are one event.
+          // Going dark is instant: nothing about it needs warning.
+          if (next === 'light') flashOut(apply);
+          else apply();
         });
 
         document.addEventListener('DOMContentLoaded', () => {

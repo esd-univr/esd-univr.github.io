@@ -67,12 +67,14 @@ test('the volume is kept barely there', () => {
   assert.ok(volume <= 0.05, `BANG_VOLUME is ${volume} — this is meant to be barely there`);
 });
 
-test('the bang fires on the frame leaving, not on the frame arriving', () => {
-  // One timer owns both, so they cannot drift apart. If this is ever split into two
-  // timers, the two halves of the joke will separate on a slow machine.
-  const hide = /flashing = setTimeout\(\(\) => \{([\s\S]*?)\}, ms\('--duration-flash'/.exec(script)?.[1];
-  assert.ok(hide, 'the frame is no longer hidden on a --duration-flash timer');
-  assert.match(hide, /frame\.hidden = true;/, 'the timer should hide the frame');
-  assert.match(hide, /playBang\(\);/, 'the timer should sound the bang as it hides the frame');
+test('the frame leaving, the bang and the palette turning are one event', () => {
+  // All three hang off `pending`, fired by the single --duration-flash timer, so they cannot
+  // drift apart — and a second click can run the same closure early without repeating it.
+  const deferred = /pending = \(\) => \{([\s\S]*?)\n {10}\};/.exec(script)?.[1];
+  assert.ok(deferred, 'the deferred half of the switch is no longer a `pending` closure');
+  assert.match(deferred, /frame\.hidden = true;/, 'it should hide the frame');
+  assert.match(deferred, /playBang\(\);/, 'it should sound the bang');
+  assert.match(deferred, /apply\(\);/, 'it should apply the theme, so the light arrives with the bang');
+  assert.match(script, /flashing = setTimeout\(/, 'it should still hang off the --duration-flash timer');
   assert.doesNotMatch(script, /setTimeout\(playBang/, 'the bang should not be on a timer of its own');
 });
