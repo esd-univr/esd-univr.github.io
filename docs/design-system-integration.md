@@ -86,53 +86,66 @@ clears 4.5:1 there (4.74:1) but fails on every other ground this site actually u
 vivid `#037a2c`, which was rejected: the system has no status colours and a saturated green
 reads as "success".
 
-### The whole dark ground: `#0a0f1e` → `#1a2b56`
+### The whole dark ground: `#0a0f1e` → `#1a2b56` → `#151515`
 
-The design system's dark ground was OKLCh **L 0.172 at chroma 0.032** — a very dark
-near-neutral. It read as black rather than as blue, which is not what a cool palette is for.
-This repository ships **L 0.300 at chroma 0.081**: lighter, and actually blue.
+Three states, and the third is the one that ships.
 
-This is the largest departure in the integration, and it is a whole-ramp change, not a
-one-token tweak. Two things had to be got right:
+The design system's ground was OKLCh **L 0.172 at chroma 0.032** — a very dark near-neutral
+that read as black rather than as blue, which is not what a cool palette is for. This
+repository replaced it with **L 0.300 at C 0.081**: lighter, and actually blue. **The group
+then rejected the blue**, so the ground is now **`#151515`, L 0.196 at chroma 0** and every
+neutral in the ramp is an exact grey.
 
-1. **Lightening the ground alone would cut every foreground's contrast.** So each
-   foreground moved with it.
-2. **Sizing each foreground to the AA floor instead would destroy the hierarchy.** That was
-   the first attempt and it failed: `--dark-ink-2` and `--dark-ink-3` landed **0.010** apart
-   in OKLCh lightness, where they had been **0.134** apart. Secondary and tertiary text
-   became indistinguishable — every ratio passed and the design was ruined.
+**The seven greys were not derived here.** They are the ones the STRATEGUS HE2022 site
+settled on (`strategus-he2022.github.io`, commit 98a42c1) — same author, same lineage — and
+they were adopted so the two sites read as one family in dark mode. They were re-checked
+against this palette rather than taken on trust: that site has one accent and one tint, this
+one has a purple accent, three brand hues and eight tinted grounds.
 
-The ramp is therefore rebuilt **bottom-up with the original offsets preserved**:
-`--dark-ink-3` sits just above the 4.5:1 floor on the lightest ground, and every other
-foreground keeps the lightness offset above it that it had in the design system. The gaps
-come out at 0.113 and 0.117 against the original 0.134 and 0.146.
+| | design system | the blue ramp | shipped |
+| --- | --- | --- | --- |
+| `--dark-paper` | `#0a0f1e` | `#1a2b56` | `#151515` |
+| `--dark-paper-2` | `#151b2f` | `#253865` | `#202020` |
+| `--dark-ink` | `#e6e9f5` | `#eff4ff` | `#f2f2f2` |
+| `--dark-ink-2` | `#b2b9d4` | `#becef0` | `#c4c4c4` |
+| `--dark-ink-3` | `#888fae` | `#97aad1` | `#9a9a9a` |
+| `--dark-rule` | `#262e47` | `#344878` | `#2e2e2e` |
+| `--dark-rule-strong` | `#c3c9de` | `#d5dff3` | `#d9d9d9` |
+| `--dark-accent` / `-strong` | `#d79ccf` / `#e8bfe1` | `#edb1e5` / `#fed5f8` | unchanged |
+| `--dark-focus` | `#e0a6d6` | `#f6bcee` | unchanged |
+| `--dark-selection` | `#4a2a46` | `#674662` | unchanged |
+| `--dark-parco` / `-strong` | `#8fa5e8` / `#b3c2f2` | `#a3baff` / `#c5d4ff` | unchanged |
+| `--dark-iot4care` / `-strong` | `#6cc47f` / `#97d8a4` | `#89d998` / `#aeeeb9` | unchanged |
 
-| | design system | shipped |
-| --- | --- | --- |
-| `--dark-paper` | `#0a0f1e` (L 0.172, C 0.032) | `#1a2b56` (L 0.300, C 0.081) |
-| `--dark-paper-2` | `#151b2f` | `#253865` |
-| `--dark-ink` | `#e6e9f5` | `#eff4ff` |
-| `--dark-ink-2` | `#b2b9d4` | `#becef0` |
-| `--dark-ink-3` | `#888fae` | `#97aad1` |
-| `--dark-rule` | `#262e47` | `#344878` |
-| `--dark-rule-strong` | `#c3c9de` | `#d5dff3` |
-| `--dark-accent` / `-strong` | `#d79ccf` / `#e8bfe1` | `#edb1e5` / `#fed5f8` |
-| `--dark-focus` | `#e0a6d6` | `#f6bcee` |
-| `--dark-selection` | `#4a2a46` | `#674662` |
-| `--dark-parco` / `-strong` | `#8fa5e8` / `#b3c2f2` | `#a3baff` / `#c5d4ff` |
-| `--dark-iot4care` / `-strong` | `#6cc47f` / `#97d8a4` | `#89d998` / `#aeeeb9` |
+The accents and the three brand hues did not move. They were tuned for a ground lighter than
+this one, so on the neutral ground each of them clears **7.5:1** instead of the 4.5:1 they
+were sized to. `--dark-selection` keeps its plum on purpose: a selection has to read as a
+selection and not as another band.
 
-Ink on paper is **12.5:1**, down from 15.8:1 and still well past the 7:1 this repository
-requires — that headroom was never used. All **65** foreground/ground pairs clear their
-minimum across paper, paper-2 and the three tinted plates; the tightest is `--dark-ink-3` on
-`--dark-paper-2` at **4.90:1**.
+**Measured, all 130 foreground/ground pairs** across paper, paper-2 and the eight tinted
+grounds: no failures. Ink on paper **16.3:1**, `--dark-ink-2` **10.5:1**, `--dark-ink-3`
+**6.5:1** on paper and **5.8:1** on paper-2; the tightest pair in the whole matrix is
+`--dark-ink-3` on a strong IoT4Care tint at **5.10:1**. The ink gaps come out at OKLCh
+lightness **0.141 and 0.134**, wider than the 0.116/0.113 the blue ramp was built to — so
+the three text levels separate more, not less. That was the failure mode the blue ramp had to
+be rebuilt to avoid, and it is worth restating: **a palette where every pair passes AA can
+still be a flat, unreadable one.**
 
-Two side effects, both wanted: the three tinted Research plates now separate from the ground
-instead of being almost invisible, and the mark's white plate is far less harsh against a
-lighter navy.
+Two numbers did get weaker, both deliberately, and both worth knowing before you touch this:
+
+- **The hairline.** `--dark-rule` is **1.35:1** on paper, where the blue ramp's was 2.06:1.
+  This is a type-and-rule design and hairlines carry its structure, so that is a real change
+  in how present they are. It was checked on the list-heavy pages rather than in the
+  abstract: the separators render, faintly, and the edges that must be read — masthead,
+  footer, current nav item — are `--dark-rule-strong` at 13.7:1. If they ever need their old
+  presence back on this ground, `#3d3d3d` is about 1.7:1 and `#4a4a4a` about 2.1:1.
+- **The band step.** `paper` to `paper-2` is **1.12:1** against the blue ramp's 1.20:1. Near
+  black, an equal OKLCh lightness step buys less luminance ratio than it does higher up the
+  scale, so a sunken band is a slightly quieter change of ground than it was.
 
 **If you change the dark ground again, move the whole ramp and check the gaps, not just the
-ratios.** A palette where every pair passes AA can still be a flat, unreadable one.
+ratios** — and check `paper-2` and `rule` against the ground in luminance terms, not in
+lightness steps, because near black those two stop agreeing.
 
 ### The home groups margin column: `5rem` → `6.5rem`
 

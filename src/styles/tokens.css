@@ -78,6 +78,20 @@
   /* One duration, one easing. No transforms, no bounce, no reveal-on-scroll. */
   --duration: 120ms;
   --ease: ease;
+
+  /*
+   * The one exception to "one duration": swapping the theme repaints every surface at once,
+   * and at 120ms that reads as a camera flash rather than as a change. This is deliberately
+   * slow enough to be a fade. It is used by one rule — the theme swap in base.css — and by
+   * nothing else; a hover or a focus ring at this speed would feel broken.
+   */
+  --duration-theme: 500ms;
+
+  /*
+   * How long the "Flash out!" frame stays up after a dark → light swap. Read by the toggle
+   * script as well as by the keyframes, so the number lives here once.
+   */
+  --duration-flash: 1600ms;
   --transition-link: color var(--duration) var(--ease), text-decoration-color var(--duration) var(--ease);
   --transition-control: color var(--duration) var(--ease), border-color var(--duration) var(--ease), background-color var(--duration) var(--ease);
 
@@ -113,39 +127,46 @@
   --light-iot4care-strong: #1f5b30;
 
   /*
-   * ---- Palette: dark — a lit navy ground, near-white ink, lifted-purple accents ----
+   * ---- Palette: dark — a neutral ground, grey ink, lifted-purple accents ----
    *
-   * The design system's dark ground was #0a0f1e: OKLCh lightness 0.172 at chroma 0.032,
-   * which is a very dark near-neutral and read as black rather than as blue. This ground
-   * is L 0.300 at C 0.081 — lighter, and actually blue.
+   * The ground was #1a2b56, a deliberately blue ground chosen over the design system's
+   * near-black #0a0f1e. The group rejected the blue, so every neutral here is now an exact
+   * grey, chroma 0, and the only colour left in the dark theme is the accent, the three
+   * brand hues, and `--dark-selection`, which keeps its plum because a selection has to
+   * read as a selection and not as another band.
    *
-   * The whole ramp had to move with it, not just the ground. Lightening paper alone would
-   * have cut the contrast of every foreground; sizing each foreground to the AA floor
-   * instead would have collapsed the hierarchy, with --dark-ink-2 and --dark-ink-3 landing
-   * 0.010 apart in lightness where they were 0.134 apart before. So the ramp is rebuilt
-   * bottom-up: --dark-ink-3 sits just above the 4.5:1 floor on the lightest ground and
-   * everything else keeps its original lightness offset above it. The gaps are preserved
-   * at 0.113 and 0.117.
+   * The seven greys are not derived here. They are the ones the STRATEGUS HE2022 site
+   * settled on (`strategus-he2022.github.io`, commit 98a42c1) — same author, same
+   * lineage — so the two sites read as one family in dark mode. They were re-checked
+   * against *this* site's palette rather than adopted on trust: the sibling has one
+   * accent and one tint, this one has a purple accent, three brand hues and eight tinted
+   * grounds. All 130 foreground/ground pairs clear their minimum; the tightest is
+   * `--dark-ink-3` on a strong IoT4Care tint at 5.10:1. Ink on paper is 16.3:1, and the
+   * ink gaps come out at OKLCh lightness 0.141 and 0.134 — wider than the 0.116/0.113 the
+   * blue ramp was built to, so the three text levels separate more, not less.
    *
-   * Ink on paper is 12.5:1, down from 15.8:1 and still comfortably past the 7:1 this
-   * repository requires — that headroom was unused. All 65 foreground/ground pairs clear
-   * their minimum, including the three tinted Research plates; the tightest is
-   * --dark-ink-3 on --dark-paper-2 at 4.90:1. See docs/design-system-integration.md.
+   * One number to watch if you touch this: `--dark-rule` is 1.35:1 on paper, where the
+   * blue ramp's was 2.06:1. This is a type-and-rule design and hairlines carry its
+   * structure, so that is a real change in how present they are — deliberate, and checked
+   * on the list-heavy pages, not just in the abstract. `--dark-rule-strong` carries the
+   * edges that must be read.
+   *
+   * See docs/design-system-integration.md.
    */
-  --dark-paper: #1a2b56;
-  --dark-paper-2: #253865;
+  --dark-paper: #151515;
+  --dark-paper-2: #202020;
   --dark-selection: #674662;
-  --dark-ink: #eff4ff;
-  --dark-ink-2: #becef0;
-  --dark-ink-3: #97aad1;
-  --dark-rule: #344878;
-  --dark-rule-strong: #d5dff3;
+  --dark-ink: #f2f2f2;
+  --dark-ink-2: #c4c4c4;
+  --dark-ink-3: #9a9a9a;
+  --dark-rule: #2e2e2e;
+  --dark-rule-strong: #d9d9d9;
   --dark-accent: #edb1e5;
   --dark-accent-strong: #fed5f8;
   --dark-focus: #f6bcee;
 
-  /* The same three brand hues, lifted to sit on the lighter ground without vibrating.
-     Each clears 4.5:1 on paper, paper-2 and every tinted band. */
+  /* The same three brand hues, unchanged: they were tuned to sit on a ground lighter than
+     this one, so on the neutral ground every one of them clears 7.5:1. */
   --dark-esd: #edb1e5;
   --dark-esd-strong: #fed5f8;
   --dark-parco: #a3baff;

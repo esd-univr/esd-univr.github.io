@@ -471,6 +471,36 @@ main > .band:first-child > .container {
 
 /* --- Motion ---------------------------------------------------------------- */
 
+/*
+ * The theme swap, eased.
+ *
+ * Repainting every surface in one frame reads as a camera flash, and going from dark to
+ * light at midnight is genuinely unpleasant. The fade is not on all the time, though: it is
+ * armed by `.theme-transition`, which the toggle script in BaseLayout.astro sets for the
+ * length of one swap and then removes (the same hook, by the same name, as on
+ * strategus-he2022.github.io). Leaving it on permanently would make ordinary
+ * navigation smear, and would fade the palette in on first paint — the one thing the
+ * pre-paint theme script exists to prevent.
+ *
+ * `color` and `border-color` ride along with `background-color` on purpose. Fading only the
+ * background leaves the text and the hairlines snapping a frame ahead of the ground they sit
+ * on, which is worse than no fade at all: for a moment the page is light-on-light. `fill`
+ * carries the one inline icon.
+ *
+ * The reduced-motion block below already forces every transition to 0.01ms, so this rule
+ * needs no exception of its own.
+ */
+:root.theme-transition,
+:root.theme-transition *,
+:root.theme-transition *::before,
+:root.theme-transition *::after {
+  transition:
+    background-color var(--duration-theme) var(--ease),
+    border-color var(--duration-theme) var(--ease),
+    color var(--duration-theme) var(--ease),
+    fill var(--duration-theme) var(--ease);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

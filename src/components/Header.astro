@@ -67,6 +67,14 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
           <path d="M8 1.75a6.25 6.25 0 0 0 0 12.5Z" fill="currentColor" />
         </svg>
       </button>
+      {/*
+        Dark → light is the direction that hurts, so the switch admits it. Decorative and
+        `aria-hidden`: the toggle's own accessible name already says what it did, and having
+        a screen reader announce a joke on every theme change would be noise. The script in
+        BaseLayout.astro unhides it for one swap. Named to match the same frame on
+        strategus-he2022.github.io, so the two masthead files still diff against each other.
+      */}
+      <p class="theme-flash" data-theme-flash hidden aria-hidden="true">Flash out!</p>
     </div>
   </div>
 </header>
@@ -147,8 +155,10 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
     color: var(--color-ink-3);
   }
 
-  /* Row 2: navigation on the left, the theme toggle pushed to the right. */
+  /* Row 2: navigation on the left, the theme toggle pushed to the right. Positioned so the
+     "Flash out!" frame can hang under the toggle without joining the flex row. */
   .masthead__end {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -181,6 +191,51 @@ const current = `/${Astro.url.pathname.split('/')[1] ?? ''}/`;
     color: var(--color-accent);
     border-color: var(--color-accent);
     background: var(--color-paper-2);
+  }
+
+  /*
+   * Out of flow, so it cannot move the navigation, and anchored under the toggle because
+   * that is the control it is feedback for. The treatment is the accent one — a strong
+   * tint, an accent hairline, uppercase mono — rather than a neutral plate, both because
+   * it has to be noticed in the half-second it exists and because it is the same frame the
+   * STRATEGUS site shows.
+   */
+  .theme-flash {
+    position: absolute;
+    top: calc(100% + var(--space-xs));
+    right: 0;
+    z-index: 10;
+    padding: var(--space-xs) var(--space-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+    color: var(--color-accent-strong);
+    background: var(--color-tint-strong);
+    border: var(--rule-accent);
+    border-radius: var(--radius);
+  }
+
+  /*
+   * The fade is the enhancement; `hidden` is the mechanism. That way a reader who has asked
+   * for reduced motion — for whom base.css crushes every animation to 0.01ms — still gets
+   * the frame for its full stay, just without it fading in and out.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .theme-flash {
+      animation: theme-flash var(--duration-flash) var(--ease);
+    }
+  }
+
+  @keyframes theme-flash {
+    0% { opacity: 0; }
+    15% { opacity: 1; }
+    75% { opacity: 1; }
+    100% { opacity: 0; }
   }
 
   .nav__list {

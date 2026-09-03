@@ -87,7 +87,7 @@ the only theme source of truth**; a hard-coded colour anywhere else is a bug.
 | Spacing | `--space-2xs` … `--space-3xl` |
 | Widths | `--measure`, `--container`, `--container-wide`, `--container-narrow`, `--gutter` |
 | Detail | `--rule`, `--radius` |
-| Motion | `--duration` (120ms), `--ease`, `--transition-link`, `--transition-control` |
+| Motion | `--duration` (120ms), `--ease`, `--transition-link`, `--transition-control`, and two named exceptions: `--duration-theme` (500ms, the theme swap) and `--duration-flash` (1600ms, how long the "Flash out!" frame stays up) |
 
 The type and spacing scales use `clamp()` so they grow with the viewport; change the three
 numbers inside a `clamp()`, not the places that use it.
@@ -152,21 +152,27 @@ component cannot be "light-only" by accident.
 
 | Active token | Light | Dark | Used for |
 | --- | --- | --- | --- |
-| `--color-paper` | `#f6f7fb` | `#1a2b56` | Page background, `.band` |
-| `--color-paper-2` | `#eaecf5` | `#253865` | Surfaces: code, `pre`, portrait placeholder, toggle hover, `.band--sunken` |
+| `--color-paper` | `#f6f7fb` | `#151515` | Page background, `.band` |
+| `--color-paper-2` | `#eaecf5` | `#202020` | Surfaces: code, `pre`, portrait placeholder, toggle hover, `.band--sunken` |
 | `--color-selection` | `#f2dcef` | `#674662` | `::selection` background |
-| `--color-ink` | `#141a2e` | `#eff4ff` | Body text and headings |
-| `--color-ink-2` | `#3b4468` | `#becef0` | Ledes, summaries, secondary prose |
-| `--color-ink-3` | `#5a6383` | `#97aad1` | Eyebrows, meta, roles, captions |
-| `--color-rule` | `#d3d8e8` | `#344878` | Hairline separators (`--rule`) |
-| `--color-rule-strong` | `#141a2e` | `#d5dff3` | Masthead and footer edges, blockquote bar, current nav item |
+| `--color-ink` | `#141a2e` | `#f2f2f2` | Body text and headings |
+| `--color-ink-2` | `#3b4468` | `#c4c4c4` | Ledes, summaries, secondary prose |
+| `--color-ink-3` | `#5a6383` | `#9a9a9a` | Eyebrows, meta, roles, captions |
+| `--color-rule` | `#d3d8e8` | `#2e2e2e` | Hairline separators (`--rule`) |
+| `--color-rule-strong` | `#141a2e` | `#d9d9d9` | Masthead and footer edges, blockquote bar, current nav item |
 | `--color-accent` | `#9d3e91` | `#edb1e5` | Link hover, group acronyms, toggle hover |
 | `--color-accent-strong` | `#7e2f74` | `#fed5f8` | Selected text, the heavier accent |
 | `--color-focus` | `#8a3580` | `#f6bcee` | Focus ring |
 
-Light is a cool off-white ground with deep navy ink and brand-purple accents; dark is a
-lit navy ground with near-white ink and lifted-purple accents. There are no gradients,
-and no colour is used decoratively — every one of these has a job.
+Light is a cool off-white ground with deep navy ink and brand-purple accents. **Dark is
+neutral**: every ground, ink and rule in it is an exact grey, chroma 0. It used to be a
+deliberately blue ground and the group rejected the blue, so the only colour left in the dark
+theme is the accent, the three brand hues, and `--color-selection`, which keeps its plum
+because a selection has to read as a selection and not as another band. **The seven greys
+are the STRATEGUS HE2022 site's** (`strategus-he2022.github.io`, commit 98a42c1), adopted so
+the two sites read as one family in dark mode and re-checked against this site's own accents
+and eight tinted grounds before being taken. There are no
+gradients, and no colour is used decoratively — every one of these has a job.
 
 The accent is **the logo's purple arc**, sampled from the mark, so the interface and the
 mark share one hue.
@@ -224,6 +230,22 @@ JavaScript the button would do nothing, so it is not shown.
 
 `color-scheme` is set per theme (`light` or `dark`), which is what makes scrollbars, form
 controls and other browser-drawn surfaces match.
+
+**The swap is eased, and only the swap.** Repainting every surface in one frame reads as a
+camera flash, so the toggle sets `data-theme-changing` on `<html>` for `--duration-theme` and
+one rule in `base.css` fades `background-color`, `border-color`, `color` and `fill` while it
+is there. The attribute is removed afterwards on purpose: a permanent transition makes
+ordinary navigation smear, and would fade the palette in on first paint — the exact thing the
+pre-paint script exists to prevent. `color` and `border-color` ride along with the background
+because fading the ground alone leaves the text a frame ahead of it, and for that frame the
+page is light-on-light.
+
+**Dark → light also shows a small "Flash out!" frame** under the toggle, for
+`--duration-flash`. It is `aria-hidden` and positioned out of flow, so it announces nothing
+and moves nothing; `hidden` is what shows and hides it, and the fade is a
+`prefers-reduced-motion: no-preference` enhancement on top, so a reader who has asked for
+less motion still gets the frame. It fires in one direction only, because that is the
+direction that hurts.
 
 ### Changing the palette safely
 

@@ -67,6 +67,37 @@ const { title, description, type, image, noindex } = Astro.props;
         const stored = read();
         if (stored) root.dataset.theme = stored;
 
+        /** Durations live in tokens.css; read them rather than restating them here. */
+        const ms = (name) => parseFloat(getComputedStyle(root).getPropertyValue(name)) || 0;
+
+        /*
+         * Arm the eased repaint for the length of one swap. It is not left on: a permanent
+         * transition makes ordinary navigation smear, and would fade the palette in on first
+         * paint, which is the one thing the script above exists to prevent.
+         */
+        let fading;
+        const armFade = () => {
+          root.classList.add('theme-transition');
+          clearTimeout(fading);
+          fading = setTimeout(() => root.classList.remove('theme-transition'), ms('--duration-theme'));
+        };
+
+        /* Dark → light only — the direction that hurts. */
+        let flashing;
+        const flashOut = () => {
+          const frame = document.querySelector('[data-theme-flash]');
+          if (!frame) return;
+          // Hide, force a layout read, show: without the read in between the browser never
+          // sees `display: none`, and the animation does not restart on a second switch.
+          frame.hidden = true;
+          void frame.offsetHeight;
+          frame.hidden = false;
+          clearTimeout(flashing);
+          flashing = setTimeout(() => {
+            frame.hidden = true;
+          }, ms('--duration-flash'));
+        };
+
         /** Label the toggle with the action it performs, not the state it is in. */
         const label = (button) => {
           const next = (root.dataset.theme ?? system()) === 'dark' ? 'light' : 'dark';
@@ -78,6 +109,8 @@ const { title, description, type, image, noindex } = Astro.props;
           const button = event.target.closest('[data-theme-toggle]');
           if (!button) return;
           const next = (root.dataset.theme ?? system()) === 'dark' ? 'light' : 'dark';
+          armFade();
+          if (next === 'light') flashOut();
           try {
             // Choosing your own system preference clears the override again.
             if (next === system()) {
