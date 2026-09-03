@@ -95,21 +95,34 @@ const { title, description, type, image, noindex } = Astro.props;
         };
 
         /*
-         * The easter egg: the bang lands just after the frame, at a volume you have to be
+         * The easter egg: the bang lands as the frame goes, at a volume you have to be
          * listening for. 1.3 seconds, which keeps it under the 3-second line where WCAG 1.4.2
          * would require a stop control for audio that starts on its own.
          *
          * Built on first use, never at load, so a visitor who never switches theme never
-         * fetches it. `play()` can be refused — some browsers want a fresher user gesture
-         * than a click 180ms ago — and a refusal is fine: this is decoration, so it fails
-         * silently rather than logging at people.
+         * fetches it. `play()` can be refused — the gesture that started this is a click one
+         * and a half seconds ago, and browsers differ on how long they honour it — and a
+         * refusal is fine: this is decoration, so it fails silently rather than logging at
+         * people.
          */
-        const BANG_VOLUME = 0.08;
-        const BANG_DELAY = 180;
+        const BANG_VOLUME = 0.04;
         let bang;
-        const playBang = () => {
+
+        /*
+         * Fetched when the frame appears and sounded when it leaves. The frame's stay is
+         * otherwise dead time, and building the element only at the moment of playing left
+         * the first bang waiting on the network — late or missing exactly once, on the switch
+         * where the joke is new.
+         */
+        const armBang = () => {
           try {
             bang ??= new Audio('/audio/flash-out.mp3');
+          } catch {}
+        };
+
+        const playBang = () => {
+          if (!bang) return;
+          try {
             bang.volume = BANG_VOLUME;
             bang.currentTime = 0;
             const played = bang.play();
@@ -127,10 +140,13 @@ const { title, description, type, image, noindex } = Astro.props;
           frame.hidden = true;
           void frame.offsetHeight;
           frame.hidden = false;
-          setTimeout(playBang, BANG_DELAY);
+          armBang();
           clearTimeout(flashing);
+          // The bang is the frame leaving, not the frame arriving: one timer, so the two can
+          // never drift apart.
           flashing = setTimeout(() => {
             frame.hidden = true;
+            playBang();
           }, ms('--duration-flash', 1600));
         };
 

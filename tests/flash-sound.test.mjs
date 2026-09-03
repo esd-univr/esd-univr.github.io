@@ -61,9 +61,18 @@ test('it carries no metadata — no tags, no cover art, no channel name', () => 
   }
 });
 
-test('the volume is kept low and the delay puts the bang after the frame', () => {
+test('the volume is kept barely there', () => {
   const volume = Number(/const BANG_VOLUME = ([\d.]+);/.exec(script)?.[1]);
-  const delay = Number(/const BANG_DELAY = (\d+);/.exec(script)?.[1]);
-  assert.ok(volume > 0 && volume <= 0.15, `BANG_VOLUME is ${volume} — this is meant to be barely there`);
-  assert.ok(delay >= 100, `BANG_DELAY is ${delay}ms — it should land after the frame has faded in`);
+  assert.ok(volume > 0, 'BANG_VOLUME is missing or zero');
+  assert.ok(volume <= 0.05, `BANG_VOLUME is ${volume} — this is meant to be barely there`);
+});
+
+test('the bang fires on the frame leaving, not on the frame arriving', () => {
+  // One timer owns both, so they cannot drift apart. If this is ever split into two
+  // timers, the two halves of the joke will separate on a slow machine.
+  const hide = /flashing = setTimeout\(\(\) => \{([\s\S]*?)\}, ms\('--duration-flash'/.exec(script)?.[1];
+  assert.ok(hide, 'the frame is no longer hidden on a --duration-flash timer');
+  assert.match(hide, /frame\.hidden = true;/, 'the timer should hide the frame');
+  assert.match(hide, /playBang\(\);/, 'the timer should sound the bang as it hides the frame');
+  assert.doesNotMatch(script, /setTimeout\(playBang/, 'the bang should not be on a timer of its own');
 });

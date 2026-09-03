@@ -247,13 +247,19 @@ and moves nothing; `hidden` is what shows and hides it, and the fade is a
 less motion still gets the frame. It fires in one direction only, because that is the
 direction that hurts.
 
-**And it makes a noise**, 180 ms later: `public/audio/flash-out.mp3`, 1.3 seconds at 8 %
-volume. Three constraints shape it. It is under three seconds, because past that WCAG 1.4.2
-requires a stop control for audio that starts without being asked. The `Audio` object is
-built on first use, so a visitor who never switches theme never fetches it. And a refused
-`play()` is swallowed — some browsers want a fresher user gesture than a click 180 ms ago,
-and an easter egg has no business logging at anybody. `tests/flash-sound.test.mjs` holds the
-path, the length, the volume and the absence of metadata.
+**And it makes a noise as the frame leaves**: `public/audio/flash-out.mp3`, 1.3 seconds at
+4 % volume, on the same timer that hides the frame so the two can never drift apart. The
+`Audio` element is built when the frame *appears* and played when it goes — the frame's stay
+is otherwise dead time, and building it at the moment of playing left the first bang waiting
+on the network, exactly once, on the switch where the joke is new. It is still built on
+first use, so a visitor who never switches theme never fetches it.
+
+Two more constraints. It is under three seconds, because past that WCAG 1.4.2 requires a stop
+control for audio that starts without being asked. And a refused `play()` is swallowed: the
+gesture behind it is a click a second and a half ago, browsers differ on how long they honour
+one, and an easter egg has no business logging at anybody.
+`tests/flash-sound.test.mjs` holds the path, the length, the volume, the absence of metadata,
+and that the bang is on the frame's exit rather than a timer of its own.
 
 ### Changing the palette safely
 
